@@ -30,6 +30,8 @@
 #endif /* CONFIG_WIFI_PROV_TRANSPORT_SOFTAP */
 #include "qrcode.h"
 
+#include "Websocket.h"
+
 static const char *TAG = "app";
 
 /* Signal Wi-Fi events on this event-group */
@@ -332,9 +334,10 @@ void app_main(void)
     /* Wait for Wi-Fi connection */
     xEventGroupWaitBits(wifi_event_group, WIFI_CONNECTED_EVENT, false, true, portMAX_DELAY);
 
-    /* Start main application now */
-    while (1) {
-        ESP_LOGI(TAG, "Hello World!");
-        vTaskDelay(1000 / portTICK_PERIOD_MS);
-    }
+    /* Start Websocket */
+    websocket_app_start();
+
+    wifi_send(create_new_game_req());
+
+    wifi_stop();
 }
