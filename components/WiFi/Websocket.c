@@ -56,6 +56,9 @@ void websocket_app_start(void)
     // wifi_send(create_new_game_req()); //TODO: CHANGE THIS TO A CONNECT TO ACCOUNT REQUEST
 }
 
+/**
+ * @param - msg: this must be the output of a WebSocketMsg.h function call!
+ */
 int wifi_send(char *msg) 
 {
     //wrapper for wifi client send to ws
