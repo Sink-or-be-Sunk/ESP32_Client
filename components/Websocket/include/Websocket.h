@@ -13,7 +13,7 @@
 
 #include "WebSocketMsg.h"
 
-#define CONFIG_WEBSOCKET_URI "ws:sink-or-be-sunk.herokuapp.com"
+#define CONFIG_WEBSOCKET_URI "ws://sink-or-be-sunk.herokuapp.com"
 
 void websocket_app_start(void);
 
