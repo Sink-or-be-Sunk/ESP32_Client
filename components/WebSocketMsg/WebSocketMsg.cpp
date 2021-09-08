@@ -22,8 +22,10 @@ char *create_new_game_req(void)
         goto end;
     }
 
-    id = cJSON_CreateString("PLAYER ID");
-    //TODO: ADD DEVICE ID FUNCTION CALL HERE
+    // id = cJSON_CreateString("PLAYER ID");
+    char device_id[13];
+    get_device_id(device_id);
+    id = cJSON_CreateString(device_id);
     if (id == NULL)
     {
         goto end;

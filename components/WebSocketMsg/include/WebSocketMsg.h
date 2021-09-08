@@ -9,12 +9,15 @@ typedef struct ships
 {
     uint8_t type;
 } ship;
+// namespace move_type
+// {
+//     const char *CLASSIC = "classic";
 
-typedef enum
-{
-    CLASSIC,
-    BASIC
-} game_type_t;
+// }
+// namespace game_type
+// {
+//     const char *CLASSIC = "classic";
+// }
 
 typedef enum
 {
