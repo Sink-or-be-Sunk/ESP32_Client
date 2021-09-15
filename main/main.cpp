@@ -20,28 +20,21 @@
 #include <nvs_flash.h>
 
 #include <wifi_provisioning/manager.h>
-
-#ifdef CONFIG_WIFI_PROV_TRANSPORT_BLE
 #include <wifi_provisioning/scheme_ble.h>
-#endif /* CONFIG_WIFI_PROV_TRANSPORT_BLE */
-
-#ifdef CONFIG_WIFI_PROV_TRANSPORT_SOFTAP
-#include <wifi_provisioning/scheme_softap.h>
-#endif /* CONFIG_WIFI_PROV_TRANSPORT_SOFTAP */
 #include "qrcode.h"
-
-#include "Websocket.h"
-
-static const char *TAG = "app";
-
-/* Signal Wi-Fi events on this event-group */
-const int WIFI_CONNECTED_EVENT = BIT0;
-static EventGroupHandle_t wifi_event_group;
 
 #define PROV_QR_VERSION "v1"
 #define PROV_TRANSPORT_SOFTAP "softap"
 #define PROV_TRANSPORT_BLE "ble"
 #define QRCODE_BASE_URL "https://espressif.github.io/esp-jumpstart/qrcode.html"
+
+#include "Websocket.h"
+
+static const char *TAG = "MAIN";
+
+/* Signal Wi-Fi events on this event-group */
+const int WIFI_CONNECTED_EVENT = BIT0;
+static EventGroupHandle_t wifi_event_group;
 
 /* Event handler for catching system events */
 static void event_handler(void *arg, esp_event_base_t event_base,
@@ -115,14 +108,14 @@ static void event_handler(void *arg, esp_event_base_t event_base,
     }
 }
 
-static void wifi_init_sta(void)
+static void wifi_init_sta(void) //TODO: REMOVE
 {
     /* Start Wi-Fi in station mode */
     ESP_ERROR_CHECK(esp_wifi_set_mode(WIFI_MODE_STA));
     ESP_ERROR_CHECK(esp_wifi_start());
 }
 
-static void get_device_service_name(char *service_name, size_t max)
+static void get_device_service_name(char *service_name, size_t max) //TODO: REMOVE
 {
     uint8_t eth_mac[6];
     const char *ssid_prefix = "PROV_";
@@ -210,38 +203,18 @@ extern "C" void app_main(void)
 
     /* Initialize Wi-Fi including netif with default config */
     esp_netif_create_default_wifi_sta();
-#ifdef CONFIG_WIFI_PROV_TRANSPORT_SOFTAP
-    esp_netif_create_default_wifi_ap();
-#endif /* CONFIG_WIFI_PROV_TRANSPORT_SOFTAP */
+
     wifi_init_config_t cfg = WIFI_INIT_CONFIG_DEFAULT();
     ESP_ERROR_CHECK(esp_wifi_init(&cfg));
 
     /* Configuration for the provisioning manager */
     wifi_prov_mgr_config_t config = {
-    /* What is the Provisioning Scheme that we want ?
+        /* What is the Provisioning Scheme that we want ?
          * wifi_prov_scheme_softap or wifi_prov_scheme_ble */
-#ifdef CONFIG_WIFI_PROV_TRANSPORT_BLE
         .scheme = wifi_prov_scheme_ble,
-#endif /* CONFIG_WIFI_PROV_TRANSPORT_BLE */
-#ifdef CONFIG_WIFI_PROV_TRANSPORT_SOFTAP
-        .scheme = wifi_prov_scheme_softap,
-#endif /* CONFIG_WIFI_PROV_TRANSPORT_SOFTAP */
 
-    /* Any default scheme specific event handler that you would
-         * like to choose. Since our example application requires
-         * neither BT nor BLE, we can choose to release the associated
-         * memory once provisioning is complete, or not needed
-         * (in case when device is already provisioned). Choosing
-         * appropriate scheme specific event handler allows the manager
-         * to take care of this automatically. This can be set to
-         * WIFI_PROV_EVENT_HANDLER_NONE when using wifi_prov_scheme_softap*/
-#ifdef CONFIG_WIFI_PROV_TRANSPORT_BLE
-        .scheme_event_handler = WIFI_PROV_SCHEME_BLE_EVENT_HANDLER_FREE_BTDM
-#endif /* CONFIG_WIFI_PROV_TRANSPORT_BLE */
-#ifdef CONFIG_WIFI_PROV_TRANSPORT_SOFTAP
-                                    .scheme_event_handler = WIFI_PROV_EVENT_HANDLER_NONE
-#endif /* CONFIG_WIFI_PROV_TRANSPORT_SOFTAP */
-    };
+        /* Release the associated memory for ble once provisioning is complete*/
+        .scheme_event_handler = WIFI_PROV_SCHEME_BLE_EVENT_HANDLER_FREE_BTDM};
 
     /* Initialize provisioning manager with the
      * configuration parameters set above */
@@ -253,8 +226,8 @@ extern "C" void app_main(void)
 #else
     /* Let's find out if the device is provisioned */
     ESP_ERROR_CHECK(wifi_prov_mgr_is_provisioned(&provisioned));
-
 #endif
+
     /* If device is not yet provisioned start provisioning service */
     if (!provisioned)
     {
@@ -280,7 +253,7 @@ extern "C" void app_main(void)
          *      - this should be a string with length > 0
          *      - NULL if not used
          */
-        const char *pop = "abcd1234";
+        const char *pop = "abcd1234"; //TODO: CHANGE THIS TO SOMETHING MORE SECURE
 
         /* What is the service key (could be NULL)
          * This translates to :
@@ -289,7 +262,6 @@ extern "C" void app_main(void)
          */
         const char *service_key = NULL;
 
-#ifdef CONFIG_WIFI_PROV_TRANSPORT_BLE
         /* This step is only useful when scheme is wifi_prov_scheme_ble. This will
          * set a custom 128 bit UUID which will be included in the BLE advertisement
          * and will correspond to the primary GATT service that provides provisioning
@@ -324,7 +296,6 @@ extern "C" void app_main(void)
          * forgotten to enable the BT stack or BTDM BLE settings in the SDK (e.g. see
          * the sdkconfig.defaults in the example project) */
         wifi_prov_scheme_ble_set_service_uuid(custom_service_uuid);
-#endif /* CONFIG_WIFI_PROV_TRANSPORT_BLE */
 
         /* An optional endpoint that applications can create if they expect to
          * get some additional custom data during provisioning workflow.
@@ -347,11 +318,7 @@ extern "C" void app_main(void)
         // wifi_prov_mgr_wait();
         // wifi_prov_mgr_deinit();
         /* Print QR code for provisioning */
-#ifdef CONFIG_WIFI_PROV_TRANSPORT_BLE
         wifi_prov_print_qr(service_name, pop, PROV_TRANSPORT_BLE);
-#else  /* CONFIG_WIFI_PROV_TRANSPORT_SOFTAP */
-        wifi_prov_print_qr(service_name, pop, PROV_TRANSPORT_SOFTAP);
-#endif /* CONFIG_WIFI_PROV_TRANSPORT_BLE */
     }
     else
     {
@@ -371,7 +338,11 @@ extern "C" void app_main(void)
     /* Start Websocket */
     websocket_app_start();
 
-    wifi_send(create_new_game_req());
+    for (int i = 0; i < 5; i++)
+    {
+        wifi_send(create_new_game_req());
+        vTaskDelay(1000 / portTICK_RATE_MS);
+    }
 
     wifi_stop();
 }

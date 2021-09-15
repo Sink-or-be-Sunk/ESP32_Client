@@ -1,25 +1,4 @@
 menu "Wifi Configuration"
-
-    choice WIFI_PROV_TRANSPORT
-        bool "Provisioning Transport"
-        default EXAMPLE_PROV_TRANSPORT_SOFTAP if IDF_TARGET_ESP32S2
-        default EXAMPLE_PROV_TRANSPORT_BLE
-        help
-            Wi-Fi provisioning component offers both, SoftAP and BLE transports. Choose any one.
-
-        config WIFI_PROV_TRANSPORT_BLE
-            bool "BLE"
-            select BT_ENABLED
-            depends on !IDF_TARGET_ESP32S2
-        config WIFI_PROV_TRANSPORT_SOFTAP
-            bool "Soft AP"
-    endchoice
-
-    config WIFI_PROV_TRANSPORT
-        int
-        default 1 if EXAMPLE_PROV_TRANSPORT_BLE
-        default 2 if EXAMPLE_PROV_TRANSPORT_SOFTAP
-
     config WIFI_RESET_PROVISIONED
         bool
         default n
