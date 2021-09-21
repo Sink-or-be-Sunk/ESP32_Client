@@ -5,6 +5,9 @@
 #include <stdio.h>
 #include <esp_wifi.h>
 
+/** This comes for ESP IDF definitions*/
+#define SSID_MAX_LEN 33
+
 typedef struct ships
 {
     uint8_t type;
@@ -28,8 +31,9 @@ typedef enum
 } move_type_t;
 //create a monitor with a list of supported resolutions
 //NOTE: Returns a heap allocated string, you are required to free it after use.
-char *
-create_new_game_req(void);
+char *create_new_game_req(void);
+
+char *register_enqueue(void);
 
 char *make_move(uint8_t c, uint8_t r);
 // char *make_move(uint8_t c, uint8_t r, type, at); //TODO: ADD GAME TYPE AND MORE THAN 2 PLAYER GAMES

@@ -1,5 +1,12 @@
 #include "WebSocketMsg.h"
 
+static void get_device_ssid(char result[SSID_MAX_LEN])
+{
+    wifi_ap_record_t ap;
+    esp_wifi_sta_get_ap_info(&ap);
+    snprintf(result, SSID_MAX_LEN, "%s", ap.ssid);
+}
+
 static void get_device_id(char *service_name)
 {
     const size_t max = 13;
@@ -49,5 +56,72 @@ char *create_new_game_req(void)
 
 end:
     cJSON_Delete(obj);
+    return string;
+}
+
+char *register_enqueue(void)
+{
+    char *string = NULL; //point to output (built) string
+    cJSON *msg = NULL;   // main json wrapper object
+    cJSON *id = NULL;    // unique device id (mac address)
+    cJSON *req = NULL;   // request header
+    cJSON *data = NULL;  // data: request object wrapper
+    cJSON *type = NULL;  // REGISTER_TYPE: Register type header
+    cJSON *ssid = NULL;  // wifi ssid of connected device
+
+    msg = cJSON_CreateObject();
+    if (msg == NULL)
+    {
+        goto end;
+    }
+
+    char device_id[13];
+    get_device_id(device_id);
+    id = cJSON_CreateString(device_id);
+    if (id == NULL)
+    {
+        goto end;
+    }
+    cJSON_AddItemToObject(msg, "id", id);
+
+    req = cJSON_CreateString("REGISTRATION");
+    if (req == NULL)
+    {
+        goto end;
+    }
+    cJSON_AddItemToObject(msg, "req", req);
+
+    data = cJSON_CreateObject();
+    if (data == NULL)
+    {
+        goto end;
+    }
+
+    type = cJSON_CreateString("ENQUEUE");
+    if (type == NULL)
+    {
+        goto end;
+    }
+    cJSON_AddItemToObject(data, "type", type);
+
+    char device_ssid[SSID_MAX_LEN];
+    get_device_ssid(device_ssid);
+    ssid = cJSON_CreateString(device_ssid);
+    if (ssid == NULL)
+    {
+        goto end;
+    }
+    cJSON_AddItemToObject(data, "ssid", ssid);
+
+    cJSON_AddItemToObject(msg, "data", data);
+
+    string = cJSON_Print(msg);
+    if (string == NULL)
+    {
+        fprintf(stderr, "Failed to print obj.\n");
+    }
+
+end:
+    cJSON_Delete(msg);
     return string;
 }
