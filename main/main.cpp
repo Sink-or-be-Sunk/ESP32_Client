@@ -338,11 +338,16 @@ extern "C" void app_main(void)
     /* Start Websocket */
     websocket_app_start();
 
-    // wifi_ap_record_t ap;
-    // esp_wifi_sta_get_ap_info(&ap);
-    // SSID_MAX_LEN;
+    //FIXME: THIS IS NOT HOW THESE FUNCTIONS SHOULD BE CALLED: SEE README (this is testing only)
+    char *enqueue = register_enqueue();
+    printf("%s\n", enqueue);
+    free(enqueue);
 
-    wifi_send(register_enqueue());
+    char *confirm = register_confirm();
+    printf("%s\n", confirm);
+    free(confirm);
+
+    // wifi_send(register_enqueue());
 
     // for (int i = 0; i < 5; i++)
     // {

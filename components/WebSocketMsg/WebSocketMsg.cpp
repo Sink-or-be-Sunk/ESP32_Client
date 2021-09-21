@@ -59,7 +59,7 @@ end:
     return string;
 }
 
-char *register_enqueue(void)
+char *register_base(const char *type_str)
 {
     char *string = NULL; //point to output (built) string
     cJSON *msg = NULL;   // main json wrapper object
@@ -97,7 +97,7 @@ char *register_enqueue(void)
         goto end;
     }
 
-    type = cJSON_CreateString("ENQUEUE");
+    type = cJSON_CreateString(type_str);
     if (type == NULL)
     {
         goto end;
@@ -124,4 +124,14 @@ char *register_enqueue(void)
 end:
     cJSON_Delete(msg);
     return string;
+}
+
+char *register_confirm(void)
+{
+    return register_base("CONFIRM");
+}
+
+char *register_enqueue(void)
+{
+    return register_base("ENQUEUE");
 }

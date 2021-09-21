@@ -2,6 +2,18 @@
   "C_Cpp.intelliSenseEngine": "Tag Parser",
   "files.associations": {
     "type_traits": "cpp",
-    "limits": "c"
+    "limits": "c",
+    "array": "cpp",
+    "chrono": "cpp",
+    "functional": "cpp",
+    "istream": "cpp",
+    "ostream": "cpp",
+    "ratio": "cpp",
+    "tuple": "cpp",
+    "utility": "cpp",
+    "*.tcc": "cpp",
+    "random": "cpp",
+    "regex": "cpp",
+    "*.ipp": "cpp"
   }
 }
