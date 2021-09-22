@@ -16,7 +16,6 @@
 
 static const char *TAG = "WIFI_MANAGER";
 
-
 #define PROV_QR_VERSION "v1"
 #define PROV_TRANSPORT_SOFTAP "softap"
 #define PROV_TRANSPORT_BLE "ble"
@@ -167,6 +166,9 @@ static void wifi_prov_print_qr(const char *name, const char *pop, const char *tr
 
 void wifi_manager_init(void)
 {
+    /* Initialize TCP/IP */
+    ESP_ERROR_CHECK(esp_netif_init());
+
     wifi_event_group = xEventGroupCreate();
 
     /* Register our event handler for Wi-Fi, IP and Provisioning related events */
