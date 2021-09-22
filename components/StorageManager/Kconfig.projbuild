@@ -1,0 +1,9 @@
+menu "Storage Configuration"
+    config STORAGE_RESET_ALL
+        bool
+        default n
+        prompt "Reset Non-Volatile Storage to Factory Defaults"
+        help
+            This erases the NVS that corresponds with saved user preferences
+
+endmenu

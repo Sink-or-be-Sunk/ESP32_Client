@@ -50,9 +50,11 @@ extern "C" void app_main(void)
 
     registration_manager_init();
 
-    int8_t isRegistered = nvs_read_i8(REGISTER_TAG);
-    isRegistered++;
-    nvs_write_i8(REGISTER_TAG, isRegistered);
+    char username[SETTING_STR_LEN::USERNAME];
+    size_t len = SETTING_STR_LEN::USERNAME;
+    nvs_read(SETTING_HEADERS::USERNAME, username, &len);
+    strcpy(username, "mitch");
+    nvs_write(SETTING_HEADERS::USERNAME, username);
 
     // wifi_send(register_enqueue());
 
