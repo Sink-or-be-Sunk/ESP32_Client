@@ -4,6 +4,7 @@
 #include <string.h>
 #include <stdio.h>
 #include <esp_wifi.h>
+#include "Settings.h"
 
 /** This comes for ESP IDF definitions*/
 #define SSID_MAX_LEN 33

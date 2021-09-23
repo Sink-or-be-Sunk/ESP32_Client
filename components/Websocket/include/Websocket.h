@@ -13,10 +13,18 @@
 
 #include "WebSocketMsg.h"
 
-#define CONFIG_WEBSOCKET_URI "ws://sink-or-be-sunk.herokuapp.com"
+// #define CONFIG_WEBSOCKET_URI "ws://sink-or-be-sunk.herokuapp.com"
 
-void websocket_app_start(void);
+class Websocket
+{
+private:
+    esp_websocket_client_handle_t client;
 
-int wifi_send(char *msg);
+public:
+    void start(void);
+    void stop(void);
+    int send(char *msg);
+    void handle(const char *msg, uint8_t len);
+};
 
-void wifi_stop(void);
+extern Websocket websocket;

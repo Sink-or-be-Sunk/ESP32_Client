@@ -1,0 +1,8 @@
+menu "Websocket Configuration"
+    config WEBSOCKET_URI
+        string "Websocket Server URI"
+        default "ws://sink-or-be-sunk.herokuapp.com"
+        help
+            changing this uri will change the endpoint that the
+            device attempts to connect for gameplay, registration, etc...
+endmenu

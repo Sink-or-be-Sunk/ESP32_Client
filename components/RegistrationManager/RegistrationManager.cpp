@@ -27,11 +27,11 @@ static void gpio_task_example(void *arg)
             printf("GPIO[%d] intr, val: %d\n", io_num, gpio_get_level((gpio_num_t)io_num));
             if (io_num == GPIO_NUM_26)
             {
-                wifi_send(register_enqueue());
+                websocket.send(register_enqueue());
             }
             else if (io_num == GPIO_NUM_25)
             {
-                wifi_send(register_confirm());
+                websocket.send(register_confirm());
             }
         }
     }

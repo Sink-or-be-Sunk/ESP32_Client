@@ -28,6 +28,8 @@ static const char *TAG = "MAIN"; //FIXME: THIS IS UNUSED RIGHT NOW
 
 extern "C" void app_main(void)
 {
+    ESP_LOGI(TAG, "Starting App Main");
+
     /* Initializes nvs (needed for wifi prov too!) */
     settings.init();
 
@@ -37,7 +39,7 @@ extern "C" void app_main(void)
     wifi_manager_init();
 
     /* Start Websocket */
-    websocket_app_start();
+    websocket.start();
 
     //FIXME: THIS IS NOT HOW THESE FUNCTIONS SHOULD BE CALLED: SEE README (this is testing only)
     char *enqueue = register_enqueue();
@@ -50,9 +52,9 @@ extern "C" void app_main(void)
 
     registration_manager_init();
 
-    printf("username: %s\n", settings.username);
-    settings.username[0] += 1;
-    settings.save();
+    // printf("username: %s\n", settings.username);
+    // settings.username[0] += 1;
+    // settings.save();
 
     // wifi_send(register_enqueue());
 

@@ -139,10 +139,12 @@ end:
 
 char *register_confirm(void)
 {
-    return register_base("CONFIRM", NULL);
+    char username[SETTING_STR_LEN::USERNAME];
+    strcpy(username, settings.username);
+    return register_base("CONFIRM", username);
 }
 
 char *register_enqueue(void)
 {
-    return register_base("ENQUEUE", "mitchaarndt");
+    return register_base("ENQUEUE", NULL);
 }
