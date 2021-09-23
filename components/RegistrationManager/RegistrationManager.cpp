@@ -4,10 +4,9 @@
 #include <freertos/task.h>
 #include <freertos/event_groups.h>
 #include "driver/gpio.h"
+#include "Websocket.h"
 
 // GPIO code
-#define GPIO_INPUT_IO_0 (gpio_num_t)26
-#define GPIO_INPUT_PIN_SEL (1ULL << GPIO_INPUT_IO_0)
 #define ESP_INTR_FLAG_DEFAULT 0
 
 static xQueueHandle gpio_evt_queue = NULL;
@@ -26,21 +25,27 @@ static void gpio_task_example(void *arg)
         if (xQueueReceive(gpio_evt_queue, &io_num, portMAX_DELAY))
         {
             printf("GPIO[%d] intr, val: %d\n", io_num, gpio_get_level((gpio_num_t)io_num));
+            if (io_num == GPIO_NUM_26)
+            {
+                wifi_send(register_enqueue());
+            }
+            else if (io_num == GPIO_NUM_25)
+            {
+                wifi_send(register_confirm());
+            }
         }
     }
 }
 
 void registration_manager_init(void)
 {
-    //zero-initialize the config structure.
-    gpio_config_t io_conf = {};
-
-    //interrupt of rising edge
-    io_conf.intr_type = GPIO_INTR_POSEDGE;
-    //bit mask of the pins, use GPIO4/5 here
-    io_conf.pin_bit_mask = GPIO_INPUT_PIN_SEL;
-    //set as input mode
-    io_conf.mode = GPIO_MODE_INPUT;
+    gpio_config_t io_conf = {
+        .pin_bit_mask = (1ULL << GPIO_NUM_25) | (1ULL << GPIO_NUM_26),
+        .mode = GPIO_MODE_INPUT,
+        .pull_up_en = GPIO_PULLUP_DISABLE,
+        .pull_down_en = GPIO_PULLDOWN_DISABLE,
+        .intr_type = GPIO_INTR_POSEDGE,
+    };
     gpio_config(&io_conf);
 
     //create a queue to handle gpio event from isr
@@ -51,5 +56,6 @@ void registration_manager_init(void)
     //install gpio isr service
     gpio_install_isr_service(ESP_INTR_FLAG_DEFAULT);
     //hook isr handler for specific gpio pin
-    gpio_isr_handler_add(GPIO_INPUT_IO_0, gpio_isr_handler, (void *)GPIO_INPUT_IO_0);
+    gpio_isr_handler_add(GPIO_NUM_25, gpio_isr_handler, (void *)GPIO_NUM_25);
+    gpio_isr_handler_add(GPIO_NUM_26, gpio_isr_handler, (void *)GPIO_NUM_26);
 }

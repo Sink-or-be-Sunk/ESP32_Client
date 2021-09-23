@@ -7,7 +7,8 @@ esp_websocket_client_handle_t client;
 static void websocket_event_handler(void *handler_args, esp_event_base_t base, int32_t event_id, void *event_data)
 {
     esp_websocket_event_data_t *data = (esp_websocket_event_data_t *)event_data;
-    switch (event_id) {
+    switch (event_id)
+    {
     case WEBSOCKET_EVENT_CONNECTED:
         ESP_LOGI(TAG, "WEBSOCKET_EVENT_CONNECTED");
         break;
@@ -16,10 +17,14 @@ static void websocket_event_handler(void *handler_args, esp_event_base_t base, i
         break;
     case WEBSOCKET_EVENT_DATA:
         ESP_LOGI(TAG, "WEBSOCKET_EVENT_DATA");
+        //TODO: ADD SOCKET MANAGER CODE HERE
         ESP_LOGI(TAG, "Received opcode=%d", data->op_code);
-        if (data->op_code == 0x08 && data->data_len == 2) {
-            ESP_LOGW(TAG, "Received closed message with code=%d", 256*data->data_ptr[0] + data->data_ptr[1]);
-        } else {
+        if (data->op_code == 0x08 && data->data_len == 2)
+        {
+            ESP_LOGW(TAG, "Received closed message with code=%d", 256 * data->data_ptr[0] + data->data_ptr[1]);
+        }
+        else
+        {
             ESP_LOGW(TAG, "Received=%.*s", data->data_len, (char *)data->data_ptr);
         }
         ESP_LOGW(TAG, "Total payload length=%d, data_len=%d, current payload offset=%d\r\n", data->payload_len, data->data_len, data->payload_offset);
@@ -50,7 +55,7 @@ void websocket_app_start(void)
 /**
  * @param - msg: this must be the output of a WebSocketMsg.h function call!
  */
-int wifi_send(char *msg) 
+int wifi_send(char *msg)
 {
     //wrapper for wifi client send to ws
     size_t len = strlen(msg);
@@ -58,9 +63,9 @@ int wifi_send(char *msg)
     int res = esp_websocket_client_send_text(client, msg, len, portMAX_DELAY);
     free(msg);
     return res;
-} 
+}
 
-void wifi_stop(void) 
+void wifi_stop(void)
 {
     esp_websocket_client_close(client, portMAX_DELAY);
     ESP_LOGI(TAG, "Websocket Stopped");

@@ -29,7 +29,7 @@ static const char *TAG = "MAIN"; //FIXME: THIS IS UNUSED RIGHT NOW
 extern "C" void app_main(void)
 {
     /* Initializes nvs (needed for wifi prov too!) */
-    storage_manager_init();
+    Settings settings;
 
     /* Initialize the event loop */
     ESP_ERROR_CHECK(esp_event_loop_create_default());
@@ -50,11 +50,9 @@ extern "C" void app_main(void)
 
     registration_manager_init();
 
-    char username[SETTING_STR_LEN::USERNAME];
-    size_t len = SETTING_STR_LEN::USERNAME;
-    nvs_read(SETTING_HEADERS::USERNAME, username, &len);
-    strcpy(username, "mitch");
-    nvs_write(SETTING_HEADERS::USERNAME, username);
+    printf("username: %s\n", settings.username);
+    settings.username[0] += 1;
+    settings.save();
 
     // wifi_send(register_enqueue());
 
@@ -64,5 +62,5 @@ extern "C" void app_main(void)
     //     vTaskDelay(1000 / portTICK_RATE_MS);
     // }
 
-    wifi_stop();
+    // wifi_stop();
 }
