@@ -25,8 +25,9 @@ private:
 public:
     char username[SETTING_STR_LEN::USERNAME];
 
-    Settings();
-
+    void init(void);
     void unset(const char *key);
     void save();
 };
+
+extern Settings settings;

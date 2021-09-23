@@ -59,15 +59,16 @@ end:
     return string;
 }
 
-char *register_base(const char *type_str)
+char *register_base(const char *type_str, const char *username)
 {
-    char *string = NULL; //point to output (built) string
-    cJSON *msg = NULL;   // main json wrapper object
-    cJSON *id = NULL;    // unique device id (mac address)
-    cJSON *req = NULL;   // request header
-    cJSON *data = NULL;  // data: request object wrapper
-    cJSON *type = NULL;  // REGISTER_TYPE: Register type header
-    cJSON *ssid = NULL;  // wifi ssid of connected device
+    char *string = NULL;    //point to output (built) string
+    cJSON *msg = NULL;      // main json wrapper object
+    cJSON *id = NULL;       // unique device id (mac address)
+    cJSON *req = NULL;      // request header
+    cJSON *data = NULL;     // data: request object wrapper
+    cJSON *type = NULL;     // REGISTER_TYPE: Register type header
+    cJSON *ssid = NULL;     // wifi ssid of connected device
+    cJSON *reg_data = NULL; // wifi ssid of connected device
 
     msg = cJSON_CreateObject();
     if (msg == NULL)
@@ -113,6 +114,16 @@ char *register_base(const char *type_str)
     }
     cJSON_AddItemToObject(data, "ssid", ssid);
 
+    if (username)
+    {
+        reg_data = cJSON_CreateString(username);
+        if (reg_data == NULL)
+        {
+            goto end;
+        }
+        cJSON_AddItemToObject(data, "data", reg_data);
+    }
+
     cJSON_AddItemToObject(msg, "data", data);
 
     string = cJSON_Print(msg);
@@ -128,10 +139,10 @@ end:
 
 char *register_confirm(void)
 {
-    return register_base("CONFIRM");
+    return register_base("CONFIRM", NULL);
 }
 
 char *register_enqueue(void)
 {
-    return register_base("ENQUEUE");
+    return register_base("ENQUEUE", "mitchaarndt");
 }

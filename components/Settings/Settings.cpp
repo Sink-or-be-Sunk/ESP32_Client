@@ -1,8 +1,10 @@
-#include "StorageManager.h"
+#include "Settings.h"
 
 static const char *TAG = "STORAGE";
 
-Settings::Settings()
+Settings settings; //singleton instance of class
+
+void Settings::init(void)
 {
     /* Initialize NVS partition */
     esp_err_t ret = nvs_flash_init();

@@ -22,14 +22,14 @@
 #include "Websocket.h"
 #include "RegistrationManager.h"
 #include "WifiManager.h"
-#include "StorageManager.h"
+#include "Settings.h"
 
 static const char *TAG = "MAIN"; //FIXME: THIS IS UNUSED RIGHT NOW
 
 extern "C" void app_main(void)
 {
     /* Initializes nvs (needed for wifi prov too!) */
-    Settings settings;
+    settings.init();
 
     /* Initialize the event loop */
     ESP_ERROR_CHECK(esp_event_loop_create_default());
