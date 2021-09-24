@@ -1,4 +1,4 @@
-#include "RegistrationManager.h"
+#include "ButtonManager.h"
 #include <freertos/FreeRTOS.h>
 #include <freertos/queue.h>
 #include <freertos/task.h>
@@ -37,7 +37,7 @@ static void gpio_task_example(void *arg)
     }
 }
 
-void registration_manager_init(void)
+void button_manager_init(void)
 {
     gpio_config_t io_conf = {
         .pin_bit_mask = (1ULL << GPIO_NUM_25) | (1ULL << GPIO_NUM_26),

@@ -41,9 +41,22 @@ static void event_handler(void *handler_args, esp_event_base_t base, int32_t eve
 enum HEADERS
 {
     CONNECTED,
+    //Registration Header
     REGISTRATION,
     REGISTER_PENDING,
     REGISTER_SUCCESS,
+    REGISTER_ERROR,
+    //Game Headers
+    GAME_ALREADY_EXITS,
+    GAME_CREATED,
+    MOVE_MADE,
+    INVALID_MOVE,
+    JOINED_GAME,
+    POSITIONED_SHIPS,
+    INVALID_LAYOUT,
+    // GAME_TYPE_APPROVED, //TODO: ADD THESE BACK IF/WHEN WE MAKE MULTIPLE GAME TYPES
+    // INVALID_GAME_TYPE,
+
 };
 
 //TODO: CHANGE SERVER CODE TO SEND ENUM INSTEAD OF STRINGS (REMOVE THIS MAP)
@@ -83,7 +96,7 @@ void Websocket::stop(void)
 }
 
 /**
- * @param - msg: this must be the output of a WebSocketMsg.h function call!
+ * @param - msg: this must be the output of a Messenger.h function call!
  */
 int Websocket::send(char *msg)
 {
@@ -134,13 +147,13 @@ void Websocket::handle(const char *msg, uint8_t len)
     }
     case REGISTRATION:
     {
-        printf("Registration\n");
+        //TODO: NEEDS IMPLEMENTATION
         status = HEADERS::REGISTRATION;
         break;
     }
     case REGISTER_PENDING:
     {
-        printf("Register Pending\n");
+        //TODO: NEEDS IMPLEMENTATION
         status = HEADERS::REGISTER_PENDING;
         break;
     }
@@ -166,6 +179,55 @@ void Websocket::handle(const char *msg, uint8_t len)
             goto end;
         }
         status = HEADERS::REGISTER_SUCCESS;
+        break;
+    }
+
+    case REGISTER_ERROR:
+    {
+        //TODO: NEEDS IMPLEMENTATION
+        status = HEADERS::REGISTER_ERROR;
+        break;
+    }
+    case GAME_ALREADY_EXITS:
+    {
+        //TODO: NEEDS IMPLEMENTATION
+        status = HEADERS::GAME_ALREADY_EXITS;
+        break;
+    }
+    case GAME_CREATED:
+    {
+        //TODO: NEEDS IMPLEMENTATION
+        status = HEADERS::GAME_CREATED;
+        break;
+    }
+    case MOVE_MADE:
+    {
+        //TODO: NEEDS IMPLEMENTATION
+        status = HEADERS::MOVE_MADE;
+        break;
+    }
+    case INVALID_MOVE:
+    {
+        //TODO: NEEDS IMPLEMENTATION
+        status = HEADERS::INVALID_MOVE;
+        break;
+    }
+    case JOINED_GAME:
+    {
+        //TODO: NEEDS IMPLEMENTATION
+        status = HEADERS::JOINED_GAME;
+        break;
+    }
+    case POSITIONED_SHIPS:
+    {
+        //TODO: NEEDS IMPLEMENTATION
+        status = HEADERS::POSITIONED_SHIPS;
+        break;
+    }
+    case INVALID_LAYOUT:
+    {
+        //TODO: NEEDS IMPLEMENTATION
+        status = HEADERS::INVALID_LAYOUT;
         break;
     }
     }

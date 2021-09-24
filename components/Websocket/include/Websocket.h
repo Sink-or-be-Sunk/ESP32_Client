@@ -12,7 +12,7 @@
 #include <wifi_provisioning/manager.h>
 #include <wifi_provisioning/scheme_ble.h>
 
-#include "WebSocketMsg.h"
+#include "Messenger.h"
 
 // #define CONFIG_WEBSOCKET_URI "ws://sink-or-be-sunk.herokuapp.com"
 

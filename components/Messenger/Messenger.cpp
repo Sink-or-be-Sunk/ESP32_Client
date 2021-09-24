@@ -1,4 +1,4 @@
-#include "WebSocketMsg.h"
+#include "Messenger.h"
 
 static void get_device_ssid(char result[SSID_MAX_LEN])
 {

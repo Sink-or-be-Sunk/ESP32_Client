@@ -16,9 +16,9 @@ In VSCode:
 - Look for the custom configuration name given at the top of a Kconfig.projbuild such as `WiFi Configuration`
 - Editing this in the config editor will change the behavior of the program
 
-## WebSocketMsg
+## Messenger
 
-to help with abstracting communincation with the server, the WebSocketMsg component is used. This will allow for sending json objects to the server.
+to help with abstracting communincation with the server, the Messenger component is used. This will allow for sending json objects to the server.
 
 ### Use Case
 

@@ -1,4 +1,13 @@
 menu "Wifi Configuration"
+    config WIFI_NO_CONNECT_RETRY_CNT
+        int
+        default 5
+        prompt "Max retries at connecting to network before resetting wifi provising"
+        help
+            Set the Maximum retry to avoid attempting to connect to a network that isn't available.
+            Provisioned credentials are erased and internal state machine
+            is reset after this threshold is reached.
+            
     config WIFI_RESET_PROVISIONED
         bool
         default n

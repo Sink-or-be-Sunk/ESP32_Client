@@ -20,7 +20,7 @@
 #include <nvs_flash.h>
 
 #include "Websocket.h"
-#include "RegistrationManager.h"
+#include "ButtonManager.h"
 #include "WifiManager.h"
 #include "Settings.h"
 
@@ -41,7 +41,7 @@ extern "C" void app_main(void)
     /* Start Websocket */
     websocket.start();
 
-    registration_manager_init();
+    button_manager_init();
 
     // printf("username: %s\n", settings.username);
     // settings.username[0] += 1;
