@@ -157,17 +157,23 @@ void Websocket::handle(const char *msg, uint8_t len)
     if (cJSON_IsString(header) && (header->valuestring != NULL))
     {
         printf("Checking header \"%s\"\n", header->valuestring);
+        if (strcmp("REGISTER SUCCESS", header->valuestring))
+        {
+            status = -1;
+            goto end;
+        }
     }
 
-    meta = cJSON_GetObjectItemCaseSensitive(msg_json, "meta");
-    if (cJSON_IsObject(meta))
+    payload = cJSON_GetObjectItemCaseSensitive(msg_json, "payload");
+    if (cJSON_IsObject(payload))
     {
-        cJSON *username = cJSON_GetObjectItemCaseSensitive(meta, "username");
+        cJSON *username = cJSON_GetObjectItemCaseSensitive(payload, "username");
 
         if (cJSON_IsString(username) && (username->valuestring != NULL))
         {
             printf("Checking username \"%s\"\n", username->valuestring);
             strcpy(settings.username, username->valuestring);
+            settings.save();
         }
     }
 
