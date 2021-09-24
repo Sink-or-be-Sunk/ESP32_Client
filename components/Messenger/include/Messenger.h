@@ -10,7 +10,7 @@
 #define SSID_MAX_LEN 33
 #define DEVICE_ID_MAX_LEN 13
 
-enum CLIENT_GAME_HEADER
+enum GAME_REQ_TYPE
 {
     NEW_GAME
 };
@@ -31,6 +31,7 @@ private:
 public:
     void init(void);
     char *build_registration_msg(REGISTRATION_TYPE type);
+    char *build_game_msg(GAME_REQ_TYPE type);
 };
 
 extern Messenger messenger;

@@ -4,6 +4,8 @@
 #define REGISTRATION_ENQUEUE_TAG "ENQUEUE"
 #define REGISTRATION_CONFIRM_TAG "CONFIRM"
 
+#define GAME_NEW_GAME_TAG "NEW GAME"
+
 Messenger messenger; //singleton instance of class
 
 static void get_device_ssid(char result[SSID_MAX_LEN])
@@ -107,44 +109,48 @@ end:
     return string;
 }
 
-char *create_new_game_req(void)
+char *Messenger::build_game_msg(GAME_REQ_TYPE type)
 {
     char *string = NULL; //point to output (built) string
-    cJSON *id = NULL;
-    cJSON *req = NULL;
+    cJSON *msg = NULL;   // main json wrapper object
+    cJSON *id = NULL;    // unique device id (mac address)
+    cJSON *req = NULL;   // request header
+    cJSON *data = NULL;  // data: request object wrapper
 
-    cJSON *obj = cJSON_CreateObject();
-    if (obj == NULL)
+    msg = cJSON_CreateObject();
+    if (msg == NULL)
     {
         goto end;
     }
 
-    // id = cJSON_CreateString("PLAYER ID");
-    char device_id[13];
-    get_device_id(device_id);
-    id = cJSON_CreateString(device_id);
+    id = cJSON_CreateString(this->device_id);
     if (id == NULL)
     {
         goto end;
     }
-    /* after creation was successful, immediately add it to the obj,
-     * thereby transferring ownership of the pointer to it */
-    cJSON_AddItemToObject(obj, "id", id);
+    cJSON_AddItemToObject(msg, "id", id);
 
-    req = cJSON_CreateString("NEW GAME");
+    switch (type)
+    {
+    case NEW_GAME:
+    {
+        req = cJSON_CreateString(GAME_NEW_GAME_TAG);
+        break;
+    }
+    }
     if (req == NULL)
     {
         goto end;
     }
-    cJSON_AddItemToObject(obj, "req", req);
+    cJSON_AddItemToObject(msg, "req", req);
 
-    string = cJSON_Print(obj);
+    string = cJSON_Print(msg);
     if (string == NULL)
     {
         fprintf(stderr, "Failed to print obj.\n");
     }
 
 end:
-    cJSON_Delete(obj);
+    cJSON_Delete(msg);
     return string;
 }

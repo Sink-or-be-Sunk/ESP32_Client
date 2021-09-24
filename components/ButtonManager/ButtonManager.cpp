@@ -31,7 +31,8 @@ static void gpio_task_example(void *arg)
             }
             else if (io_num == GPIO_NUM_25)
             {
-                websocket.send(messenger.build_registration_msg(CONFIRM));
+                // websocket.send(messenger.build_registration_msg(CONFIRM));
+                websocket.send(messenger.build_game_msg(NEW_GAME));
             }
         }
     }
