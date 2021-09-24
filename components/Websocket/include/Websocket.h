@@ -1,6 +1,7 @@
 #pragma once
 
 #include <string.h>
+#include <map>
 
 #include "esp_wifi.h"
 #include "esp_log.h"

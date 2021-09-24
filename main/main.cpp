@@ -41,15 +41,6 @@ extern "C" void app_main(void)
     /* Start Websocket */
     websocket.start();
 
-    //FIXME: THIS IS NOT HOW THESE FUNCTIONS SHOULD BE CALLED: SEE README (this is testing only)
-    char *enqueue = register_enqueue();
-    printf("%s\n", enqueue);
-    free(enqueue);
-
-    char *confirm = register_confirm();
-    printf("%s\n", confirm);
-    free(confirm);
-
     registration_manager_init();
 
     // printf("username: %s\n", settings.username);
