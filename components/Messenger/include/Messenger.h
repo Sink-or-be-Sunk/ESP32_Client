@@ -8,10 +8,32 @@
 
 /** This comes for ESP IDF definitions*/
 #define SSID_MAX_LEN 33
+#define DEVICE_ID_MAX_LEN 13
 
-char *register_enqueue(void);
+enum CLIENT_GAME_HEADER
+{
+    NEW_GAME
+};
 
-char *register_confirm(void);
+enum REGISTRATION_TYPE
+{
+    ENQUEUE,
+    CONFIRM,
+};
+
+class Messenger
+{
+private:
+    char device_id[DEVICE_ID_MAX_LEN];
+    char device_ssid[SSID_MAX_LEN];
+    char *register_base(const char *type_str, const char *username);
+
+public:
+    void init(void);
+    char *build_registration_msg(REGISTRATION_TYPE type);
+};
+
+extern Messenger messenger;
 
 // FIXME: NEED TO CLEAN UP EVERYTHING BELOW THIS LINE
 // typedef struct ships
