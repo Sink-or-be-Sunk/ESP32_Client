@@ -23,8 +23,10 @@
 #include "ButtonManager.h"
 #include "WifiManager.h"
 #include "Settings.h"
+#include "Keypad.h"
+#include "Display.h"
 
-static const char *TAG = "MAIN"; //FIXME: THIS IS UNUSED RIGHT NOW
+static const char *TAG = "MAIN";
 
 extern "C" void app_main(void)
 {
@@ -41,18 +43,24 @@ extern "C" void app_main(void)
     /* Start Websocket */
     websocket.start();
 
-    button_manager_init();
+    // button_manager_init();
 
-    // printf("username: %s\n", settings.username);
-    // settings.username[0] += 1;
-    // settings.save();
+    init_keypad();
+    display.init();
 
-    // wifi_send(register_enqueue());
+    display.display1("Sink or be Sunk");
+    display.display2("Enter Coords:");
 
-    // for (int i = 0; i < 5; i++)
+    // while (1)
     // {
-    //     wifi_send(create_new_game_req());
-    //     vTaskDelay(1000 / portTICK_RATE_MS);
+    //     spi_display1(oled, disp1);
+    //     spi_display2(oled, disp2);
+    //     key = begin_scan_keypad();
+    //     memcpy(disp1, "You Entered:    ", 16);
+    //     memcpy(disp2, "                ", 16);
+    //     memcpy(disp2, &key, 1);
+    //     // strcpy(disp1, "You entered:");
+    //     // strcpy(disp2, &key);
     // }
 
     // wifi_stop();
