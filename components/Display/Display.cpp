@@ -1,9 +1,13 @@
 #include "Display.h"
 
-#define PIN_NUM_MISO GPIO_NUM_12
-#define PIN_NUM_MOSI GPIO_NUM_13
-#define PIN_NUM_SCLK GPIO_NUM_14
-#define PIN_NUM_CS GPIO_NUM_15
+// #define PIN_NUM_MISO GPIO_NUM_12
+// #define PIN_NUM_MOSI GPIO_NUM_13
+// #define PIN_NUM_SCLK GPIO_NUM_14
+// #define PIN_NUM_CS GPIO_NUM_15
+#define PIN_NUM_MISO GPIO_NUM_19
+#define PIN_NUM_MOSI GPIO_NUM_18
+#define PIN_NUM_SCLK GPIO_NUM_5
+#define PIN_NUM_CS GPIO_NUM_16
 
 Display display; //singleton instance of class
 

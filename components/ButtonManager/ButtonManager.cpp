@@ -6,14 +6,22 @@
 #include "driver/gpio.h"
 #include "Websocket.h"
 
-#define ROW_1_PIN GPIO_NUM_19
-#define ROW_2_PIN GPIO_NUM_18
-#define ROW_3_PIN GPIO_NUM_5
-#define ROW_4_PIN GPIO_NUM_17
-#define COL_1_PIN GPIO_NUM_16
-#define COL_2_PIN GPIO_NUM_4
-#define COL_3_PIN GPIO_NUM_0
-#define COL_4_PIN GPIO_NUM_2
+// #define ROW_1_PIN GPIO_NUM_19
+// #define ROW_2_PIN GPIO_NUM_18
+// #define ROW_3_PIN GPIO_NUM_5
+// #define ROW_4_PIN GPIO_NUM_17
+// #define COL_1_PIN GPIO_NUM_16
+// #define COL_2_PIN GPIO_NUM_4
+// #define COL_3_PIN GPIO_NUM_0
+// #define COL_4_PIN GPIO_NUM_2
+#define ROW_1_PIN GPIO_NUM_15
+#define ROW_2_PIN GPIO_NUM_33
+#define ROW_3_PIN GPIO_NUM_27
+#define ROW_4_PIN GPIO_NUM_12
+#define COL_1_PIN GPIO_NUM_23
+#define COL_2_PIN GPIO_NUM_22
+#define COL_3_PIN GPIO_NUM_14
+#define COL_4_PIN GPIO_NUM_32
 
 #define GPIO_ROW_MASK ((1ULL << ROW_1_PIN) | \
                        (1ULL << ROW_2_PIN) | \
