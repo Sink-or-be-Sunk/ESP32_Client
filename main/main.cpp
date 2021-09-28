@@ -23,7 +23,6 @@
 #include "ButtonManager.h"
 #include "WifiManager.h"
 #include "Settings.h"
-#include "Keypad.h"
 #include "Display.h"
 
 static const char *TAG = "MAIN";
@@ -45,7 +44,6 @@ extern "C" void app_main(void)
 
     // button_manager_init();
 
-    init_keypad();
     display.init();
 
     display.display1("Sink or be Sunk");

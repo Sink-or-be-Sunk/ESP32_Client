@@ -6,56 +6,173 @@
 #include "driver/gpio.h"
 #include "Websocket.h"
 
-// GPIO code
-#define ESP_INTR_FLAG_DEFAULT 0
+#define ROW_1_PIN GPIO_NUM_19
+#define ROW_2_PIN GPIO_NUM_18
+#define ROW_3_PIN GPIO_NUM_5
+#define ROW_4_PIN GPIO_NUM_17
+#define COL_1_PIN GPIO_NUM_16
+#define COL_2_PIN GPIO_NUM_4
+#define COL_3_PIN GPIO_NUM_0
+#define COL_4_PIN GPIO_NUM_2
 
-static xQueueHandle gpio_evt_queue = NULL;
+#define GPIO_ROW_MASK ((1ULL << ROW_1_PIN) | \
+                       (1ULL << ROW_2_PIN) | \
+                       (1ULL << ROW_3_PIN) | \
+                       (1ULL << ROW_4_PIN))
 
-static void IRAM_ATTR gpio_isr_handler(void *arg)
+#define GPIO_COL_MASK ((1ULL << COL_1_PIN) | \
+                       (1ULL << COL_2_PIN) | \
+                       (1ULL << COL_3_PIN) | \
+                       (1ULL << COL_4_PIN))
+
+static char decipher_keypad(int row, int col)
 {
-    uint32_t gpio_num = (uint32_t)arg;
-    xQueueSendFromISR(gpio_evt_queue, &gpio_num, NULL);
+    printf("Row:%d Col:%d\n", row, col);
+    switch (row)
+    {
+    case 0:
+    {
+        switch (col)
+        {
+        case 0:
+            return '1';
+        case 1:
+            return '2';
+        case 2:
+            return '3';
+        case 3:
+            return 'A';
+        }
+        break;
+    }
+    case 1:
+        switch (col)
+        {
+        case 0:
+            return '4';
+        case 1:
+            return '5';
+        case 2:
+            return '6';
+        case 3:
+            return 'B';
+        }
+        break;
+    case 2:
+        switch (col)
+        {
+        case 0:
+            return '7';
+        case 1:
+            return '8';
+        case 2:
+            return '9';
+        case 3:
+            return 'C';
+        }
+        break;
+    case 3:
+        switch (col)
+        {
+        case 0:
+            return '*';
+        case 1:
+            return '0';
+        case 2:
+            return '#';
+        case 3:
+            return 'D';
+        }
+        break;
+    default:
+        break;
+    }
+    return '\0';
 }
 
-static void gpio_task_example(void *arg)
+static void gpio_buttons_task(void *arg)
 {
-    uint32_t io_num;
     for (;;)
     {
-        if (xQueueReceive(gpio_evt_queue, &io_num, portMAX_DELAY))
+        bool key_pressed = false;
+        char key = 0;
+        int row_num = 0;
+        for (row_num = 0; row_num < 4 && !key_pressed; row_num++)
         {
-            printf("GPIO[%d] intr, val: %d\n", io_num, gpio_get_level((gpio_num_t)io_num));
-            if (io_num == GPIO_NUM_26)
+            gpio_num_t row_to_pin = (gpio_num_t)0;
+            switch (row_num)
             {
-                websocket.send(messenger.build_registration_msg(ENQUEUE));
+            case 0:
+                row_to_pin = ROW_1_PIN;
+                break;
+            case 1:
+                row_to_pin = ROW_2_PIN;
+                break;
+            case 2:
+                row_to_pin = ROW_3_PIN;
+                break;
+            case 3:
+                row_to_pin = ROW_4_PIN;
+                break;
+            default:
+                printf("ERROR\n");
+                break;
             }
-            else if (io_num == GPIO_NUM_25)
+            gpio_set_level(row_to_pin, 0);
+
+            if (gpio_get_level(COL_1_PIN) == 0)
             {
-                websocket.send(messenger.build_registration_msg(CONFIRM));
+                key = decipher_keypad(row_num, 0);
+                key_pressed = true;
+                vTaskDelay(100 / portTICK_PERIOD_MS);
             }
+            else if (gpio_get_level(COL_2_PIN) == 0)
+            {
+                key = decipher_keypad(row_num, 1);
+                key_pressed = true;
+                vTaskDelay(100 / portTICK_PERIOD_MS);
+            }
+            else if (gpio_get_level(COL_3_PIN) == 0)
+            {
+                key = decipher_keypad(row_num, 2);
+                key_pressed = true;
+                vTaskDelay(100 / portTICK_PERIOD_MS);
+            }
+            else if (gpio_get_level(COL_4_PIN) == 0)
+            {
+                key = decipher_keypad(row_num, 3);
+                key_pressed = true;
+                vTaskDelay(100 / portTICK_PERIOD_MS);
+            }
+            if (row_num == 3)
+            {
+                row_num = -1;
+            }
+            gpio_set_level(row_to_pin, 1);
+            printf("key pressed: %c\n", key); //TODO: ATTACH THIS TO BUTTON MANAGER CLASS TO PRODUCE BUTTON PRESSED EVENTS
         }
+        vTaskDelay(10 / portTICK_PERIOD_MS);
     }
 }
 
 void button_manager_init(void)
 {
-    gpio_config_t io_conf = {
-        .pin_bit_mask = (1ULL << GPIO_NUM_25) | (1ULL << GPIO_NUM_26),
+    gpio_config_t io_conf;
+    io_conf = {
+        .pin_bit_mask = GPIO_ROW_MASK,
+        .mode = GPIO_MODE_OUTPUT,
+        .pull_up_en = GPIO_PULLUP_DISABLE,
+        .pull_down_en = GPIO_PULLDOWN_DISABLE,
+        .intr_type = GPIO_INTR_DISABLE,
+    };
+    gpio_config(&io_conf);
+    io_conf = {
+        .pin_bit_mask = GPIO_ROW_MASK,
         .mode = GPIO_MODE_INPUT,
         .pull_up_en = GPIO_PULLUP_DISABLE,
         .pull_down_en = GPIO_PULLDOWN_DISABLE,
-        .intr_type = GPIO_INTR_POSEDGE,
+        .intr_type = GPIO_INTR_DISABLE,
     };
-    gpio_config(&io_conf);
-
-    //create a queue to handle gpio event from isr
-    gpio_evt_queue = xQueueCreate(10, sizeof(uint32_t));
     //start gpio task
-    xTaskCreate(gpio_task_example, "gpio_task_example", 2048, NULL, 10, NULL);
-
-    //install gpio isr service
-    gpio_install_isr_service(ESP_INTR_FLAG_DEFAULT);
-    //hook isr handler for specific gpio pin
-    gpio_isr_handler_add(GPIO_NUM_25, gpio_isr_handler, (void *)GPIO_NUM_25);
-    gpio_isr_handler_add(GPIO_NUM_26, gpio_isr_handler, (void *)GPIO_NUM_26);
+    xTaskCreate(gpio_buttons_task, "gpio_buttons_task", 2048, NULL, 10, NULL);
 }
