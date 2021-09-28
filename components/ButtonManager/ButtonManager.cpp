@@ -33,70 +33,9 @@
                        (1ULL << COL_3_PIN) | \
                        (1ULL << COL_4_PIN))
 
-static char decipher_keypad(int row, int col)
-{
-    printf("Row:%d Col:%d\n", row, col);
-    switch (row)
-    {
-    case 0:
-    {
-        switch (col)
-        {
-        case 0:
-            return '1';
-        case 1:
-            return '2';
-        case 2:
-            return '3';
-        case 3:
-            return 'A';
-        }
-        break;
-    }
-    case 1:
-        switch (col)
-        {
-        case 0:
-            return '4';
-        case 1:
-            return '5';
-        case 2:
-            return '6';
-        case 3:
-            return 'B';
-        }
-        break;
-    case 2:
-        switch (col)
-        {
-        case 0:
-            return '7';
-        case 1:
-            return '8';
-        case 2:
-            return '9';
-        case 3:
-            return 'C';
-        }
-        break;
-    case 3:
-        switch (col)
-        {
-        case 0:
-            return '*';
-        case 1:
-            return '0';
-        case 2:
-            return '#';
-        case 3:
-            return 'D';
-        }
-        break;
-    default:
-        break;
-    }
-    return '\0';
-}
+static gpio_num_t decode_row_pins[4] = {ROW_1_PIN, ROW_2_PIN, ROW_3_PIN, ROW_4_PIN};
+static gpio_num_t decode_col_pins[4] = {COL_1_PIN, COL_2_PIN, COL_3_PIN, COL_4_PIN};
+static char decode_letter[16] = {'1', '2', '3', 'A', '4', '5', '6', 'B', '7', '8', '9', 'C', '*', '0', '#', 'D'};
 
 static void gpio_buttons_task(void *arg)
 {
@@ -104,83 +43,84 @@ static void gpio_buttons_task(void *arg)
     {
         bool key_pressed = false;
         char key = 0;
-        int row_num = 0;
-        for (row_num = 0; row_num < 4 && !key_pressed; row_num++)
+        for (int row_num = 0; row_num < 4 && !key_pressed; row_num++)
         {
-            gpio_num_t row_to_pin = (gpio_num_t)0;
-            switch (row_num)
-            {
-            case 0:
-                row_to_pin = ROW_1_PIN;
-                break;
-            case 1:
-                row_to_pin = ROW_2_PIN;
-                break;
-            case 2:
-                row_to_pin = ROW_3_PIN;
-                break;
-            case 3:
-                row_to_pin = ROW_4_PIN;
-                break;
-            default:
-                printf("ERROR\n");
-                break;
-            }
+            gpio_num_t row_to_pin = decode_row_pins[row_num];
+
             gpio_set_level(row_to_pin, 0);
 
-            if (gpio_get_level(COL_1_PIN) == 0)
+            for (int c = 0; c < 4; c++)
             {
-                key = decipher_keypad(row_num, 0);
-                key_pressed = true;
-                vTaskDelay(100 / portTICK_PERIOD_MS);
+                if (gpio_get_level(decode_col_pins[c]) == 0)
+                {
+                    key = decode_letter[row_num * 4 + c];
+                    key_pressed = true;
+                    break;
+                }
             }
-            else if (gpio_get_level(COL_2_PIN) == 0)
-            {
-                key = decipher_keypad(row_num, 1);
-                key_pressed = true;
-                vTaskDelay(100 / portTICK_PERIOD_MS);
-            }
-            else if (gpio_get_level(COL_3_PIN) == 0)
-            {
-                key = decipher_keypad(row_num, 2);
-                key_pressed = true;
-                vTaskDelay(100 / portTICK_PERIOD_MS);
-            }
-            else if (gpio_get_level(COL_4_PIN) == 0)
-            {
-                key = decipher_keypad(row_num, 3);
-                key_pressed = true;
-                vTaskDelay(100 / portTICK_PERIOD_MS);
-            }
-            if (row_num == 3)
-            {
-                row_num = -1;
-            }
+
             gpio_set_level(row_to_pin, 1);
+            vTaskDelay(20 / portTICK_PERIOD_MS);
+        }
+        if (key_pressed)
+        {
             printf("key pressed: %c\n", key); //TODO: ATTACH THIS TO BUTTON MANAGER CLASS TO PRODUCE BUTTON PRESSED EVENTS
         }
-        vTaskDelay(10 / portTICK_PERIOD_MS);
+        vTaskDelay(100 / portTICK_PERIOD_MS);
     }
 }
 
 void button_manager_init(void)
 {
-    gpio_config_t io_conf;
-    io_conf = {
-        .pin_bit_mask = GPIO_ROW_MASK,
-        .mode = GPIO_MODE_OUTPUT,
-        .pull_up_en = GPIO_PULLUP_DISABLE,
-        .pull_down_en = GPIO_PULLDOWN_DISABLE,
-        .intr_type = GPIO_INTR_DISABLE,
-    };
-    gpio_config(&io_conf);
-    io_conf = {
-        .pin_bit_mask = GPIO_ROW_MASK,
-        .mode = GPIO_MODE_INPUT,
-        .pull_up_en = GPIO_PULLUP_DISABLE,
-        .pull_down_en = GPIO_PULLDOWN_DISABLE,
-        .intr_type = GPIO_INTR_DISABLE,
-    };
+    // gpio_config_t io_conf;
+    // io_conf = {
+    //     .pin_bit_mask = GPIO_ROW_MASK,
+    //     .mode = GPIO_MODE_OUTPUT,
+    //     .pull_up_en = GPIO_PULLUP_DISABLE,
+    //     .pull_down_en = GPIO_PULLDOWN_DISABLE,
+    //     .intr_type = GPIO_INTR_DISABLE,
+    // };
+    // gpio_config(&io_conf);
+    // io_conf = {
+    //     .pin_bit_mask = GPIO_COL_MASK,
+    //     .mode = GPIO_MODE_INPUT,
+    //     .pull_up_en = GPIO_PULLUP_DISABLE,
+    //     .pull_down_en = GPIO_PULLDOWN_DISABLE,
+    //     .intr_type = GPIO_INTR_DISABLE,
+    // };
+    // gpio_config(&io_conf);
+
+    // gpio_set_level(ROW_1_PIN, 1);
+    // gpio_set_level(ROW_2_PIN, 1);
+    // gpio_set_level(ROW_3_PIN, 1);
+    // gpio_set_level(ROW_4_PIN, 1);
+
+    gpio_reset_pin(ROW_1_PIN);
+    gpio_reset_pin(ROW_2_PIN);
+    gpio_reset_pin(ROW_3_PIN);
+    gpio_reset_pin(ROW_4_PIN);
+
+    gpio_set_direction(ROW_1_PIN, GPIO_MODE_OUTPUT);
+    gpio_set_direction(ROW_2_PIN, GPIO_MODE_OUTPUT);
+    gpio_set_direction(ROW_3_PIN, GPIO_MODE_OUTPUT);
+    gpio_set_direction(ROW_4_PIN, GPIO_MODE_OUTPUT);
+    gpio_set_level(ROW_1_PIN, 1);
+    gpio_set_level(ROW_2_PIN, 1);
+    gpio_set_level(ROW_3_PIN, 1);
+    gpio_set_level(ROW_4_PIN, 1);
+
+    //columns
+    gpio_reset_pin(COL_1_PIN);
+    gpio_reset_pin(COL_2_PIN);
+    gpio_reset_pin(COL_3_PIN);
+    gpio_reset_pin(COL_4_PIN);
+
+    gpio_set_direction(COL_1_PIN, GPIO_MODE_INPUT);
+    gpio_set_direction(COL_2_PIN, GPIO_MODE_INPUT);
+    gpio_set_direction(COL_3_PIN, GPIO_MODE_INPUT);
+    gpio_set_direction(COL_4_PIN, GPIO_MODE_INPUT);
+    vTaskDelay(100 / portTICK_PERIOD_MS);
+
     //start gpio task
     xTaskCreate(gpio_buttons_task, "gpio_buttons_task", 2048, NULL, 10, NULL);
 }
