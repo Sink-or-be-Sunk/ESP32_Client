@@ -24,6 +24,7 @@
 #include "WifiManager.h"
 #include "Settings.h"
 #include "Display.h"
+#include "ScreenManager.h"
 
 static const char *TAG = "MAIN";
 
@@ -46,8 +47,11 @@ extern "C" void app_main(void)
 
     display.init();
 
-    display.display1("Sink or be Sunk");
-    display.display2("Enter Coords:");
+    //need to init display before screen manager
+    screenManager.init();
+
+    // display.display1("Sink or be Sunk");
+    // display.display2("Enter Coords:");
 
     // while (1)
     // {

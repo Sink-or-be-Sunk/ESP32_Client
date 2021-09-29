@@ -24,6 +24,12 @@ void Display::init_oled(void)
     Display::send_cmd(0x0c);
 }
 
+void Display::clear(void)
+{
+    Display::send_cmd(0x01);
+    vTaskDelay(100 / portTICK_RATE_MS);
+}
+
 void Display::init(void)
 {
     esp_err_t ret;

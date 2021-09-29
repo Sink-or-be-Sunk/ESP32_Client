@@ -17,6 +17,7 @@ private:
 
 public:
     void init(void);
+    void clear(void);
     void display1(const char *str);
     void display2(const char *str);
 };

@@ -4,7 +4,7 @@
 #include <freertos/task.h>
 #include <freertos/event_groups.h>
 #include "driver/gpio.h"
-#include "Websocket.h"
+#include "ScreenManager.h"
 
 // #define ROW_1_PIN GPIO_NUM_19
 // #define ROW_2_PIN GPIO_NUM_18
@@ -45,14 +45,20 @@ static void handle_button_event(int row, int col)
     printf("key: %c\n", letter);
     switch (letter)
     {
-    case '1':
+    case 'C':
     {
-        websocket.send(messenger.build_registration_msg(ENQUEUE));
+        screenManager.upArrow();
         break;
     }
-    case '2':
+    case 'D':
     {
-        websocket.send(messenger.build_registration_msg(CONFIRM));
+        screenManager.downArrow();
+        break;
+    }
+    case '#':
+    {
+        screenManager.enter();
+        break;
     }
     }
 }
