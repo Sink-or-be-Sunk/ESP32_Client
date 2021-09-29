@@ -37,90 +37,93 @@ static gpio_num_t decode_row_pins[4] = {ROW_1_PIN, ROW_2_PIN, ROW_3_PIN, ROW_4_P
 static gpio_num_t decode_col_pins[4] = {COL_1_PIN, COL_2_PIN, COL_3_PIN, COL_4_PIN};
 static char decode_letter[16] = {'1', '2', '3', 'A', '4', '5', '6', 'B', '7', '8', '9', 'C', '*', '0', '#', 'D'};
 
+static xQueueHandle gpio_evt_queue = NULL;
+
+static void IRAM_ATTR gpio_isr_handler(void *arg)
+{
+    uint32_t gpio_num = (uint32_t)arg;
+    xQueueSendFromISR(gpio_evt_queue, &gpio_num, NULL);
+}
+
 static void gpio_buttons_task(void *arg)
 {
+    uint32_t col;
     for (;;)
     {
-        bool key_pressed = false;
-        char key = 0;
-        for (int row_num = 0; row_num < 4 && !key_pressed; row_num++)
+        if (xQueueReceive(gpio_evt_queue, &col, portMAX_DELAY))
         {
-            gpio_num_t row_to_pin = decode_row_pins[row_num];
+            //bring all rows low
+            gpio_set_level(ROW_1_PIN, 0);
+            gpio_set_level(ROW_2_PIN, 0);
+            gpio_set_level(ROW_3_PIN, 0);
+            gpio_set_level(ROW_4_PIN, 0);
 
-            gpio_set_level(row_to_pin, 0);
-
-            for (int c = 0; c < 4; c++)
+            for (int r = 0; r < 4; r++)
             {
-                if (gpio_get_level(decode_col_pins[c]) == 0)
+                gpio_set_level(decode_row_pins[r], 1); //turn on row
+
+                vTaskDelay(10 / portTICK_RATE_MS); //allow pin voltage to settle
+
+                if (gpio_get_level(decode_col_pins[col]))
                 {
-                    key = decode_letter[row_num * 4 + c];
-                    key_pressed = true;
+                    printf("key: %c\n", decode_letter[r * 4 + col]);
+                    while (gpio_get_level(decode_col_pins[col]))
+                    {
+                        vTaskDelay(10 / portTICK_PERIOD_MS); //wait for button to be released
+                    }
                     break;
                 }
+
+                gpio_set_level(decode_row_pins[r], 0); //turn off row
             }
 
-            gpio_set_level(row_to_pin, 1);
-            vTaskDelay(20 / portTICK_PERIOD_MS);
+            //bring all rows high
+            gpio_set_level(ROW_1_PIN, 1);
+            gpio_set_level(ROW_2_PIN, 1);
+            gpio_set_level(ROW_3_PIN, 1);
+            gpio_set_level(ROW_4_PIN, 1);
         }
-        if (key_pressed)
-        {
-            printf("key pressed: %c\n", key); //TODO: ATTACH THIS TO BUTTON MANAGER CLASS TO PRODUCE BUTTON PRESSED EVENTS
-        }
-        vTaskDelay(100 / portTICK_PERIOD_MS);
     }
 }
 
 void button_manager_init(void)
 {
-    // gpio_config_t io_conf;
-    // io_conf = {
-    //     .pin_bit_mask = GPIO_ROW_MASK,
-    //     .mode = GPIO_MODE_OUTPUT,
-    //     .pull_up_en = GPIO_PULLUP_DISABLE,
-    //     .pull_down_en = GPIO_PULLDOWN_DISABLE,
-    //     .intr_type = GPIO_INTR_DISABLE,
-    // };
-    // gpio_config(&io_conf);
-    // io_conf = {
-    //     .pin_bit_mask = GPIO_COL_MASK,
-    //     .mode = GPIO_MODE_INPUT,
-    //     .pull_up_en = GPIO_PULLUP_DISABLE,
-    //     .pull_down_en = GPIO_PULLDOWN_DISABLE,
-    //     .intr_type = GPIO_INTR_DISABLE,
-    // };
-    // gpio_config(&io_conf);
+    gpio_config_t io_conf;
+    io_conf = {
+        .pin_bit_mask = GPIO_ROW_MASK,
+        .mode = GPIO_MODE_OUTPUT,
+        .pull_up_en = GPIO_PULLUP_DISABLE,
+        .pull_down_en = GPIO_PULLDOWN_DISABLE,
+        .intr_type = GPIO_INTR_DISABLE,
+    };
+    gpio_config(&io_conf);
+    io_conf = {
+        .pin_bit_mask = GPIO_COL_MASK,
+        .mode = GPIO_MODE_INPUT,
+        .pull_up_en = GPIO_PULLUP_DISABLE,
+        .pull_down_en = GPIO_PULLDOWN_ENABLE,
+        .intr_type = GPIO_INTR_POSEDGE,
+    };
+    gpio_config(&io_conf);
 
-    // gpio_set_level(ROW_1_PIN, 1);
-    // gpio_set_level(ROW_2_PIN, 1);
-    // gpio_set_level(ROW_3_PIN, 1);
-    // gpio_set_level(ROW_4_PIN, 1);
+    //create a queue to handle gpio event from isr
+    gpio_evt_queue = xQueueCreate(10, sizeof(uint32_t));
 
-    gpio_reset_pin(ROW_1_PIN);
-    gpio_reset_pin(ROW_2_PIN);
-    gpio_reset_pin(ROW_3_PIN);
-    gpio_reset_pin(ROW_4_PIN);
+    //start gpio task
+    xTaskCreate(gpio_buttons_task, "gpio_buttons_task", 2048, NULL, 10, NULL);
 
-    gpio_set_direction(ROW_1_PIN, GPIO_MODE_OUTPUT);
-    gpio_set_direction(ROW_2_PIN, GPIO_MODE_OUTPUT);
-    gpio_set_direction(ROW_3_PIN, GPIO_MODE_OUTPUT);
-    gpio_set_direction(ROW_4_PIN, GPIO_MODE_OUTPUT);
+    //install gpio isr service
+    gpio_install_isr_service(0);
+
+    //hook isr handler for specific gpio pin
+    gpio_isr_handler_add(COL_1_PIN, gpio_isr_handler, (void *)0);
+    gpio_isr_handler_add(COL_2_PIN, gpio_isr_handler, (void *)1);
+    gpio_isr_handler_add(COL_3_PIN, gpio_isr_handler, (void *)2);
+    gpio_isr_handler_add(COL_4_PIN, gpio_isr_handler, (void *)3);
+
+    //set rows high to initiate interrupt on button press
     gpio_set_level(ROW_1_PIN, 1);
     gpio_set_level(ROW_2_PIN, 1);
     gpio_set_level(ROW_3_PIN, 1);
     gpio_set_level(ROW_4_PIN, 1);
-
-    //columns
-    gpio_reset_pin(COL_1_PIN);
-    gpio_reset_pin(COL_2_PIN);
-    gpio_reset_pin(COL_3_PIN);
-    gpio_reset_pin(COL_4_PIN);
-
-    gpio_set_direction(COL_1_PIN, GPIO_MODE_INPUT);
-    gpio_set_direction(COL_2_PIN, GPIO_MODE_INPUT);
-    gpio_set_direction(COL_3_PIN, GPIO_MODE_INPUT);
-    gpio_set_direction(COL_4_PIN, GPIO_MODE_INPUT);
-    vTaskDelay(100 / portTICK_PERIOD_MS);
-
-    //start gpio task
-    xTaskCreate(gpio_buttons_task, "gpio_buttons_task", 2048, NULL, 10, NULL);
 }
