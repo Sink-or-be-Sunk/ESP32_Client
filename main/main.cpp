@@ -25,6 +25,7 @@
 #include "Settings.h"
 #include "Display.h"
 #include "ScreenManager.h"
+#include "LEDManager.h"
 
 static const char *TAG = "MAIN";
 
@@ -49,6 +50,8 @@ extern "C" void app_main(void)
 
     //need to init display before screen manager
     screenManager.init();
+
+    ledManager.init();
 
     // display.display1("Sink or be Sunk");
     // display.display2("Enter Coords:");

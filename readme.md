@@ -48,3 +48,6 @@ wifi_send(create_new_game_req());
 ## Future Integration Ideas
 
 - Web Wifi Provisioning integration with [Improv](https://www.improv-wifi.com/)
+
+## Resources
+- [Neopixel Library](https://github.com/mirronelli/neopixel)
