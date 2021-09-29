@@ -37,17 +37,17 @@ extern "C" void app_main(void)
     /* Initialize the event loop */
     ESP_ERROR_CHECK(esp_event_loop_create_default());
 
-    // wifi_manager_init();
+    wifi_manager_init();
 
     /* Start Websocket */
-    // websocket.start();
+    websocket.start();
 
     button_manager_init();
 
-    // display.init();
+    display.init();
 
-    // display.display1("Sink or be Sunk");
-    // display.display2("Enter Coords:");
+    display.display1("Sink or be Sunk");
+    display.display2("Enter Coords:");
 
     // while (1)
     // {
