@@ -39,6 +39,24 @@ static char decode_letter[16] = {'1', '2', '3', 'A', '4', '5', '6', 'B', '7', '8
 
 static xQueueHandle gpio_evt_queue = NULL;
 
+static void handle_button_event(int row, int col)
+{
+    char letter = decode_letter[row * 4 + col];
+    printf("key: %c\n", letter);
+    switch (letter)
+    {
+    case '1':
+    {
+        websocket.send(messenger.build_registration_msg(ENQUEUE));
+        break;
+    }
+    case '2':
+    {
+        websocket.send(messenger.build_registration_msg(CONFIRM));
+    }
+    }
+}
+
 static void IRAM_ATTR gpio_isr_handler(void *arg)
 {
     uint32_t gpio_num = (uint32_t)arg;
@@ -58,15 +76,15 @@ static void gpio_buttons_task(void *arg)
             gpio_set_level(ROW_3_PIN, 0);
             gpio_set_level(ROW_4_PIN, 0);
 
-            for (int r = 0; r < 4; r++)
+            for (int row = 0; row < 4; row++)
             {
-                gpio_set_level(decode_row_pins[r], 1); //turn on row
+                gpio_set_level(decode_row_pins[row], 1); //turn on row
 
                 vTaskDelay(10 / portTICK_RATE_MS); //allow pin voltage to settle
 
                 if (gpio_get_level(decode_col_pins[col]))
                 {
-                    printf("key: %c\n", decode_letter[r * 4 + col]);
+                    handle_button_event(row, col);
                     while (gpio_get_level(decode_col_pins[col]))
                     {
                         vTaskDelay(10 / portTICK_PERIOD_MS); //wait for button to be released
@@ -74,7 +92,7 @@ static void gpio_buttons_task(void *arg)
                     break;
                 }
 
-                gpio_set_level(decode_row_pins[r], 0); //turn off row
+                gpio_set_level(decode_row_pins[row], 0); //turn off row
             }
 
             //bring all rows high
