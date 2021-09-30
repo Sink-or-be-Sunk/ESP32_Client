@@ -5,6 +5,7 @@
 #include <freertos/event_groups.h>
 #include "driver/gpio.h"
 #include "ScreenManager.h"
+#include "LEDManager.h"
 
 // #define ROW_1_PIN GPIO_NUM_19
 // #define ROW_2_PIN GPIO_NUM_18
@@ -58,6 +59,16 @@ static void handle_button_event(int row, int col)
     case '#':
     {
         screenManager.enter();
+        break;
+    }
+    case '1':
+    {
+        ledManager.start();
+        break;
+    }
+    case '2':
+    {
+        ledManager.pause();
         break;
     }
     }
