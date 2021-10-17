@@ -33,6 +33,12 @@ extern "C" void app_main(void)
 {
     ESP_LOGI(TAG, "Starting App Main");
 
+    // init display spi drivers
+    display.init();
+
+    // need to init display before screen manager
+    screenManager.init();
+
     /* Initializes nvs (needed for wifi prov too!) */
     settings.init();
 
@@ -46,10 +52,7 @@ extern "C" void app_main(void)
 
     button_manager_init();
 
-    display.init();
-
-    //need to init display before screen manager
-    screenManager.init();
+    screenManager.setState(HOME);
 
     ledManager.init();
 

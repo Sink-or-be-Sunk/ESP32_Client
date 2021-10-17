@@ -3,11 +3,17 @@
 #include "Websocket.h"
 #include "Messenger.h"
 
-ScreenManager screenManager; //singleton instance of class
+ScreenManager screenManager; // singleton instance of class
+
+void ScreenManager::setState(SCREEN_STATE state)
+{
+    this->state = state;
+    ScreenManager::render();
+}
 
 void ScreenManager::init(void)
 {
-    this->state = HOME;
+    this->state = WIFI_CONNECTING;
     ScreenManager::render();
 }
 
@@ -16,6 +22,13 @@ void ScreenManager::render(void)
     display.clear();
     switch (this->state)
     {
+    case WIFI_CONNECTING:
+    {
+        //               "-=-=-=-=-=-=-=-="
+        display.display1("No WiFi Detected");
+        display.display2("Provision Device");
+        break;
+    }
     case HOME:
     {
         //               "-=-=-=-=-=-=-=-="
@@ -44,6 +57,11 @@ void ScreenManager::upArrow(void)
 {
     switch (this->state)
     {
+    case WIFI_CONNECTING:
+    {
+        printf("Up Arrow Ignored!\n");
+        break;
+    }
     case HOME:
     {
         this->state = INIT_PAIRING;
@@ -67,6 +85,11 @@ void ScreenManager::downArrow(void)
 {
     switch (this->state)
     {
+    case WIFI_CONNECTING:
+    {
+        printf("Down Arrow Ignored!\n");
+        break;
+    }
     case HOME:
     {
         this->state = CONFIRM_PAIRING;
@@ -90,6 +113,7 @@ void ScreenManager::enter(void)
 {
     switch (this->state)
     {
+    case WIFI_CONNECTING:
     case HOME:
     {
         printf("Do Nothing\n");

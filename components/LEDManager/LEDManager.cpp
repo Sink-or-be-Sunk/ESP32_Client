@@ -74,26 +74,21 @@ static void led_task(void *arg)
     uint32_t green = 0;
     uint32_t blue = 0;
     uint16_t hue = 0;
-    uint16_t start_rgb = 0;
     for (;;)
     {
-        for (int i = 0; i < 3; i++)
+        for (int i = 0; i < 360; i++)
         {
-            for (int j = i; j < NUMBER_OF_LEDS; j += 3)
-            {
-                // Build RGB values
-                hue = j * 360 / NUMBER_OF_LEDS + start_rgb;
-                led_strip_hsv2rgb(hue, 100, 100, &red, &green, &blue);
-                // Write RGB values to strip driver
-                ESP_ERROR_CHECK(strip->set_pixel(strip, j, red, green, blue));
-            }
+            hue = (uint16_t)(i);
+            led_strip_hsv2rgb(hue, 100, 100, &red, &green, &blue);
+            // Write RGB values to strip driver
+            ESP_ERROR_CHECK(strip->set_pixel(strip, 0, red, green, blue));
+
             // Flush RGB values to LEDs
             ESP_ERROR_CHECK(strip->refresh(strip, 100));
             vTaskDelay(pdMS_TO_TICKS(EXAMPLE_CHASE_SPEED_MS));
             // strip->clear(strip, 50);
             // vTaskDelay(pdMS_TO_TICKS(EXAMPLE_CHASE_SPEED_MS));
         }
-        start_rgb += 60;
     }
 }
 

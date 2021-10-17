@@ -2,6 +2,7 @@
 
 enum SCREEN_STATE
 {
+    WIFI_CONNECTING,
     HOME,
     INIT_PAIRING,
     CONFIRM_PAIRING,
@@ -18,6 +19,7 @@ public:
     void upArrow(void);
     void downArrow(void);
     void enter(void);
+    void setState(SCREEN_STATE state);
 };
 
 extern ScreenManager screenManager;
