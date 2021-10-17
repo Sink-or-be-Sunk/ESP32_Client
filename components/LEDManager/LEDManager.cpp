@@ -86,9 +86,13 @@ static void led_task(void *arg)
             // Flush RGB values to LEDs
             ESP_ERROR_CHECK(strip->refresh(strip, 100));
             vTaskDelay(pdMS_TO_TICKS(EXAMPLE_CHASE_SPEED_MS));
-            // strip->clear(strip, 50);
-            // vTaskDelay(pdMS_TO_TICKS(EXAMPLE_CHASE_SPEED_MS));
         }
+        // Write RGB values to strip driver
+        ESP_ERROR_CHECK(strip->set_pixel(strip, 0, 255, 255, 255));
+
+        // Flush RGB values to LEDs
+        ESP_ERROR_CHECK(strip->refresh(strip, 100));
+        vTaskDelay(pdMS_TO_TICKS(1000));
     }
 }
 
