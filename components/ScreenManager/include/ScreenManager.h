@@ -7,6 +7,7 @@ enum SCREEN_STATE
     HOME, // TODO: CHANGE TO WELCOME
     CONFIRM_PAIRING,
     WAITING_PAIRING,
+    DEVICE_PAIRED,
 
     // SETUP
     INIT_PAIRING,
@@ -39,6 +40,7 @@ public:
     void setState(SCREEN_STATE state);
     SCREEN_STATE getState(void);
     void splash(SCREEN_STATE state);
+    void splash(SCREEN_STATE splashState, SCREEN_STATE returnState);
 };
 
 extern ScreenManager screenManager;

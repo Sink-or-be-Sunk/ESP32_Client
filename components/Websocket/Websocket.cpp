@@ -1,5 +1,8 @@
 #include "Websocket.h"
 
+// WEBSOCKET META TAGS
+#define REGISTRATION_WAITING_FOR_WEB_TAG "WAITING FOR WEB"
+
 static const char *TAG = "Websocket";
 
 Websocket websocket; // singleton instance of class
@@ -113,6 +116,7 @@ void Websocket::handle(const char *msg, uint8_t len)
 {
     const cJSON *header = NULL;
     const cJSON *payload = NULL;
+    const cJSON *meta = NULL;
     int status = -1;
     printf("raw: %.*s\n", len, msg);
     cJSON *msg_json = cJSON_ParseWithLength(msg, len);
@@ -133,10 +137,18 @@ void Websocket::handle(const char *msg, uint8_t len)
         status = 404;
         goto end;
     }
+    printf("header: \"%s\"\n", header->valuestring);
+
+    meta = cJSON_GetObjectItemCaseSensitive(msg_json, "meta");
+
+    if (!cJSON_IsString(meta) || (meta->valuestring == NULL))
+    {
+        status = 405;
+        goto end;
+    }
+    printf("meta: \"%s\"\n", meta->valuestring);
 
     payload = cJSON_GetObjectItemCaseSensitive(msg_json, "payload");
-
-    printf("header: \"%s\"\n", header->valuestring);
 
     switch (header_map[header->valuestring])
     {
@@ -154,8 +166,23 @@ void Websocket::handle(const char *msg, uint8_t len)
     }
     case REGISTER_PENDING:
     {
-        // TODO: NEEDS IMPLEMENTATION
-        status = HEADERS::REGISTER_PENDING;
+        if (strcmp(meta->valuestring, REGISTRATION_WAITING_FOR_WEB_TAG))
+        {
+            if (screenManager.getState() == WAITING_PAIRING)
+            {
+                screenManager.setState(CONFIRM_PAIRING);
+            }
+            else
+            {
+                printf("Error: tried to confirm pairing when not requested");
+            }
+            status = HEADERS::REGISTER_PENDING;
+        }
+        else
+        {
+            status = -2;
+        }
+
         break;
     }
     case REGISTER_SUCCESS:
@@ -173,6 +200,7 @@ void Websocket::handle(const char *msg, uint8_t len)
             printf("username: \"%s\"\n", username->valuestring);
             strcpy(settings.username, username->valuestring);
             settings.save();
+            screenManager.splash(DEVICE_PAIRED, CREATE_GAME);
         }
         else
         {

@@ -56,6 +56,15 @@ void ScreenManager::render(void)
         display.display2("Press Enter");
         break;
     }
+    case DEVICE_PAIRED:
+    {
+        //               "-=-=-=-=-=-=-=-="
+        display.display1("Device Paired to");
+        char buff[17];
+        strncpy(buff, settings.username, 16);
+        display.display2(buff);
+        break;
+    }
     case WAITING_PAIRING:
     {
         //               "-=-=-=-=-=-=-=-="
@@ -102,8 +111,8 @@ void ScreenManager::render(void)
     {
         //               "-=-=-=-=-=-=-=-="
         display.display1("Enter Attack");
-        char buff[20];
-        sprintf(buff, "Coords: r%d, c%d", gameState.get_attack_row(), gameState.get_attack_col());
+        char buff[17];
+        snprintf(buff, sizeof(buff), "Coords: r%c, c%c", gameState.get_attack_row() + 'A', gameState.get_attack_col() + '1');
         display.display2(buff);
         break;
     }
@@ -222,9 +231,14 @@ void ScreenManager::enter(void)
         {
         case INIT_PAIRING:
         {
-            websocket.send(messenger.build_registration_msg(ENQUEUE));
             this->state = WAITING_PAIRING;
             this->render();
+            websocket.send(messenger.build_registration_msg(ENQUEUE));
+            break;
+        }
+        case CONFIRM_PAIRING:
+        {
+            websocket.send(messenger.build_registration_msg(CONFIRM));
             break;
         }
         case CREATE_GAME:
@@ -270,7 +284,6 @@ void ScreenManager::enter(void)
         {
         case ATTACK:
         {
-            // websocket.send(messenger.build_registration_msg(CONFIRM));
             websocket.send(messenger.build_attack_msg(1, 2, SOLO, gameState.opponent));
             break;
         }
@@ -322,9 +335,12 @@ void ScreenManager::back(void)
 
 void ScreenManager::splash(SCREEN_STATE state)
 {
-    SCREEN_STATE prev = this->state;
+    this->splash(state, this->state);
+}
 
-    ScreenManager::setState(state);
+void ScreenManager::splash(SCREEN_STATE splashState, SCREEN_STATE returnState)
+{
+    this->setState(splashState);
     vTaskDelay(2000 / portTICK_PERIOD_MS);
-    ScreenManager::setState(prev);
+    this->setState(returnState);
 }

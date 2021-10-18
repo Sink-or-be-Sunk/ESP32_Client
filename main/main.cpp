@@ -56,8 +56,7 @@ extern "C" void app_main(void)
     ledManager.init();
     button_manager_init();
 
-    screenManager.setState(CREATE_GAME);
-    screenManager.splash(HOME);
+    screenManager.splash(HOME, CREATE_GAME);
 
     // wifi_stop();
 }
