@@ -8,26 +8,9 @@ void GameState::init(void)
     this->state = SETUP;
 }
 
-void GameState::next_state(void)
+void GameState::setState(game_state_t state)
 {
-    switch (this->state)
-    {
-    case SETUP:
-    {
-        this->state = LOBBY;
-        break;
-    }
-    case LOBBY:
-    {
-        this->state = IN_PROGRESS;
-        break;
-    }
-    case IN_PROGRESS:
-    {
-        this->state = SETUP;
-        break;
-    }
-    }
+    this->state = state;
 }
 
 void GameState::increment_attack_row(void)

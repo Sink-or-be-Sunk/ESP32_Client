@@ -56,9 +56,7 @@ extern "C" void app_main(void)
     ledManager.init();
     button_manager_init();
 
-    screenManager.setState(HOME);
-    vTaskDelay(2000 / portTICK_PERIOD_MS); // SPLASH WELCOME MESSAGE
-    screenManager.setState(CREATE_GAME);
+    screenManager.splash(HOME);
 
     // wifi_stop();
 }

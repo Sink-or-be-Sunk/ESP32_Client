@@ -21,7 +21,7 @@ public:
     game_state_t state;
 
     void init(void);
-    void next_state(void);
+    void setState(game_state_t state);
     void increment_attack_row(void);
     void increment_attack_col(void);
     void decrement_attack_row(void);

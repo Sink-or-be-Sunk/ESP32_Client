@@ -2,7 +2,7 @@
 
 static const char *TAG = "Websocket";
 
-Websocket websocket; //singleton instance of class
+Websocket websocket; // singleton instance of class
 
 static void event_handler(void *handler_args, esp_event_base_t base, int32_t event_id, void *event_data)
 {
@@ -41,13 +41,13 @@ static void event_handler(void *handler_args, esp_event_base_t base, int32_t eve
 enum HEADERS
 {
     CONNECTED,
-    //Registration Header
+    // Registration Header
     REGISTRATION,
     REGISTER_PENDING,
     REGISTER_SUCCESS,
     REGISTER_ERROR,
-    //Game Headers
-    GAME_ALREADY_EXITS,
+    // Game Headers
+    // GAME_ALREADY_EXITS, //FIXME: REMOVE THIS FROM SERVER
     GAME_CREATED,
     MOVE_MADE,
     INVALID_MOVE,
@@ -59,7 +59,7 @@ enum HEADERS
 
 };
 
-//TODO: CHANGE SERVER CODE TO SEND ENUM INSTEAD OF STRINGS (REMOVE THIS MAP)
+// TODO: CHANGE SERVER CODE TO SEND ENUM INSTEAD OF STRINGS (REMOVE THIS MAP)
 static std::map<std::string, HEADERS> header_map;
 
 static void header_map_init()
@@ -68,6 +68,7 @@ static void header_map_init()
     header_map["REGISTRATION"] = REGISTRATION;
     header_map["REGISTER PENDING"] = REGISTER_PENDING;
     header_map["REGISTER SUCCESS"] = REGISTER_SUCCESS;
+    header_map["GAME CREATED"] = GAME_CREATED;
 }
 
 void Websocket::start(void)
@@ -100,7 +101,7 @@ void Websocket::stop(void)
  */
 int Websocket::send(char *msg)
 {
-    //wrapper for wifi client send to ws
+    // wrapper for wifi client send to ws
     size_t len = strlen(msg);
     ESP_LOGI(TAG, "Sending %s", msg);
     int res = esp_websocket_client_send_text(Websocket::client, msg, len, portMAX_DELAY);
@@ -147,13 +148,13 @@ void Websocket::handle(const char *msg, uint8_t len)
     }
     case REGISTRATION:
     {
-        //TODO: NEEDS IMPLEMENTATION
+        // TODO: NEEDS IMPLEMENTATION
         status = HEADERS::REGISTRATION;
         break;
     }
     case REGISTER_PENDING:
     {
-        //TODO: NEEDS IMPLEMENTATION
+        // TODO: NEEDS IMPLEMENTATION
         status = HEADERS::REGISTER_PENDING;
         break;
     }
@@ -184,49 +185,44 @@ void Websocket::handle(const char *msg, uint8_t len)
 
     case REGISTER_ERROR:
     {
-        //TODO: NEEDS IMPLEMENTATION
+        // TODO: NEEDS IMPLEMENTATION
         status = HEADERS::REGISTER_ERROR;
-        break;
-    }
-    case GAME_ALREADY_EXITS:
-    {
-        //TODO: NEEDS IMPLEMENTATION
-        status = HEADERS::GAME_ALREADY_EXITS;
         break;
     }
     case GAME_CREATED:
     {
-        //TODO: NEEDS IMPLEMENTATION
+        gameState.setState(LOBBY);
+        screenManager.setState(INVITE_FRIEND);
         status = HEADERS::GAME_CREATED;
         break;
     }
     case MOVE_MADE:
     {
-        //TODO: NEEDS IMPLEMENTATION
+        // TODO: NEEDS IMPLEMENTATION
         status = HEADERS::MOVE_MADE;
         break;
     }
     case INVALID_MOVE:
     {
-        //TODO: NEEDS IMPLEMENTATION
+        // TODO: NEEDS IMPLEMENTATION
         status = HEADERS::INVALID_MOVE;
         break;
     }
     case JOINED_GAME:
     {
-        //TODO: NEEDS IMPLEMENTATION
+        // TODO: NEEDS IMPLEMENTATION
         status = HEADERS::JOINED_GAME;
         break;
     }
     case POSITIONED_SHIPS:
     {
-        //TODO: NEEDS IMPLEMENTATION
+        // TODO: NEEDS IMPLEMENTATION
         status = HEADERS::POSITIONED_SHIPS;
         break;
     }
     case INVALID_LAYOUT:
     {
-        //TODO: NEEDS IMPLEMENTATION
+        // TODO: NEEDS IMPLEMENTATION
         status = HEADERS::INVALID_LAYOUT;
         break;
     }

@@ -89,7 +89,7 @@ void ScreenManager::render(void)
     case INVITE_FRIEND:
     {
         //               "-=-=-=-=-=-=-=-="
-        display.display1("Ready Up");
+        display.display1("Invite Friend");
         display.display2("Scroll :Down");
         break;
     }
@@ -316,4 +316,13 @@ void ScreenManager::back(void)
         break;
     }
     }
+}
+
+void ScreenManager::splash(SCREEN_STATE state)
+{
+    SCREEN_STATE prev = this->state;
+
+    ScreenManager::setState(state);
+    vTaskDelay(2000 / portTICK_PERIOD_MS);
+    ScreenManager::setState(prev);
 }
