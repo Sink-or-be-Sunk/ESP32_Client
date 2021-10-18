@@ -37,6 +37,7 @@ public:
     void enter(void);
     void back(void); // cancel or back
     void setState(SCREEN_STATE state);
+    SCREEN_STATE getState(void);
     void splash(SCREEN_STATE state);
 };
 

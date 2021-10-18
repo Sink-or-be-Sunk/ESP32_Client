@@ -9,13 +9,18 @@ ScreenManager screenManager; // singleton instance of class
 void ScreenManager::setState(SCREEN_STATE state)
 {
     this->state = state;
-    ScreenManager::render();
+    this->render();
+}
+
+SCREEN_STATE ScreenManager::getState(void)
+{
+    return this->state;
 }
 
 void ScreenManager::init(void)
 {
     this->state = WIFI_CONNECTING;
-    ScreenManager::render();
+    this->render();
 }
 
 void ScreenManager::render(void)
@@ -172,13 +177,13 @@ void ScreenManager::rightArrow(void)
     }
     }
 
-    ScreenManager::render();
+    this->render();
 }
 
 void ScreenManager::leftArrow(void)
 {
-    ScreenManager::rightArrow(); // FIXME: COPY/UPDATE THIS WITH RIGHT ARROW
-    // ScreenManager::render();
+    this->rightArrow(); // FIXME: COPY/UPDATE THIS WITH RIGHT ARROW
+    // this->render();
 }
 
 void ScreenManager::upArrow(void)
@@ -191,7 +196,7 @@ void ScreenManager::upArrow(void)
         break;
     }
     }
-    ScreenManager::render();
+    this->render();
 }
 
 void ScreenManager::downArrow(void)
@@ -204,7 +209,7 @@ void ScreenManager::downArrow(void)
         break;
     }
     }
-    ScreenManager::render();
+    this->render();
 }
 
 void ScreenManager::enter(void)
@@ -219,7 +224,7 @@ void ScreenManager::enter(void)
         {
             websocket.send(messenger.build_registration_msg(ENQUEUE));
             this->state = WAITING_PAIRING;
-            ScreenManager::render();
+            this->render();
             break;
         }
         case CREATE_GAME:
@@ -227,11 +232,11 @@ void ScreenManager::enter(void)
             websocket.send(messenger.build_new_game_msg());
             break;
         }
-        case JOIN_GAME:
-        {
-            // TODO:
-            break;
-        }
+        // TODO:
+        // case JOIN_GAME:
+        // {
+        //     break;
+        // }
         default:
         {
             printf("Enter Ignored!\n");
@@ -246,12 +251,9 @@ void ScreenManager::enter(void)
         {
         case READY_UP_SHIPS:
         {
-            this->state = INVITE_FRIEND;
-            break;
-        }
-        case INVITE_FRIEND:
-        {
-            this->state = READY_UP_SHIPS;
+            gameState.state = IN_PROGRESS;
+            this->state = ATTACK;
+            this->render();
             break;
         }
         default:
@@ -294,7 +296,7 @@ void ScreenManager::back(void)
         case WAITING_PAIRING:
         {
             this->state = INIT_PAIRING;
-            ScreenManager::render();
+            this->render();
             break;
         }
         default:
