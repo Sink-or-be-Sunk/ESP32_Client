@@ -6,6 +6,7 @@
 
 #define GAME_NEW_GAME_TAG "NEW GAME"
 #define GAME_MAKE_MOVE_TAG "MAKE MOVE"
+#define GAME_POSITION_SHIPS_TAG "POSITION SHIPS"
 #define GAME_ATTACK_SOLO_TAG "SOLO"
 
 Messenger messenger; // singleton instance of class
@@ -145,6 +146,12 @@ char *Messenger::build_game_msg(GAME_REQ_TYPE type, cJSON *data)
         cJSON_AddItemToObject(msg, "data", data);
         break;
     }
+    case POSITION_SHIPS:
+    {
+        req = cJSON_CreateString(GAME_POSITION_SHIPS_TAG);
+        cJSON_AddItemToObject(msg, "data", data);
+        break;
+    }
     }
     if (req == NULL)
     {
@@ -217,4 +224,98 @@ char *Messenger::build_attack_msg(char r, char c, ATTACK_TYPE type, const char *
 
 end:
     return build_game_msg(MAKE_MOVE, data);
+}
+
+static cJSON *build_one_ship_position(const char *t, uint8_t r, uint8_t c)
+{
+    cJSON *pos = NULL;  // position object
+    cJSON *row = NULL;  // row of position
+    cJSON *col = NULL;  // col of position
+    cJSON *type = NULL; // ship type
+
+    pos = cJSON_CreateObject();
+    if (pos == NULL)
+    {
+        goto end;
+    }
+
+    row = cJSON_CreateNumber(r);
+    if (row == NULL)
+    {
+        goto end;
+    }
+    cJSON_AddItemToObject(pos, "r", row);
+
+    col = cJSON_CreateNumber(c);
+    if (col == NULL)
+    {
+        goto end;
+    }
+    cJSON_AddItemToObject(pos, "c", col);
+
+    type = cJSON_CreateString(t);
+    if (type == NULL)
+    {
+        goto end;
+    }
+    cJSON_AddItemToObject(pos, "t", type);
+end:
+    return pos;
+}
+
+char *Messenger::build_position_ships(void)
+{
+    cJSON *data = NULL; // data: request object wrapper
+    cJSON *pos = NULL;  // position object
+    uint8_t r1;
+    uint8_t c1;
+    uint8_t r2;
+    uint8_t c2;
+
+    data = cJSON_CreateArray();
+    if (data == NULL)
+    {
+        goto end;
+    }
+
+    for (int i = PATROL; i <= CARRIER; i++)
+    {
+        gameState.getShip((ship_position_t)i, &r1, &c1, &r2, &c2);
+
+        for (int j = 0; j < 2; j++)
+        {
+            switch (i)
+            {
+            case PATROL:
+            {
+                pos = build_one_ship_position("P", (j == 0) ? r1 : r2, (j == 0) ? c1 : c2);
+                break;
+            }
+            case SUBMARINE:
+            {
+                pos = build_one_ship_position("S", (j == 0) ? r1 : r2, (j == 0) ? c1 : c2);
+                break;
+            }
+            case BATTLESHIP:
+            {
+                pos = build_one_ship_position("B", (j == 0) ? r1 : r2, (j == 0) ? c1 : c2);
+                break;
+            }
+            case CARRIER:
+            {
+                pos = build_one_ship_position("C", (j == 0) ? r1 : r2, (j == 0) ? c1 : c2);
+                break;
+            }
+            }
+            if (pos == NULL)
+            {
+                goto end;
+            }
+            cJSON_AddItemToArray(data, pos);
+            printf("array size: %d\n", cJSON_GetArraySize(data));
+        }
+    }
+
+end:
+    return build_game_msg(POSITION_SHIPS, data);
 }

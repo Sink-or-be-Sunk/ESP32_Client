@@ -311,9 +311,14 @@ void ScreenManager::enter(void)
         {
         case READY_UP_SHIPS:
         {
+            gameState.updateShip(PATROL, 0, 0, 0, 1);
+            gameState.updateShip(SUBMARINE, 1, 0, 0, 2);
+            gameState.updateShip(BATTLESHIP, 2, 0, 0, 3);
+            gameState.updateShip(CARRIER, 3, 0, 0, 4);
+            websocket.send(messenger.build_position_ships());
             gameState.state = IN_PROGRESS;
-            this->state = ATTACK;
-            this->render();
+            // this->state = ATTACK;//TODO: CHANGE TO WAITING FOR RESPONSE STATE
+            // this->render();
             break;
         }
         default:

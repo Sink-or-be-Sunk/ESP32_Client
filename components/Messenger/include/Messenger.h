@@ -5,6 +5,7 @@
 #include <stdio.h>
 #include <esp_wifi.h>
 #include "Settings.h"
+#include "GameState.h"
 
 /** This comes for ESP IDF definitions*/
 #define SSID_MAX_LEN 33
@@ -14,6 +15,7 @@ enum GAME_REQ_TYPE
 {
     NEW_GAME,
     MAKE_MOVE,
+    POSITION_SHIPS
 };
 
 enum REGISTRATION_TYPE
@@ -40,6 +42,7 @@ public:
     char *build_registration_msg(REGISTRATION_TYPE type);
     char *build_new_game_msg(void);
     char *build_attack_msg(char r, char c, ATTACK_TYPE type, const char *to);
+    char *build_position_ships(void);
 };
 
 extern Messenger messenger;

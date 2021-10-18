@@ -170,7 +170,7 @@ void button_manager_init(void)
     gpio_evt_queue = xQueueCreate(10, sizeof(uint32_t));
 
     // start gpio task
-    xTaskCreate(gpio_buttons_task, "gpio_buttons_task", 2048, NULL, 10, NULL);
+    xTaskCreate(gpio_buttons_task, "gpio_buttons_task", 4096, NULL, 10, NULL);
 
     // install gpio isr service
     gpio_install_isr_service(0);

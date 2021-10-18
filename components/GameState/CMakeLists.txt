@@ -1,2 +1,3 @@
 idf_component_register(SRCS "GameState.cpp"
-                    INCLUDE_DIRS "include")
+                    INCLUDE_DIRS "include" 
+                    REQUIRES ShipPosition)
