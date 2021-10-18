@@ -39,7 +39,7 @@ public:
     void init(void);
     char *build_registration_msg(REGISTRATION_TYPE type);
     char *build_new_game_msg(void);
-    char *build_attack_msg(uint8_t r, uint8_t c, ATTACK_TYPE type, const char *to);
+    char *build_attack_msg(char r, char c, ATTACK_TYPE type, const char *to);
 };
 
 extern Messenger messenger;

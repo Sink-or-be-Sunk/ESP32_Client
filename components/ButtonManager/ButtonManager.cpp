@@ -71,6 +71,16 @@ static void handle_button_event(int row, int col)
         screenManager.enter();
         break;
     }
+    case '0':
+    {
+        screenManager.leftPage();
+        break;
+    }
+    case 'D':
+    {
+        screenManager.rightPage();
+        break;
+    }
     case 'B':
     {
         screenManager.back();

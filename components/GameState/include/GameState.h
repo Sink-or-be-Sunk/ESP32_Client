@@ -13,8 +13,8 @@ enum game_state_t
 class GameState
 {
 private:
-    int8_t attack_row;
-    int8_t attack_col;
+    int8_t attackSel;                // index of selected element
+    int8_t attackCoords[2] = {0, 0}; //[col, row]
 
 public:
     char opponent[USERNAME_MAX_LEN]; // opposing player
@@ -22,12 +22,14 @@ public:
 
     void init(void);
     void setState(game_state_t state);
-    void increment_attack_row(void);
-    void increment_attack_col(void);
-    void decrement_attack_row(void);
-    void decrement_attack_col(void);
+    void increment_attack(void);
+    void decrement_attack(void);
+    void request_right_sel_attack(void);
+    void request_left_sel_attack(void);
     uint8_t get_attack_row(void);
     uint8_t get_attack_col(void);
+    char get_attack_row_tag(void);
+    char get_attack_col_tag(void);
 };
 
 extern GameState gameState;

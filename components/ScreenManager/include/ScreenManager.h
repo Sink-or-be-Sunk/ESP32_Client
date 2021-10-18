@@ -33,6 +33,8 @@ public:
     void init(void);
     void upArrow(void);
     void downArrow(void);
+    void rightPage(void);
+    void leftPage(void);
     void rightArrow(void);
     void leftArrow(void);
     void enter(void);

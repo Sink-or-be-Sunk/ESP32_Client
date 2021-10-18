@@ -4,6 +4,7 @@ GameState gameState; // singleton instance of class
 
 void GameState::init(void)
 {
+    this->attackSel = 0;
     strcpy(this->opponent, "OPPONENT ERROR");
     this->state = SETUP;
 }
@@ -13,48 +14,60 @@ void GameState::setState(game_state_t state)
     this->state = state;
 }
 
-void GameState::increment_attack_row(void)
+void GameState::increment_attack(void)
 {
-    this->attack_row++;
-    if (this->attack_row >= 8)
+    int8_t i = this->attackSel;
+    this->attackCoords[i]++;
+    if (this->attackCoords[i] >= 8)
     {
-        this->attack_row = 7;
+        this->attackCoords[i] = 7;
     }
 }
 
-void GameState::increment_attack_col(void)
+void GameState::decrement_attack(void)
 {
-    this->attack_col++;
-    if (this->attack_col >= 8)
+    int8_t i = this->attackSel;
+    this->attackCoords[i]--;
+    if (this->attackCoords[i] < 0)
     {
-        this->attack_col = 7;
+        this->attackCoords[i] = 0;
     }
 }
 
-void GameState::decrement_attack_row(void)
+void GameState::request_left_sel_attack(void)
 {
-    this->attack_row--;
-    if (this->attack_row < 0)
+    this->attackSel--;
+    if (this->attackSel < 0)
     {
-        this->attack_row = 0;
+        this->attackSel = 0;
     }
 }
 
-void GameState::decrement_attack_col(void)
+void GameState::request_right_sel_attack(void)
 {
-    this->attack_col--;
-    if (this->attack_col < 0)
+    this->attackSel++;
+    if (this->attackSel > 1)
     {
-        this->attack_col = 0;
+        this->attackSel = 1;
     }
 }
 
 uint8_t GameState::get_attack_row(void)
 {
-    return this->attack_row;
+    return this->attackCoords[1];
 }
 
 uint8_t GameState::get_attack_col(void)
 {
-    return this->attack_col;
+    return this->attackCoords[0];
+}
+
+char GameState::get_attack_col_tag(void)
+{
+    return (this->attackSel == 0) ? 'C' : 'c';
+}
+
+char GameState::get_attack_row_tag(void)
+{
+    return (this->attackSel == 1) ? 'R' : 'r';
 }

@@ -168,13 +168,15 @@ char *Messenger::build_new_game_msg(void)
     return build_game_msg(NEW_GAME, NULL);
 }
 
-char *Messenger::build_attack_msg(uint8_t r, uint8_t c, ATTACK_TYPE type, const char *to)
+char *Messenger::build_attack_msg(char r, char c, ATTACK_TYPE type, const char *to)
 {
     cJSON *data = NULL;      // data: request object wrapper
     cJSON *row = NULL;       // row of move
     cJSON *col = NULL;       // col of move
     cJSON *json_type = NULL; // move type
     cJSON *json_to = NULL;   // player that is being attacked
+    char r_str[2] = {r, 0};
+    char c_str[2] = {c, 0};
 
     data = cJSON_CreateObject();
     if (data == NULL)
@@ -182,14 +184,14 @@ char *Messenger::build_attack_msg(uint8_t r, uint8_t c, ATTACK_TYPE type, const 
         goto end;
     }
 
-    row = cJSON_CreateNumber(r);
+    row = cJSON_CreateString(r_str);
     if (row == NULL)
     {
         goto end;
     }
     cJSON_AddItemToObject(data, "r", row);
 
-    col = cJSON_CreateNumber(c);
+    col = cJSON_CreateString(c_str);
     if (col == NULL)
     {
         goto end;

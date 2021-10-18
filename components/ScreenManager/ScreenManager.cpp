@@ -112,14 +112,18 @@ void ScreenManager::render(void)
         //               "-=-=-=-=-=-=-=-="
         display.display1("Enter Attack");
         char buff[17];
-        snprintf(buff, sizeof(buff), "Coords: r%c, c%c", gameState.get_attack_row() + 'A', gameState.get_attack_col() + '1');
+        snprintf(buff, sizeof(buff), "Coords: %c%c, %c%c",
+                 gameState.get_attack_col_tag(),
+                 gameState.get_attack_col() + 'A',
+                 gameState.get_attack_row_tag(),
+                 gameState.get_attack_row() + '1');
         display.display2(buff);
         break;
     }
     }
 }
 
-void ScreenManager::rightArrow(void)
+void ScreenManager::rightPage(void)
 {
     switch (gameState.state)
     {
@@ -144,7 +148,7 @@ void ScreenManager::rightArrow(void)
         }
         default:
         {
-            printf("Right Arrow Ignored!\n");
+            printf("Right Page Ignored!\n");
             break;
         }
         }
@@ -166,7 +170,7 @@ void ScreenManager::rightArrow(void)
         }
         default:
         {
-            printf("Right Arrow Ignored!\n");
+            printf("Right Page Ignored!\n");
             break;
         }
         }
@@ -178,7 +182,7 @@ void ScreenManager::rightArrow(void)
         {
         default:
         {
-            printf("Right Arrow Ignored!\n");
+            printf("Right Page Ignored!\n");
             break;
         }
         }
@@ -189,16 +193,58 @@ void ScreenManager::rightArrow(void)
     this->render();
 }
 
+void ScreenManager::leftPage(void)
+{
+    this->rightPage(); // FIXME: COPY/UPDATE THIS WITH RIGHT Page
+    // this->render();
+}
+
+void ScreenManager::rightArrow(void)
+{
+    switch (this->state)
+    {
+    case ATTACK:
+    {
+        gameState.request_right_sel_attack();
+        this->render();
+        break;
+    }
+    default:
+    {
+        printf("Ignoring Right Arrow\n");
+        break;
+    }
+    }
+}
+
 void ScreenManager::leftArrow(void)
 {
-    this->rightArrow(); // FIXME: COPY/UPDATE THIS WITH RIGHT ARROW
-    // this->render();
+    switch (this->state)
+    {
+    case ATTACK:
+    {
+        gameState.request_left_sel_attack();
+        this->render();
+        break;
+    }
+    default:
+    {
+        printf("Ignoring Left Arrow\n");
+        break;
+    }
+    }
 }
 
 void ScreenManager::upArrow(void)
 {
     switch (this->state)
     {
+    case ATTACK:
+    {
+        gameState.increment_attack();
+        this->render();
+        break;
+    }
     default:
     {
         printf("Up Arrow Ignored!\n");
@@ -284,7 +330,7 @@ void ScreenManager::enter(void)
         {
         case ATTACK:
         {
-            websocket.send(messenger.build_attack_msg(1, 2, SOLO, gameState.opponent));
+            websocket.send(messenger.build_attack_msg(gameState.get_attack_row() + '0', gameState.get_attack_col() + '0', SOLO, gameState.opponent));
             break;
         }
         default:
