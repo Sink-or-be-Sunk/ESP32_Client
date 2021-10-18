@@ -12,7 +12,8 @@
 
 enum GAME_REQ_TYPE
 {
-    NEW_GAME
+    NEW_GAME,
+    MAKE_MOVE,
 };
 
 enum REGISTRATION_TYPE
@@ -21,17 +22,24 @@ enum REGISTRATION_TYPE
     CONFIRM,
 };
 
+enum ATTACK_TYPE
+{
+    SOLO,
+};
+
 class Messenger
 {
 private:
     char device_id[DEVICE_ID_MAX_LEN];
     char device_ssid[SSID_MAX_LEN];
     char *register_base(const char *type_str, const char *username);
+    char *build_game_msg(GAME_REQ_TYPE type, cJSON *data);
 
 public:
     void init(void);
     char *build_registration_msg(REGISTRATION_TYPE type);
-    char *build_game_msg(GAME_REQ_TYPE type);
+    char *build_new_game_msg(void);
+    char *build_attack_msg(uint8_t r, uint8_t c, ATTACK_TYPE type, const char *to);
 };
 
 extern Messenger messenger;

@@ -26,6 +26,7 @@
 #include "Display.h"
 #include "ScreenManager.h"
 #include "LEDManager.h"
+#include "GameState.h"
 
 static const char *TAG = "MAIN";
 
@@ -56,6 +57,9 @@ extern "C" void app_main(void)
 
     ledManager.init();
 
+    gameState.init();
+
+    websocket.send(messenger.build_attack_msg(1, 2, SOLO, gameState.opponent));
     // display.display1("Sink or be Sunk");
     // display.display2("Enter Coords:");
 

@@ -5,8 +5,10 @@
 #define REGISTRATION_CONFIRM_TAG "CONFIRM"
 
 #define GAME_NEW_GAME_TAG "NEW GAME"
+#define GAME_MAKE_MOVE_TAG "MAKE MOVE"
+#define GAME_ATTACK_SOLO_TAG "SOLO"
 
-Messenger messenger; //singleton instance of class
+Messenger messenger; // singleton instance of class
 
 static void get_device_ssid(char result[SSID_MAX_LEN])
 {
@@ -32,7 +34,7 @@ void Messenger::init(void)
 
 char *Messenger::build_registration_msg(REGISTRATION_TYPE reg_type)
 {
-    char *string = NULL; //point to output (built) string
+    char *string = NULL; // point to output (built) string
     cJSON *msg = NULL;   // main json wrapper object
     cJSON *id = NULL;    // unique device id (mac address)
     cJSON *req = NULL;   // request header
@@ -109,13 +111,12 @@ end:
     return string;
 }
 
-char *Messenger::build_game_msg(GAME_REQ_TYPE type)
+char *Messenger::build_game_msg(GAME_REQ_TYPE type, cJSON *data)
 {
-    char *string = NULL; //point to output (built) string
+    char *string = NULL; // point to output (built) string
     cJSON *msg = NULL;   // main json wrapper object
     cJSON *id = NULL;    // unique device id (mac address)
     cJSON *req = NULL;   // request header
-    cJSON *data = NULL;  // data: request object wrapper
 
     msg = cJSON_CreateObject();
     if (msg == NULL)
@@ -135,6 +136,13 @@ char *Messenger::build_game_msg(GAME_REQ_TYPE type)
     case NEW_GAME:
     {
         req = cJSON_CreateString(GAME_NEW_GAME_TAG);
+        // no data to add to msg
+        break;
+    }
+    case MAKE_MOVE:
+    {
+        req = cJSON_CreateString(GAME_MAKE_MOVE_TAG);
+        cJSON_AddItemToObject(msg, "data", data);
         break;
     }
     }
@@ -153,4 +161,58 @@ char *Messenger::build_game_msg(GAME_REQ_TYPE type)
 end:
     cJSON_Delete(msg);
     return string;
+}
+
+char *Messenger::build_new_game_msg(void)
+{
+    return build_game_msg(NEW_GAME, NULL);
+}
+
+char *Messenger::build_attack_msg(uint8_t r, uint8_t c, ATTACK_TYPE type, const char *to)
+{
+    cJSON *data = NULL;      // data: request object wrapper
+    cJSON *row = NULL;       // row of move
+    cJSON *col = NULL;       // col of move
+    cJSON *json_type = NULL; // move type
+    cJSON *json_to = NULL;   // player that is being attacked
+
+    data = cJSON_CreateObject();
+    if (data == NULL)
+    {
+        goto end;
+    }
+
+    row = cJSON_CreateNumber(r);
+    if (row == NULL)
+    {
+        goto end;
+    }
+    cJSON_AddItemToObject(data, "r", row);
+
+    col = cJSON_CreateNumber(c);
+    if (col == NULL)
+    {
+        goto end;
+    }
+    cJSON_AddItemToObject(data, "c", col);
+
+    switch (type)
+    {
+    case SOLO:
+    {
+        json_type = cJSON_CreateString(GAME_ATTACK_SOLO_TAG);
+        break;
+    }
+    }
+    cJSON_AddItemToObject(data, "type", json_type);
+
+    json_to = cJSON_CreateString(to);
+    if (json_to == NULL)
+    {
+        goto end;
+    }
+    cJSON_AddItemToObject(data, "to", json_to);
+
+end:
+    return build_game_msg(MAKE_MOVE, data);
 }
