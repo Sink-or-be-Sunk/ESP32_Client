@@ -124,7 +124,7 @@ char *Messenger::build_game_msg(GAME_REQ_TYPE type, cJSON *data)
         goto end;
     }
 
-    id = cJSON_CreateString(this->device_id);
+    id = cJSON_CreateString(settings.username);
     if (id == NULL)
     {
         goto end;

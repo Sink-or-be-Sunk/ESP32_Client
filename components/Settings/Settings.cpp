@@ -2,7 +2,7 @@
 
 static const char *TAG = "STORAGE";
 
-Settings settings; //singleton instance of class
+Settings settings; // singleton instance of class
 
 void Settings::init(void)
 {
@@ -19,7 +19,7 @@ void Settings::init(void)
     }
 
 #ifdef CONFIG_STORAGE_RESET_ALL
-    //TODO: NEEDS IMPLEMENTATION
+    // TODO: NEEDS IMPLEMENTATION
     ESP_LOGW(TAG, "Resetting User NVS Settings");
     Settings::unset(SETTING_HEADERS::USERNAME);
 #else
@@ -30,6 +30,7 @@ void Settings::init(void)
     Settings::read_str(handle, SETTING_HEADERS::USERNAME, username, &len);
 
     strcpy(this->username, username);
+    ESP_LOGI(TAG, "Loaded Username: %s\n", this->username);
 #endif
 }
 
@@ -94,7 +95,7 @@ void Settings::read_str(nvs_handle_t handle, const char *key, char *val, size_t 
     {
     case ESP_OK:
         printf("Done\n");
-        printf("is %s = %s: len=%d\n", key, val, *len);
+        printf("%s = %s: len=%d\n", key, val, *len);
         break;
     case ESP_ERR_NVS_NOT_FOUND:
         printf("The value is not initialized yet!\n");

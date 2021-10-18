@@ -46,19 +46,34 @@ static void handle_button_event(int row, int col)
     printf("key: %c\n", letter);
     switch (letter)
     {
-    case 'C':
+    case '6':
     {
         screenManager.upArrow();
         break;
     }
-    case 'D':
+    case '#':
     {
         screenManager.downArrow();
         break;
     }
-    case '#':
+    case 'C':
+    {
+        screenManager.rightArrow();
+        break;
+    }
+    case '8':
+    {
+        screenManager.leftArrow();
+        break;
+    }
+    case '9':
     {
         screenManager.enter();
+        break;
+    }
+    case 'B':
+    {
+        screenManager.back();
         break;
     }
     case '1':
@@ -87,7 +102,7 @@ static void gpio_buttons_task(void *arg)
     {
         if (xQueueReceive(gpio_evt_queue, &col, portMAX_DELAY))
         {
-            //bring all rows low
+            // bring all rows low
             gpio_set_level(ROW_1_PIN, 0);
             gpio_set_level(ROW_2_PIN, 0);
             gpio_set_level(ROW_3_PIN, 0);
@@ -95,24 +110,24 @@ static void gpio_buttons_task(void *arg)
 
             for (int row = 0; row < 4; row++)
             {
-                gpio_set_level(decode_row_pins[row], 1); //turn on row
+                gpio_set_level(decode_row_pins[row], 1); // turn on row
 
-                vTaskDelay(10 / portTICK_RATE_MS); //allow pin voltage to settle
+                vTaskDelay(10 / portTICK_RATE_MS); // allow pin voltage to settle
 
                 if (gpio_get_level(decode_col_pins[col]))
                 {
                     handle_button_event(row, col);
                     while (gpio_get_level(decode_col_pins[col]))
                     {
-                        vTaskDelay(10 / portTICK_PERIOD_MS); //wait for button to be released
+                        vTaskDelay(10 / portTICK_PERIOD_MS); // wait for button to be released
                     }
                     break;
                 }
 
-                gpio_set_level(decode_row_pins[row], 0); //turn off row
+                gpio_set_level(decode_row_pins[row], 0); // turn off row
             }
 
-            //bring all rows high
+            // bring all rows high
             gpio_set_level(ROW_1_PIN, 1);
             gpio_set_level(ROW_2_PIN, 1);
             gpio_set_level(ROW_3_PIN, 1);
@@ -141,22 +156,22 @@ void button_manager_init(void)
     };
     gpio_config(&io_conf);
 
-    //create a queue to handle gpio event from isr
+    // create a queue to handle gpio event from isr
     gpio_evt_queue = xQueueCreate(10, sizeof(uint32_t));
 
-    //start gpio task
+    // start gpio task
     xTaskCreate(gpio_buttons_task, "gpio_buttons_task", 2048, NULL, 10, NULL);
 
-    //install gpio isr service
+    // install gpio isr service
     gpio_install_isr_service(0);
 
-    //hook isr handler for specific gpio pin
+    // hook isr handler for specific gpio pin
     gpio_isr_handler_add(COL_1_PIN, gpio_isr_handler, (void *)0);
     gpio_isr_handler_add(COL_2_PIN, gpio_isr_handler, (void *)1);
     gpio_isr_handler_add(COL_3_PIN, gpio_isr_handler, (void *)2);
     gpio_isr_handler_add(COL_4_PIN, gpio_isr_handler, (void *)3);
 
-    //set rows high to initiate interrupt on button press
+    // set rows high to initiate interrupt on button press
     gpio_set_level(ROW_1_PIN, 1);
     gpio_set_level(ROW_2_PIN, 1);
     gpio_set_level(ROW_3_PIN, 1);

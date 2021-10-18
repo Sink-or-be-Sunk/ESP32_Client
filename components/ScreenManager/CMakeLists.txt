@@ -1,3 +1,3 @@
 idf_component_register(SRCS "ScreenManager.cpp"
                     INCLUDE_DIRS "include"
-                    REQUIRES Display Websocket Messenger)
+                    REQUIRES Display Websocket Messenger GameState)

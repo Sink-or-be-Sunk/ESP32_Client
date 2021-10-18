@@ -2,6 +2,7 @@
 #include "Display.h"
 #include "Websocket.h"
 #include "Messenger.h"
+#include "GameState.h"
 
 ScreenManager screenManager; // singleton instance of class
 
@@ -36,45 +37,157 @@ void ScreenManager::render(void)
         display.display2("Sink or be Sunk!");
         break;
     }
-    case INIT_PAIRING:
-    {
-        //               "-=-=-=-=-=-=-=-="
-        display.display1("Start Pairing");
-        display.display2("Press #");
-        break;
-    }
     case CONFIRM_PAIRING:
     {
         //               "-=-=-=-=-=-=-=-="
         display.display1("Confirm Device");
-        display.display2("Press #");
+        display.display2("Press Enter");
+        break;
+    }
+    case INIT_PAIRING:
+    {
+        //               "-=-=-=-=-=-=-=-="
+        display.display1("Start Pairing");
+        display.display2("Press Enter");
+        break;
+    }
+    case WAITING_PAIRING:
+    {
+        //               "-=-=-=-=-=-=-=-="
+        display.display1("Waiting for Web");
+        display.display2("Confirmation");
+        break;
+    }
+    case CREATE_GAME:
+    {
+        //               "-=-=-=-=-=-=-=-="
+        display.display1("Create Game");
+        display.display2("Press Enter");
+        break;
+    }
+    case FIND_GAME:
+    {
+        //               "-=-=-=-=-=-=-=-="
+        display.display1("Find Games");
+        display.display2("Press Enter");
+        break;
+    }
+    case JOIN_GAME:
+    {
+        //               "-=-=-=-=-=-=-=-="
+        display.display1("Join Game");
+        display.display2("Scroll Down"); // TODO: NEEDS IMPLEMENTATION
+        break;
+    }
+    case READY_UP_SHIPS:
+    {
+        //               "-=-=-=-=-=-=-=-="
+        display.display1("Ready Up");
+        display.display2("Press Enter");
+        break;
+    }
+    case INVITE_FRIEND:
+    {
+        //               "-=-=-=-=-=-=-=-="
+        display.display1("Ready Up");
+        display.display2("Scroll :Down");
+        break;
+    }
+    case ATTACK:
+    {
+        //               "-=-=-=-=-=-=-=-="
+        display.display1("Enter Attack");
+        char buff[20];
+        sprintf(buff, "Coords: r%d, c%d", gameState.get_attack_row(), gameState.get_attack_col());
+        display.display2(buff);
         break;
     }
     }
+}
+
+void ScreenManager::rightArrow(void)
+{
+    switch (gameState.state)
+    {
+    case SETUP:
+    {
+        switch (this->state)
+        {
+        case INIT_PAIRING:
+        {
+            this->state = CREATE_GAME;
+            break;
+        }
+        case CREATE_GAME:
+        {
+            this->state = FIND_GAME;
+            break;
+        }
+        case FIND_GAME:
+        {
+            this->state = INIT_PAIRING;
+            break;
+        }
+        default:
+        {
+            printf("Right Arrow Ignored!\n");
+            break;
+        }
+        }
+        break;
+    }
+    case LOBBY:
+    {
+        switch (this->state)
+        {
+        case READY_UP_SHIPS:
+        {
+            this->state = INVITE_FRIEND;
+            break;
+        }
+        case INVITE_FRIEND:
+        {
+            this->state = READY_UP_SHIPS;
+            break;
+        }
+        default:
+        {
+            printf("Right Arrow Ignored!\n");
+            break;
+        }
+        }
+        break;
+    }
+    case IN_PROGRESS:
+    {
+        switch (this->state)
+        {
+        default:
+        {
+            printf("Right Arrow Ignored!\n");
+            break;
+        }
+        }
+        break;
+    }
+    }
+
+    ScreenManager::render();
+}
+
+void ScreenManager::leftArrow(void)
+{
+    ScreenManager::rightArrow(); // FIXME: COPY/UPDATE THIS WITH RIGHT ARROW
+    // ScreenManager::render();
 }
 
 void ScreenManager::upArrow(void)
 {
     switch (this->state)
     {
-    case WIFI_CONNECTING:
+    default:
     {
         printf("Up Arrow Ignored!\n");
-        break;
-    }
-    case HOME:
-    {
-        this->state = INIT_PAIRING;
-        break;
-    }
-    case INIT_PAIRING:
-    {
-        this->state = CONFIRM_PAIRING;
-        break;
-    }
-    case CONFIRM_PAIRING:
-    {
-        this->state = HOME;
         break;
     }
     }
@@ -85,24 +198,9 @@ void ScreenManager::downArrow(void)
 {
     switch (this->state)
     {
-    case WIFI_CONNECTING:
+    default:
     {
         printf("Down Arrow Ignored!\n");
-        break;
-    }
-    case HOME:
-    {
-        this->state = CONFIRM_PAIRING;
-        break;
-    }
-    case INIT_PAIRING:
-    {
-        this->state = HOME;
-        break;
-    }
-    case CONFIRM_PAIRING:
-    {
-        this->state = INIT_PAIRING;
         break;
     }
     }
@@ -111,22 +209,110 @@ void ScreenManager::downArrow(void)
 
 void ScreenManager::enter(void)
 {
-    switch (this->state)
+    switch (gameState.state)
     {
-    case WIFI_CONNECTING:
-    case HOME:
+    case SETUP:
     {
-        printf("Do Nothing\n");
+        switch (this->state)
+        {
+        case INIT_PAIRING:
+        {
+            websocket.send(messenger.build_registration_msg(ENQUEUE));
+            this->state = WAITING_PAIRING;
+            ScreenManager::render();
+            break;
+        }
+        case CREATE_GAME:
+        {
+            websocket.send(messenger.build_new_game_msg());
+            break;
+        }
+        case JOIN_GAME:
+        {
+            // TODO:
+            break;
+        }
+        default:
+        {
+            printf("Enter Ignored!\n");
+            break;
+        }
+        }
         break;
     }
-    case INIT_PAIRING:
+    case LOBBY:
     {
-        websocket.send(messenger.build_registration_msg(ENQUEUE));
+        switch (this->state)
+        {
+        case READY_UP_SHIPS:
+        {
+            this->state = INVITE_FRIEND;
+            break;
+        }
+        case INVITE_FRIEND:
+        {
+            this->state = READY_UP_SHIPS;
+            break;
+        }
+        default:
+        {
+            printf("Right Arrow Ignored!\n");
+            break;
+        }
+        }
         break;
     }
-    case CONFIRM_PAIRING:
+    case IN_PROGRESS:
     {
-        websocket.send(messenger.build_registration_msg(CONFIRM));
+        switch (this->state)
+        {
+        case ATTACK:
+        {
+            // websocket.send(messenger.build_registration_msg(CONFIRM));
+            websocket.send(messenger.build_attack_msg(1, 2, SOLO, gameState.opponent));
+            break;
+        }
+        default:
+        {
+            printf("Enter Ignored!\n");
+            break;
+        }
+        }
+        break;
+    }
+    }
+}
+
+void ScreenManager::back(void)
+{
+    switch (gameState.state)
+    {
+    case SETUP:
+    {
+        switch (this->state)
+        {
+        case WAITING_PAIRING:
+        {
+            this->state = INIT_PAIRING;
+            ScreenManager::render();
+            break;
+        }
+        default:
+        {
+            printf("back ignored!\n");
+            break;
+        }
+        }
+        break;
+    }
+    case LOBBY:
+    {
+        // TODO:
+        break;
+    }
+    case IN_PROGRESS:
+    {
+        // TODO:
         break;
     }
     }

@@ -51,29 +51,14 @@ extern "C" void app_main(void)
     /* Start Websocket */
     websocket.start();
 
+    gameState.init();
+
+    ledManager.init();
     button_manager_init();
 
     screenManager.setState(HOME);
-
-    ledManager.init();
-
-    gameState.init();
-
-    websocket.send(messenger.build_attack_msg(1, 2, SOLO, gameState.opponent));
-    // display.display1("Sink or be Sunk");
-    // display.display2("Enter Coords:");
-
-    // while (1)
-    // {
-    //     spi_display1(oled, disp1);
-    //     spi_display2(oled, disp2);
-    //     key = begin_scan_keypad();
-    //     memcpy(disp1, "You Entered:    ", 16);
-    //     memcpy(disp2, "                ", 16);
-    //     memcpy(disp2, &key, 1);
-    //     // strcpy(disp1, "You entered:");
-    //     // strcpy(disp2, &key);
-    // }
+    vTaskDelay(2000 / portTICK_PERIOD_MS); // SPLASH WELCOME MESSAGE
+    screenManager.setState(CREATE_GAME);
 
     // wifi_stop();
 }
