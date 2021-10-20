@@ -1,8 +1,7 @@
 #pragma once
 #include <string.h>
 #include "ShipPosition.h"
-
-#define USERNAME_MAX_LEN 33
+#include "Settings.h"
 
 enum game_state_t
 {
@@ -19,8 +18,10 @@ private:
     ShipPosition ship_layout[4];     // index of ships governed by ship_position_t
 
 public:
-    char opponent[USERNAME_MAX_LEN]; // opposing player
+    char opponent[SETTING_STR_LEN::USERNAME]; // opposing player
     game_state_t state;
+    uint16_t prev_board; // (empty, hit, miss, filled)
+    uint16_t board;
 
     void init(void);
     void setState(game_state_t state);

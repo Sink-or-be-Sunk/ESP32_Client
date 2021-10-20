@@ -198,9 +198,11 @@ void Websocket::handle(const char *msg, uint8_t len)
         if (cJSON_IsString(username) && (username->valuestring != NULL))
         {
             printf("username: \"%s\"\n", username->valuestring);
-            strcpy(settings.username, username->valuestring);
+            strncpy(settings.username, username->valuestring, SETTING_STR_LEN::USERNAME);
             settings.save();
-            screenManager.splash(DEVICE_PAIRED, CREATE_GAME);
+            screenManager.splash(DEVICE_PAIRED, REBOOT);
+            vTaskDelay(2000 / portTICK_RATE_MS);
+            esp_restart();
         }
         else
         {
@@ -226,7 +228,27 @@ void Websocket::handle(const char *msg, uint8_t len)
     }
     case MOVE_MADE:
     {
-        // TODO: NEEDS IMPLEMENTATION
+        if (!cJSON_IsObject(payload))
+        {
+            status = 505;
+            goto end;
+        }
+
+        cJSON *move_c = cJSON_GetObjectItemCaseSensitive(payload, "c");
+        cJSON *move_r = cJSON_GetObjectItemCaseSensitive(payload, "r");
+        if (cJSON_IsString(move_c) && (move_c->valuestring != NULL) && cJSON_IsString(move_r) && (move_r->valuestring != NULL))
+        {
+            // TODO: NEEDS IMPLEMENTATION FOR REGISTERING HIT FOR LEDS
+            // printf("opponent: \"%s\"\n", opponent->valuestring);
+            // strncpy(gameState.opponent, opponent->valuestring, SETTING_STR_LEN::USERNAME);
+            // screenManager.splash(OPPONENT_JOINED_GAME);
+        }
+        else
+        {
+            status = -1;
+            goto end;
+        }
+
         status = HEADERS::MOVE_MADE;
         break;
     }
@@ -238,7 +260,27 @@ void Websocket::handle(const char *msg, uint8_t len)
     }
     case JOINED_GAME:
     {
-        // TODO: NEEDS IMPLEMENTATION
+
+        if (!cJSON_IsObject(payload))
+        {
+            status = 505;
+            goto end;
+        }
+
+        cJSON *opponent = cJSON_GetObjectItemCaseSensitive(payload, "username");
+
+        if (cJSON_IsString(opponent) && (opponent->valuestring != NULL))
+        {
+            printf("opponent: \"%s\"\n", opponent->valuestring);
+            strncpy(gameState.opponent, opponent->valuestring, SETTING_STR_LEN::USERNAME);
+            screenManager.splash(OPPONENT_JOINED_GAME);
+        }
+        else
+        {
+            status = -1;
+            goto end;
+        }
+
         status = HEADERS::JOINED_GAME;
         break;
     }

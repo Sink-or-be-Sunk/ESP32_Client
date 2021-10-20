@@ -65,6 +65,40 @@ void ScreenManager::render(void)
         display.display2(buff);
         break;
     }
+    case REBOOT:
+    {
+        //               "-=-=-=-=-=-=-=-="
+        display.display1("REBOOT REQUIRED");
+        display.display2(" PLEASE WAIT");
+        break;
+    }
+    case OPPONENT_ATTACKED:
+    {
+        //               "-=-=-=-=-=-=-=-="
+        display.display1("Attack Made At");
+        char buff[17];
+        strncpy(buff, settings.username, 16);
+        display.display2(buff);
+        break;
+    }
+    case OPPONENT_READY_UP:
+    {
+        //               "-=-=-=-=-=-=-=-="
+        char buff[17];
+        strncpy(buff, gameState.opponent, 16);
+        display.display1(buff);
+        display.display2("Is Ready to Play");
+        break;
+    }
+    case OPPONENT_JOINED_GAME:
+    {
+        //               "-=-=-=-=-=-=-=-="
+        char buff[17];
+        strncpy(buff, gameState.opponent, 16);
+        display.display1(buff);
+        display.display2("Has Joined Game");
+        break;
+    }
     case WAITING_PAIRING:
     {
         //               "-=-=-=-=-=-=-=-="
