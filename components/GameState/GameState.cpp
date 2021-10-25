@@ -85,3 +85,29 @@ void GameState::getShip(ship_position_t type, uint8_t *r1, uint8_t *c1, uint8_t 
     *r2 = pos.back_r;
     *c2 = pos.back_c;
 }
+
+void GameState::moveReceived(int c, int r, char *to, char result)
+{
+    // TODO: NEED TO ADD SOMETHING HERE FOR DEALING WITH SUNK SHIPS
+    printf("result: %c\n", result);
+    if (strcmp(settings.username, to))
+    {
+        // confirming move you just made
+        printf("Attack Board Updated\n");
+
+        this->attackBoard[c * BOARD_WIDTH + r] = result;
+        this->attackCoords[0] = c; // TODO: THIS IS PROBABLY REDUNDANT
+        this->attackCoords[1] = r;
+        this->myTurn = false;
+    }
+    else
+    {
+        // move from opponent
+        printf("Opponent Board updated\n");
+
+        this->opponentAttackCoords[0] = c;
+        this->opponentAttackCoords[1] = r;
+        this->positionBoard[c * BOARD_WIDTH + r] = result;
+        this->myTurn = true;
+    }
+}

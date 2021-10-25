@@ -3,6 +3,8 @@
 // WEBSOCKET META TAGS
 #define REGISTRATION_WAITING_FOR_WEB_TAG "WAITING FOR WEB"
 
+#define JOINED_EMPTY_GAME_TAG "Empty Game"
+
 static const char *TAG = "Websocket";
 
 Websocket websocket; // singleton instance of class
@@ -52,7 +54,8 @@ enum HEADERS
     // Game Headers
     // GAME_ALREADY_EXITS, //FIXME: REMOVE THIS FROM SERVER
     GAME_CREATED,
-    MOVE_MADE,
+    GAME_STARTED,
+    MOVE_RESULT,
     INVALID_MOVE,
     JOINED_GAME,
     POSITIONED_SHIPS,
@@ -72,6 +75,9 @@ static void header_map_init()
     header_map["REGISTER PENDING"] = REGISTER_PENDING;
     header_map["REGISTER SUCCESS"] = REGISTER_SUCCESS;
     header_map["GAME CREATED"] = GAME_CREATED;
+    header_map["GAME STARTED"] = GAME_STARTED;
+    header_map["JOINED GAME"] = JOINED_GAME;
+    header_map["MADE MOVE"] = MOVE_RESULT;
 }
 
 void Websocket::start(void)
@@ -141,12 +147,12 @@ void Websocket::handle(const char *msg, uint8_t len)
 
     meta = cJSON_GetObjectItemCaseSensitive(msg_json, "meta");
 
-    if (!cJSON_IsString(meta) || (meta->valuestring == NULL))
-    {
-        status = 405;
-        goto end;
-    }
-    printf("meta: \"%s\"\n", meta->valuestring);
+    // if (!cJSON_IsString(meta) || (meta->valuestring == NULL))
+    // {
+    //     status = 405;
+    //     goto end;
+    // }
+    // printf("meta: \"%s\"\n", meta->valuestring);
 
     payload = cJSON_GetObjectItemCaseSensitive(msg_json, "payload");
 
@@ -226,7 +232,14 @@ void Websocket::handle(const char *msg, uint8_t len)
         status = HEADERS::GAME_CREATED;
         break;
     }
-    case MOVE_MADE:
+    case GAME_STARTED:
+    {
+        gameState.setState(IN_PROGRESS);
+        screenManager.setState(ATTACK);
+        status = HEADERS::GAME_STARTED;
+        break;
+    }
+    case MOVE_RESULT:
     {
         if (!cJSON_IsObject(payload))
         {
@@ -236,12 +249,15 @@ void Websocket::handle(const char *msg, uint8_t len)
 
         cJSON *move_c = cJSON_GetObjectItemCaseSensitive(payload, "c");
         cJSON *move_r = cJSON_GetObjectItemCaseSensitive(payload, "r");
-        if (cJSON_IsString(move_c) && (move_c->valuestring != NULL) && cJSON_IsString(move_r) && (move_r->valuestring != NULL))
+        cJSON *to = cJSON_GetObjectItemCaseSensitive(payload, "to");
+        cJSON *result = cJSON_GetObjectItemCaseSensitive(payload, "result");
+        // cJSON *result_ship = cJSON_GetObjectItemCaseSensitive(payload, "result_ship"); //TODO: ADD SHIP SUNK RESULT
+        if (cJSON_IsNumber(move_c) && cJSON_IsNumber(move_r) && cJSON_IsString(to) && (to->valuestring != NULL) && cJSON_IsString(result) && (result->valuestring != NULL))
         {
             // TODO: NEEDS IMPLEMENTATION FOR REGISTERING HIT FOR LEDS
-            // printf("opponent: \"%s\"\n", opponent->valuestring);
-            // strncpy(gameState.opponent, opponent->valuestring, SETTING_STR_LEN::USERNAME);
-            // screenManager.splash(OPPONENT_JOINED_GAME);
+            printf("C: \"%d\", R: \"%d\", to: \"%s\", result: \"%s\"\n", move_c->valueint, move_r->valueint, to->valuestring, result->valuestring);
+            gameState.moveReceived(move_c->valueint, move_r->valueint, to->valuestring, result->valuestring[0]);
+            screenManager.splash(MOVE_MADE);
         }
         else
         {
@@ -249,7 +265,7 @@ void Websocket::handle(const char *msg, uint8_t len)
             goto end;
         }
 
-        status = HEADERS::MOVE_MADE;
+        status = HEADERS::MOVE_RESULT;
         break;
     }
     case INVALID_MOVE:
@@ -260,20 +276,29 @@ void Websocket::handle(const char *msg, uint8_t len)
     }
     case JOINED_GAME:
     {
-
         if (!cJSON_IsObject(payload))
         {
             status = 505;
             goto end;
         }
 
-        cJSON *opponent = cJSON_GetObjectItemCaseSensitive(payload, "username");
+        cJSON *opponent = cJSON_GetObjectItemCaseSensitive(payload, "opponent");
 
         if (cJSON_IsString(opponent) && (opponent->valuestring != NULL))
         {
             printf("opponent: \"%s\"\n", opponent->valuestring);
-            strncpy(gameState.opponent, opponent->valuestring, SETTING_STR_LEN::USERNAME);
-            screenManager.splash(OPPONENT_JOINED_GAME);
+            if (strcmp(JOINED_EMPTY_GAME_TAG, opponent->valuestring))
+            {
+                printf("Player Joined Your Game\n");
+                strncpy(gameState.opponent, opponent->valuestring, SETTING_STR_LEN::USERNAME);
+                screenManager.splash(OPPONENT_JOINED_GAME);
+            }
+            else
+            {
+                printf("Joined Own Game\n");
+                gameState.setState(LOBBY);
+                screenManager.setState(INVITE_FRIEND);
+            }
         }
         else
         {

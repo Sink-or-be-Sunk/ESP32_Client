@@ -72,12 +72,55 @@ void ScreenManager::render(void)
         display.display2(" PLEASE WAIT");
         break;
     }
-    case OPPONENT_ATTACKED:
+    case MOVE_MADE:
     {
-        //               "-=-=-=-=-=-=-=-="
-        display.display1("Attack Made At");
+        char *boardPtr;
+        int8_t *coordsPtr;
+        if (gameState.myTurn) // NOTE: These are flipped because after I make a move
+        // it will no longer be my turn, i.e. myTurn is false
+        {
+            //               "-=-=-=-=-=-=-=-="
+            display.display1("Attack Made At");
+            boardPtr = gameState.positionBoard;
+            coordsPtr = gameState.opponentAttackCoords;
+        }
+        else
+        {
+            //               "-=-=-=-=-=-=-=-="
+            display.display1("Your Move Result");
+            boardPtr = gameState.attackBoard;
+            coordsPtr = gameState.attackCoords;
+        }
+
         char buff[17];
-        strncpy(buff, settings.username, 16);
+        char result[5];
+        char res = boardPtr[coordsPtr[0] * BOARD_WIDTH + coordsPtr[1]];
+        printf("c: %d, r: %d, res: %c\n", coordsPtr[0], coordsPtr[1], res);
+        switch (res)
+        {
+        case RESULT_SUNK:
+        {
+            strncpy(result, "SUNK", 5);
+            break;
+        }
+        case RESULT_HIT:
+        {
+            strncpy(result, "HIT", 5);
+            break;
+        }
+        case RESULT_MISS:
+        {
+            strncpy(result, "MISS", 5);
+            break;
+        }
+        default:
+        {
+            strncpy(result, "ERR", 5);
+            break;
+        }
+        }
+        //                 "-=-=-=-=-=-=-=-="
+        snprintf(buff, 16, "%s at c%c, r%c", result, coordsPtr[0] + 'A', coordsPtr[1] + '1');
         display.display2(buff);
         break;
     }
@@ -229,8 +272,72 @@ void ScreenManager::rightPage(void)
 
 void ScreenManager::leftPage(void)
 {
-    this->rightPage(); // FIXME: COPY/UPDATE THIS WITH RIGHT Page
-    // this->render();
+    switch (gameState.state)
+    {
+    case SETUP:
+    {
+        switch (this->state)
+        {
+        case INIT_PAIRING:
+        {
+            this->state = FIND_GAME;
+            break;
+        }
+        case CREATE_GAME:
+        {
+            this->state = INIT_PAIRING;
+            break;
+        }
+        case FIND_GAME:
+        {
+            this->state = CREATE_GAME;
+            break;
+        }
+        default:
+        {
+            printf("Left Page Ignored!\n");
+            break;
+        }
+        }
+        break;
+    }
+    case LOBBY:
+    {
+        switch (this->state)
+        {
+        case READY_UP_SHIPS:
+        {
+            this->state = INVITE_FRIEND;
+            break;
+        }
+        case INVITE_FRIEND:
+        {
+            this->state = READY_UP_SHIPS;
+            break;
+        }
+        default:
+        {
+            printf("Left Page Ignored!\n");
+            break;
+        }
+        }
+        break;
+    }
+    case IN_PROGRESS:
+    {
+        switch (this->state)
+        {
+        default:
+        {
+            printf("Left Page Ignored!\n");
+            break;
+        }
+        }
+        break;
+    }
+    }
+
+    this->render();
 }
 
 void ScreenManager::rightArrow(void)
@@ -276,7 +383,6 @@ void ScreenManager::upArrow(void)
     case ATTACK:
     {
         gameState.increment_attack();
-        this->render();
         break;
     }
     default:
@@ -292,9 +398,14 @@ void ScreenManager::downArrow(void)
 {
     switch (this->state)
     {
+    case ATTACK:
+    {
+        gameState.decrement_attack();
+        break;
+    }
     default:
     {
-        printf("Down Arrow Ignored!\n");
+        printf("Up Arrow Ignored!\n");
         break;
     }
     }
@@ -346,9 +457,9 @@ void ScreenManager::enter(void)
         case READY_UP_SHIPS:
         {
             gameState.updateShip(PATROL, 0, 0, 0, 1);
-            gameState.updateShip(SUBMARINE, 1, 0, 0, 2);
-            gameState.updateShip(BATTLESHIP, 2, 0, 0, 3);
-            gameState.updateShip(CARRIER, 3, 0, 0, 4);
+            gameState.updateShip(SUBMARINE, 1, 0, 1, 2);
+            gameState.updateShip(BATTLESHIP, 2, 0, 2, 3);
+            gameState.updateShip(CARRIER, 3, 0, 3, 4);
             websocket.send(messenger.build_position_ships());
             gameState.state = IN_PROGRESS;
             // this->state = ATTACK;//TODO: CHANGE TO WAITING FOR RESPONSE STATE
