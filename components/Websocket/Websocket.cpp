@@ -6,6 +6,7 @@
 #define JOINED_EMPTY_GAME_TAG "Empty Game"
 
 #define INVITE_SENT_TAG "INVITE SENT"
+#define LIST_SENT_TAG "LIST SENT"
 
 static const char *TAG = "Websocket";
 

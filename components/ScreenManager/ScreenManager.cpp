@@ -172,14 +172,7 @@ void ScreenManager::render(void)
     {
         //               "-=-=-=-=-=-=-=-="
         display.display1("Find Games");
-        display.display2("Press Enter");
-        break;
-    }
-    case JOIN_GAME:
-    {
-        //               "-=-=-=-=-=-=-=-="
-        display.display1("Join Game");
-        display.display2("Scroll Down"); // TODO: NEEDS IMPLEMENTATION
+        display.display2("Scroll Down");
         break;
     }
     case READY_UP_SHIPS:
@@ -193,7 +186,7 @@ void ScreenManager::render(void)
     {
         //               "-=-=-=-=-=-=-=-="
         display.display1("Invite Friend");
-        display.display2("Scroll :Down");
+        display.display2("Scroll Down");
         break;
     }
     case FRIENDS_LIST:
@@ -506,11 +499,6 @@ void ScreenManager::enter(void)
         case CREATE_GAME:
         {
             websocket.send(messenger.build_join_game_msg(friendManager.getCurUsername()));
-            break;
-        }
-        case JOIN_GAME:
-        {
-
             break;
         }
         default:

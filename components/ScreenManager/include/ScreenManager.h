@@ -26,7 +26,6 @@ enum SCREEN_STATE
     INIT_PAIRING,
     CREATE_GAME,
     FIND_GAME,
-    JOIN_GAME,
 
     // GAME LOBBY
     READY_UP_SHIPS, // ready up ships
