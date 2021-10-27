@@ -544,7 +544,7 @@ void ScreenManager::enter(void)
         }
         default:
         {
-            printf("Right Arrow Ignored!\n");
+            printf("Enter Ignored!\n");
             break;
         }
         }

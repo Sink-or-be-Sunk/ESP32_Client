@@ -48,6 +48,7 @@ private:
 
 public:
     void init(void);
+    char *build_connected_msg();
     char *build_registration_msg(REGISTRATION_TYPE type);
     char *build_new_game_msg(void);
     char *build_attack_msg(char r, char c, ATTACK_TYPE type, const char *to);
