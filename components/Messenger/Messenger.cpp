@@ -240,24 +240,16 @@ end:
 
 char *Messenger::build_join_game_msg(const char *game)
 {
-    cJSON *data = NULL;      // data: request object wrapper
     cJSON *json_game = NULL; // game
-
-    data = cJSON_CreateObject();
-    if (data == NULL)
-    {
-        goto end;
-    }
 
     json_game = cJSON_CreateString(game);
     if (json_game == NULL)
     {
         goto end;
     }
-    cJSON_AddItemToObject(data, "data", json_game);
 
 end:
-    return build_game_msg(JOIN_GAME_REQ, data);
+    return build_game_msg(JOIN_GAME_REQ, json_game);
 }
 static cJSON *build_one_ship_position(const char *t, uint8_t r, uint8_t c)
 {
@@ -353,7 +345,7 @@ end:
     return build_game_msg(POSITION_SHIPS, data);
 }
 
-char *Messenger::build_db_msg(DATABASE_REQ_TYPE type)
+char *Messenger::build_db_msg(DATABASE_REQ_TYPE type, const char *username)
 {
     char *string = NULL;   // point to output (built) string
     cJSON *msg = NULL;     // main json wrapper object
@@ -395,7 +387,7 @@ char *Messenger::build_db_msg(DATABASE_REQ_TYPE type)
     {
         db_type = cJSON_CreateString(DATABASE_INVITE_TAG);
 
-        db_data = cJSON_CreateString("myfriendid");
+        db_data = cJSON_CreateString(username);
         if (db_data == NULL)
         {
             goto end;

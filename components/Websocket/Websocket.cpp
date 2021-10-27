@@ -317,16 +317,18 @@ void Websocket::handle(const char *msg, uint8_t len)
         if (cJSON_IsString(opponent) && (opponent->valuestring != NULL))
         {
             printf("opponent: \"%s\"\n", opponent->valuestring);
+
+            gameState.setState(LOBBY);
+
             if (strcmp(JOINED_EMPTY_GAME_TAG, opponent->valuestring))
             {
                 printf("Two players in lobby\n");
                 strncpy(gameState.opponent, opponent->valuestring, SETTING_STR_LEN::USERNAME);
-                screenManager.splash(PLAYER_IN_LOBBY);
+                screenManager.splash(PLAYER_IN_LOBBY, READY_UP_SHIPS);
             }
             else
             {
                 printf("Joined Own Game\n");
-                gameState.setState(LOBBY);
                 screenManager.setState(INVITE_FRIEND);
             }
         }

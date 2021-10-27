@@ -11,6 +11,8 @@
 #define SSID_MAX_LEN 33
 #define DEVICE_ID_MAX_LEN 13
 
+// TODO: CREATE NAMESPACE FOR ALL THESE ENUMS TO AVOID NAME COLLISIONS
+
 enum GAME_REQ_TYPE
 {
     NEW_GAME,
@@ -51,7 +53,7 @@ public:
     char *build_attack_msg(char r, char c, ATTACK_TYPE type, const char *to);
     char *build_join_game_msg(const char *game);
     char *build_position_ships(void);
-    char *build_db_msg(DATABASE_REQ_TYPE type);
+    char *build_db_msg(DATABASE_REQ_TYPE type, const char *username);
 };
 
 extern Messenger messenger;

@@ -31,7 +31,7 @@ void FriendManager::update(const cJSON *list)
             goto end;
         }
 
-        strncpy(uidList[listIdx], display->valuestring, SETTING_STR_LEN::USERNAME);
+        strncpy(uidList[listIdx], user->valuestring, SETTING_STR_LEN::USERNAME);
         strncpy(namesList[listIdx], display->valuestring, SETTING_STR_LEN::USERNAME);
 
         listIdx++;

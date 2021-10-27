@@ -431,6 +431,11 @@ void ScreenManager::upArrow(void)
         }
         break;
     }
+    case NO_MORE_FRIENDS:
+    {
+        this->setState(FRIENDS_LIST);
+        break;
+    }
     default:
     {
         printf("Up Arrow Ignored!\n");
@@ -452,7 +457,7 @@ void ScreenManager::downArrow(void)
     case FIND_GAME:
     case INVITE_FRIEND:
     {
-        websocket.send(messenger.build_db_msg(GET_FRIENDS));
+        websocket.send(messenger.build_db_msg(GET_FRIENDS, NULL));
         break;
     }
     case FRIENDS_LIST:
@@ -498,6 +503,12 @@ void ScreenManager::enter(void)
         }
         case CREATE_GAME:
         {
+            websocket.send(messenger.build_new_game_msg());
+            break;
+        }
+        case FRIENDS_LIST:
+        {
+            // JOIN GAME
             websocket.send(messenger.build_join_game_msg(friendManager.getCurUsername()));
             break;
         }
@@ -523,6 +534,12 @@ void ScreenManager::enter(void)
             gameState.state = IN_PROGRESS;
             // this->state = ATTACK; //TODO: CHANGE TO WAITING FOR RESPONSE STATE
             // this->render();
+            break;
+        }
+        case FRIENDS_LIST:
+        {
+            // INVITE
+            websocket.send(messenger.build_db_msg(INVITE, friendManager.getCurUsername()));
             break;
         }
         default:
