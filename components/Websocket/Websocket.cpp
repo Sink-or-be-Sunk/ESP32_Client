@@ -5,6 +5,8 @@
 
 #define JOINED_EMPTY_GAME_TAG "Empty Game"
 
+#define INVITE_SENT_TAG "INVITE SENT"
+
 static const char *TAG = "Websocket";
 
 Websocket websocket; // singleton instance of class
@@ -60,6 +62,7 @@ enum HEADERS
     JOINED_GAME,
     POSITIONED_SHIPS,
     INVALID_LAYOUT,
+    DATABASE_SUCCESS,
     // GAME_TYPE_APPROVED, //TODO: ADD THESE BACK IF/WHEN WE MAKE MULTIPLE GAME TYPES
     // INVALID_GAME_TYPE,
 
@@ -78,6 +81,7 @@ static void header_map_init()
     header_map["GAME STARTED"] = GAME_STARTED;
     header_map["JOINED GAME"] = JOINED_GAME;
     header_map["MADE MOVE"] = MOVE_RESULT;
+    header_map["DATABASE SUCCESS"] = DATABASE_SUCCESS;
 }
 
 void Websocket::start(void)
@@ -162,6 +166,31 @@ void Websocket::handle(const char *msg, uint8_t len)
     {
         printf("Connected to Websocket\n");
         status = HEADERS::CONNECTED;
+        break;
+    }
+    case DATABASE_SUCCESS:
+    {
+        if (!cJSON_IsString(meta) || (meta->valuestring == NULL))
+        {
+            status = -1 * HEADERS::DATABASE_SUCCESS;
+            goto end;
+        }
+
+        payload = cJSON_GetObjectItemCaseSensitive(msg_json, "payload");
+
+        if (strcmp(INVITE_SENT_TAG, meta->valuestring))
+        {
+            // FIXME: THIS RELIES ON THERE BEING TWO DB MESSAGES, INVITE AND GET FRIENDS
+            //  GET_FRIENDS
+            friendManager.update(payload);
+            screenManager.setState(FRIENDS_LIST);
+        }
+        else
+        {
+            // INVITE FRIEND
+            screenManager.splash(INVITE_SENT);
+        }
+        status = HEADERS::DATABASE_SUCCESS;
         break;
     }
     case REGISTRATION:

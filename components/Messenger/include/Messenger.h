@@ -24,6 +24,12 @@ enum REGISTRATION_TYPE
     CONFIRM,
 };
 
+enum DATABASE_REQ_TYPE
+{
+    INVITE,
+    GET_FRIENDS,
+};
+
 enum ATTACK_TYPE
 {
     SOLO,
@@ -43,6 +49,7 @@ public:
     char *build_new_game_msg(void);
     char *build_attack_msg(char r, char c, ATTACK_TYPE type, const char *to);
     char *build_position_ships(void);
+    char *build_db_msg(DATABASE_REQ_TYPE type);
 };
 
 extern Messenger messenger;

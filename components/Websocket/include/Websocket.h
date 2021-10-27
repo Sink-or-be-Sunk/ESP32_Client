@@ -15,6 +15,7 @@
 #include "Messenger.h"
 #include "GameState.h"
 #include "ScreenManager.h"
+#include "FriendManager.h"
 
 // #define CONFIG_WEBSOCKET_URI "ws://sink-or-be-sunk.herokuapp.com"
 

@@ -23,6 +23,7 @@ private:
     int8_t attackSel;            // index of selected element
     ShipPosition ship_layout[4]; // index of ships governed by ship_position_t
 public:
+    // TODO: MOVE COORDS AND BOARDS TO SUBCLASS FOR BETTER ABSTRACTION
     int8_t attackCoords[2] = {0, 0};          // [col, row]
     char attackBoard[BOARD_SIZE];             // board holding your attacks on opponent
     int8_t opponentAttackCoords[2] = {0, 0};  //[col, row]
@@ -33,8 +34,7 @@ public:
     uint16_t board;
     bool myTurn; // 1->mine, 0->theirs
 
-    void
-    init(void);
+    void init(void);
     void setState(game_state_t state);
     void increment_attack(void);
     void decrement_attack(void);

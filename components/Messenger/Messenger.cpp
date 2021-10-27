@@ -4,6 +4,10 @@
 #define REGISTRATION_ENQUEUE_TAG "ENQUEUE"
 #define REGISTRATION_CONFIRM_TAG "CONFIRM"
 
+#define DATABASE_TAG "DATABASE"
+#define DATABASE_INVITE_TAG "INVITE TO GAME"
+#define DATABASE_GET_FRIENDS_TAG "GET FRIENDS"
+
 #define GAME_NEW_GAME_TAG "NEW GAME"
 #define GAME_MAKE_MOVE_TAG "MAKE MOVE"
 #define GAME_POSITION_SHIPS_TAG "POSITION SHIPS"
@@ -318,4 +322,80 @@ char *Messenger::build_position_ships(void)
 
 end:
     return build_game_msg(POSITION_SHIPS, data);
+}
+
+char *Messenger::build_db_msg(DATABASE_REQ_TYPE type)
+{
+    char *string = NULL;   // point to output (built) string
+    cJSON *msg = NULL;     // main json wrapper object
+    cJSON *id = NULL;      // device username
+    cJSON *req = NULL;     // request header
+    cJSON *data = NULL;    // data: request object wrapper
+    cJSON *db_type = NULL; // DATABASE_REQ_TYPE: Database type header
+    cJSON *db_data = NULL; // data for db sub-object
+
+    msg = cJSON_CreateObject();
+    if (msg == NULL)
+    {
+        goto end;
+    }
+
+    id = cJSON_CreateString(settings.username);
+    if (id == NULL)
+    {
+        goto end;
+    }
+    cJSON_AddItemToObject(msg, "id", id);
+
+    req = cJSON_CreateString(DATABASE_TAG);
+    if (req == NULL)
+    {
+        goto end;
+    }
+    cJSON_AddItemToObject(msg, "req", req);
+
+    data = cJSON_CreateObject();
+    if (data == NULL)
+    {
+        goto end;
+    }
+
+    switch (type)
+    {
+    case INVITE:
+    {
+        db_type = cJSON_CreateString(DATABASE_INVITE_TAG);
+
+        db_data = cJSON_CreateString("myfriendid");
+        if (db_data == NULL)
+        {
+            goto end;
+        }
+        cJSON_AddItemToObject(data, "data", db_data);
+
+        break;
+    }
+    case GET_FRIENDS:
+    {
+        db_type = cJSON_CreateString(DATABASE_GET_FRIENDS_TAG);
+        break;
+    }
+    }
+    if (db_type == NULL)
+    {
+        goto end;
+    }
+    cJSON_AddItemToObject(data, "type", db_type);
+
+    cJSON_AddItemToObject(msg, "data", data);
+
+    string = cJSON_Print(msg);
+    if (string == NULL)
+    {
+        fprintf(stderr, "Failed to print obj.\n");
+    }
+
+end:
+    cJSON_Delete(msg);
+    return string;
 }

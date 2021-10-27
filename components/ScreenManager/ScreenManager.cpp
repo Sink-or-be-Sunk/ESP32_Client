@@ -124,6 +124,15 @@ void ScreenManager::render(void)
         display.display2(buff);
         break;
     }
+    case INVITE_SENT:
+    {
+        char buff[17];
+        strncpy(buff, friendManager.getCurDisplayName(), 16);
+        //               "-=-=-=-=-=-=-=-="
+        display.display1("Invite Sent To:");
+        display.display2(buff);
+        break;
+    }
     case OPPONENT_READY_UP:
     {
         //               "-=-=-=-=-=-=-=-="
@@ -182,6 +191,15 @@ void ScreenManager::render(void)
         //               "-=-=-=-=-=-=-=-="
         display.display1("Invite Friend");
         display.display2("Scroll :Down");
+        break;
+    }
+    case FRIENDS_LIST:
+    {
+        char buff[17];
+        strncpy(buff, friendManager.getCurDisplayName(), 16);
+        //               "-=-=-=-=-=-=-=-="
+        display.display1("Select Friend:");
+        display.display2(buff);
         break;
     }
     case ATTACK:
@@ -403,9 +421,14 @@ void ScreenManager::downArrow(void)
         gameState.decrement_attack();
         break;
     }
+    case INVITE_FRIEND:
+    {
+        websocket.send(messenger.build_db_msg(GET_FRIENDS));
+        break;
+    }
     default:
     {
-        printf("Up Arrow Ignored!\n");
+        printf("Down Arrow Ignored!\n");
         break;
     }
     }
@@ -462,7 +485,7 @@ void ScreenManager::enter(void)
             gameState.updateShip(CARRIER, 3, 0, 3, 4);
             websocket.send(messenger.build_position_ships());
             gameState.state = IN_PROGRESS;
-            // this->state = ATTACK;//TODO: CHANGE TO WAITING FOR RESPONSE STATE
+            // this->state = ATTACK; //TODO: CHANGE TO WAITING FOR RESPONSE STATE
             // this->render();
             break;
         }
