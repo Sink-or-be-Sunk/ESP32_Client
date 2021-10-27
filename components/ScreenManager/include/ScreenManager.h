@@ -1,4 +1,9 @@
 #pragma once
+#include "Display.h"
+#include "Websocket.h"
+#include "Messenger.h"
+#include "GameState.h"
+#include "FriendManager.h"
 
 enum SCREEN_STATE
 {
@@ -11,10 +16,11 @@ enum SCREEN_STATE
     REBOOT,
     MOVE_MADE,
     INVITE_SENT,
+    NO_MORE_FRIENDS,
 
     // OPPONENT EVENTS
     OPPONENT_READY_UP,
-    OPPONENT_JOINED_GAME,
+    PLAYER_IN_LOBBY,
 
     // SETUP
     INIT_PAIRING,

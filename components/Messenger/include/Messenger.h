@@ -15,7 +15,8 @@ enum GAME_REQ_TYPE
 {
     NEW_GAME,
     MAKE_MOVE,
-    POSITION_SHIPS
+    POSITION_SHIPS,
+    JOIN_GAME_REQ,
 };
 
 enum REGISTRATION_TYPE
@@ -48,6 +49,7 @@ public:
     char *build_registration_msg(REGISTRATION_TYPE type);
     char *build_new_game_msg(void);
     char *build_attack_msg(char r, char c, ATTACK_TYPE type, const char *to);
+    char *build_join_game_msg(const char *game);
     char *build_position_ships(void);
     char *build_db_msg(DATABASE_REQ_TYPE type);
 };

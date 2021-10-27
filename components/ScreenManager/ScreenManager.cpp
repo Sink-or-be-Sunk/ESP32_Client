@@ -1,8 +1,4 @@
 #include "ScreenManager.h"
-#include "Display.h"
-#include "Websocket.h"
-#include "Messenger.h"
-#include "GameState.h"
 
 ScreenManager screenManager; // singleton instance of class
 
@@ -133,6 +129,13 @@ void ScreenManager::render(void)
         display.display2(buff);
         break;
     }
+    case NO_MORE_FRIENDS:
+    {
+        //               "-=-=-=-=-=-=-=-="
+        display.display1("No More Friends:");
+        display.display2("Please Scroll Up");
+        break;
+    }
     case OPPONENT_READY_UP:
     {
         //               "-=-=-=-=-=-=-=-="
@@ -142,13 +145,13 @@ void ScreenManager::render(void)
         display.display2("Is Ready to Play");
         break;
     }
-    case OPPONENT_JOINED_GAME:
+    case PLAYER_IN_LOBBY:
     {
         //               "-=-=-=-=-=-=-=-="
         char buff[17];
         strncpy(buff, gameState.opponent, 16);
         display.display1(buff);
-        display.display2("Has Joined Game");
+        display.display2("Is In Lobby");
         break;
     }
     case WAITING_PAIRING:
@@ -401,6 +404,38 @@ void ScreenManager::upArrow(void)
     case ATTACK:
     {
         gameState.increment_attack();
+        this->render();
+        break;
+    }
+    case FRIENDS_LIST:
+    {
+        if (friendManager.prev())
+        {
+            this->render();
+        }
+        else
+        {
+            switch (gameState.state)
+            {
+            case SETUP:
+            {
+                // FIND GAME
+                this->setState(FIND_GAME);
+                break;
+            }
+            case LOBBY:
+            {
+                // INVITE FRIEND
+                this->setState(INVITE_FRIEND);
+                break;
+            }
+            default:
+            {
+                printf("Error: Invalid state change from friends list");
+                break;
+            }
+            }
+        }
         break;
     }
     default:
@@ -409,7 +444,6 @@ void ScreenManager::upArrow(void)
         break;
     }
     }
-    this->render();
 }
 
 void ScreenManager::downArrow(void)
@@ -419,11 +453,26 @@ void ScreenManager::downArrow(void)
     case ATTACK:
     {
         gameState.decrement_attack();
+        this->render();
         break;
     }
+    case FIND_GAME:
     case INVITE_FRIEND:
     {
         websocket.send(messenger.build_db_msg(GET_FRIENDS));
+        break;
+    }
+    case FRIENDS_LIST:
+    {
+        if (friendManager.next())
+        {
+            this->render();
+        }
+        else
+        {
+            this->setState(NO_MORE_FRIENDS);
+            break;
+        }
         break;
     }
     default:
@@ -432,7 +481,6 @@ void ScreenManager::downArrow(void)
         break;
     }
     }
-    this->render();
 }
 
 void ScreenManager::enter(void)
@@ -457,14 +505,14 @@ void ScreenManager::enter(void)
         }
         case CREATE_GAME:
         {
-            websocket.send(messenger.build_new_game_msg());
+            websocket.send(messenger.build_join_game_msg(friendManager.getCurUsername()));
             break;
         }
-        // TODO:
-        // case JOIN_GAME:
-        // {
-        //     break;
-        // }
+        case JOIN_GAME:
+        {
+
+            break;
+        }
         default:
         {
             printf("Enter Ignored!\n");

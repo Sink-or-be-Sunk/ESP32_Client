@@ -318,9 +318,9 @@ void Websocket::handle(const char *msg, uint8_t len)
             printf("opponent: \"%s\"\n", opponent->valuestring);
             if (strcmp(JOINED_EMPTY_GAME_TAG, opponent->valuestring))
             {
-                printf("Player Joined Your Game\n");
+                printf("Two players in lobby\n");
                 strncpy(gameState.opponent, opponent->valuestring, SETTING_STR_LEN::USERNAME);
-                screenManager.splash(OPPONENT_JOINED_GAME);
+                screenManager.splash(PLAYER_IN_LOBBY);
             }
             else
             {

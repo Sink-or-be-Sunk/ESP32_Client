@@ -11,6 +11,8 @@
 #define GAME_NEW_GAME_TAG "NEW GAME"
 #define GAME_MAKE_MOVE_TAG "MAKE MOVE"
 #define GAME_POSITION_SHIPS_TAG "POSITION SHIPS"
+#define GAME_JOIN_GAME_TAG "JOIN GAME"
+
 #define GAME_ATTACK_SOLO_TAG "SOLO"
 
 Messenger messenger; // singleton instance of class
@@ -156,6 +158,12 @@ char *Messenger::build_game_msg(GAME_REQ_TYPE type, cJSON *data)
         cJSON_AddItemToObject(msg, "data", data);
         break;
     }
+    case JOIN_GAME_REQ:
+    {
+        req = cJSON_CreateString(GAME_JOIN_GAME_TAG);
+        cJSON_AddItemToObject(msg, "data", data);
+        break;
+    }
     }
     if (req == NULL)
     {
@@ -230,6 +238,27 @@ end:
     return build_game_msg(MAKE_MOVE, data);
 }
 
+char *Messenger::build_join_game_msg(const char *game)
+{
+    cJSON *data = NULL;      // data: request object wrapper
+    cJSON *json_game = NULL; // game
+
+    data = cJSON_CreateObject();
+    if (data == NULL)
+    {
+        goto end;
+    }
+
+    json_game = cJSON_CreateString(game);
+    if (json_game == NULL)
+    {
+        goto end;
+    }
+    cJSON_AddItemToObject(data, "data", json_game);
+
+end:
+    return build_game_msg(JOIN_GAME_REQ, data);
+}
 static cJSON *build_one_ship_position(const char *t, uint8_t r, uint8_t c)
 {
     cJSON *pos = NULL;  // position object
