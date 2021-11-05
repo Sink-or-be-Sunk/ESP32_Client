@@ -12,6 +12,7 @@
 #define GAME_MAKE_MOVE_TAG "MAKE MOVE"
 #define GAME_POSITION_SHIPS_TAG "POSITION SHIPS"
 #define GAME_JOIN_GAME_TAG "JOIN GAME"
+#define DEVICE_CONNECTED_TAG "CONNECTED"
 
 #define GAME_ATTACK_SOLO_TAG "SOLO"
 
@@ -106,6 +107,44 @@ char *Messenger::build_registration_msg(REGISTRATION_TYPE reg_type)
     cJSON_AddItemToObject(data, "ssid", ssid);
 
     cJSON_AddItemToObject(msg, "data", data);
+
+    string = cJSON_Print(msg);
+    if (string == NULL)
+    {
+        fprintf(stderr, "Failed to print obj.\n");
+    }
+
+end:
+    cJSON_Delete(msg);
+    return string;
+}
+
+char *Messenger::build_connected_msg()
+{
+    char *string = NULL; // point to output (built) string
+    cJSON *msg = NULL;   // main json wrapper object
+    cJSON *id = NULL;    // device username
+    cJSON *req = NULL;   // request header
+
+    msg = cJSON_CreateObject();
+    if (msg == NULL)
+    {
+        goto end;
+    }
+
+    id = cJSON_CreateString(settings.username);
+    if (id == NULL)
+    {
+        goto end;
+    }
+    cJSON_AddItemToObject(msg, "id", id);
+
+    req = cJSON_CreateString(DEVICE_CONNECTED_TAG);
+    if (req == NULL)
+    {
+        goto end;
+    }
+    cJSON_AddItemToObject(msg, "req", req);
 
     string = cJSON_Print(msg);
     if (string == NULL)

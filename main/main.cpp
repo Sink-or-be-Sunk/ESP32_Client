@@ -46,15 +46,14 @@ extern "C" void app_main(void)
     /* Initialize the event loop */
     ESP_ERROR_CHECK(esp_event_loop_create_default());
 
-    wifi_manager_init();
-
-    /* Start Websocket */
-    websocket.start();
-
     gameState.init();
 
     ledManager.init();
     button_manager_init();
+
+    wifi_manager_init();
+
+    websocket.start();
 
     screenManager.splash(HOME, CREATE_GAME);
 

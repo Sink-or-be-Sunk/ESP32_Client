@@ -5,12 +5,11 @@ LEDManager ledManager;
 static const char *TAG = "LED";
 
 #define LED_PIN GPIO_NUM_17
-#define LED_COUNT 1
 
 #define RMT_TX_CHANNEL RMT_CHANNEL_0
 #define EXAMPLE_CHASE_SPEED_MS (10)
 
-#define NUMBER_OF_LEDS 1
+#define NUMBER_OF_LEDS 128
 
 led_strip_t *strip;
 
@@ -78,22 +77,47 @@ static void led_task(void *arg)
     {
         for (int i = 0; i < 360; i++)
         {
-            hue = (uint16_t)(i);
-            led_strip_hsv2rgb(hue, 100, 100, &red, &green, &blue);
-            // Write RGB values to strip driver
-            ESP_ERROR_CHECK(strip->set_pixel(strip, 0, red, green, blue));
+            for (int j = 0; j < NUMBER_OF_LEDS; j++)
+            {
+                hue = (uint16_t)(i + j * 20);
+                led_strip_hsv2rgb(hue, 100, 100, &red, &green, &blue);
+                // Write RGB values to strip driver
+                ESP_ERROR_CHECK(strip->set_pixel(strip, j, red, green, blue));
+            }
 
             // Flush RGB values to LEDs
             ESP_ERROR_CHECK(strip->refresh(strip, 100));
             vTaskDelay(pdMS_TO_TICKS(EXAMPLE_CHASE_SPEED_MS));
         }
-        // Write RGB values to strip driver
-        ESP_ERROR_CHECK(strip->set_pixel(strip, 0, 255, 255, 255));
+        // // Write RGB values to strip driver
+        // ESP_ERROR_CHECK(strip->set_pixel(strip, 0, 255, 255, 255));
 
-        // Flush RGB values to LEDs
-        ESP_ERROR_CHECK(strip->refresh(strip, 100));
-        vTaskDelay(pdMS_TO_TICKS(1000));
+        // // Flush RGB values to LEDs
+        // ESP_ERROR_CHECK(strip->refresh(strip, 100));
+        // vTaskDelay(pdMS_TO_TICKS(1000));
     }
+    // uint16_t start_rgb = 0;
+
+    // while (true)
+    // {
+    //     for (int i = 0; i < 3; i++)
+    //     {
+    //         for (int j = i; j < NUMBER_OF_LEDS; j += 3)
+    //         {
+    //             // Build RGB values
+    //             hue = j * 360 / NUMBER_OF_LEDS + start_rgb;
+    //             led_strip_hsv2rgb(hue, 100, 100, &red, &green, &blue);
+    //             // Write RGB values to strip driver
+    //             ESP_ERROR_CHECK(strip->set_pixel(strip, j, red, green, blue));
+    //         }
+    //         // Flush RGB values to LEDs
+    //         ESP_ERROR_CHECK(strip->refresh(strip, 100));
+    //         vTaskDelay(pdMS_TO_TICKS(EXAMPLE_CHASE_SPEED_MS));
+    //         strip->clear(strip, 50);
+    //         vTaskDelay(pdMS_TO_TICKS(EXAMPLE_CHASE_SPEED_MS));
+    //     }
+    //     start_rgb += 60;
+    // }
 }
 
 void LEDManager::init(void)
@@ -107,7 +131,7 @@ void LEDManager::init(void)
     ESP_ERROR_CHECK(rmt_driver_install(config.channel, 0, 0));
 
     // install ws2812 driver
-    led_strip_config_t strip_config = LED_STRIP_DEFAULT_CONFIG(LED_PIN, (led_strip_dev_t)config.channel);
+    led_strip_config_t strip_config = LED_STRIP_DEFAULT_CONFIG(NUMBER_OF_LEDS, (led_strip_dev_t)config.channel);
     strip = led_strip_new_rmt_ws2812(&strip_config);
     if (!strip)
     {
