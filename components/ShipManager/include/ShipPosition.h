@@ -2,6 +2,9 @@
 
 #include <stdint.h>
 
+/**
+ * Ship Position and Index in ShipManager Array
+ */
 enum ship_position_t
 {
     INVALID = -1,

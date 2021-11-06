@@ -70,53 +70,25 @@ void ScreenManager::render(void)
     }
     case MOVE_MADE:
     {
-        char *boardPtr;
         int8_t *coordsPtr;
         if (gameState.myTurn) // NOTE: These are flipped because after I make a move
         // it will no longer be my turn, i.e. myTurn is false
         {
             //               "-=-=-=-=-=-=-=-="
             display.display1("Attack Made At");
-            boardPtr = gameState.positionBoard;
             coordsPtr = gameState.opponentAttackCoords;
         }
         else
         {
             //               "-=-=-=-=-=-=-=-="
             display.display1("Your Move Result");
-            boardPtr = gameState.attackBoard;
             coordsPtr = gameState.attackCoords;
         }
 
         char buff[17];
-        char result[5];
-        char res = boardPtr[coordsPtr[0] * BOARD_WIDTH + coordsPtr[1]];
-        printf("c: %d, r: %d, res: %c\n", coordsPtr[0], coordsPtr[1], res);
-        switch (res)
-        {
-        case RESULT_SUNK:
-        {
-            strncpy(result, "SUNK", 5);
-            break;
-        }
-        case RESULT_HIT:
-        {
-            strncpy(result, "HIT", 5);
-            break;
-        }
-        case RESULT_MISS:
-        {
-            strncpy(result, "MISS", 5);
-            break;
-        }
-        default:
-        {
-            strncpy(result, "ERR", 5);
-            break;
-        }
-        }
+        printf("c: %d, r: %d, res: %s\n", coordsPtr[0], coordsPtr[1], gameState.lastMoveRes);
         //                 "-=-=-=-=-=-=-=-="
-        snprintf(buff, 16, "%s at c%c, r%c", result, coordsPtr[0] + 'A', coordsPtr[1] + '1');
+        snprintf(buff, 16, "%s at c%c, r%c", gameState.lastMoveRes, coordsPtr[0] + 'A', coordsPtr[1] + '1');
         display.display2(buff);
         break;
     }
@@ -526,10 +498,10 @@ void ScreenManager::enter(void)
         {
         case READY_UP_SHIPS:
         {
-            gameState.updateShip(PATROL, 0, 0, 0, 1);
-            gameState.updateShip(SUBMARINE, 1, 0, 1, 2);
-            gameState.updateShip(BATTLESHIP, 2, 0, 2, 3);
-            gameState.updateShip(CARRIER, 3, 0, 3, 4);
+            // gameState.updateShip(PATROL, 0, 0, 0, 1);
+            // gameState.updateShip(SUBMARINE, 1, 0, 1, 2);
+            // gameState.updateShip(BATTLESHIP, 2, 0, 2, 3);
+            // gameState.updateShip(CARRIER, 3, 0, 3, 4);
             websocket.send(messenger.build_position_ships());
             gameState.state = IN_PROGRESS;
             // this->state = ATTACK; //TODO: CHANGE TO WAITING FOR RESPONSE STATE

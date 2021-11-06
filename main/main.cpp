@@ -27,6 +27,7 @@
 #include "ScreenManager.h"
 #include "LEDManager.h"
 #include "GameState.h"
+#include "ShipManager.h"
 
 static const char *TAG = "MAIN";
 
@@ -44,14 +45,16 @@ extern "C" void app_main(void)
     settings.init();
 
     /* Initialize the event loop */
-    ESP_ERROR_CHECK(esp_event_loop_create_default());
-
-    gameState.init();
+    ESP_ERROR_CHECK(esp_event_loop_create_default()); // FIXME: IS THIS NEEDED
 
     ledManager.init();
     button_manager_init();
 
     wifi_manager_init();
+
+    gameState.init();
+
+    shipManager.init();
 
     websocket.start();
 

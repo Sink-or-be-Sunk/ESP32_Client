@@ -344,7 +344,7 @@ char *Messenger::build_position_ships(void)
 
     for (int i = PATROL; i <= CARRIER; i++)
     {
-        gameState.getShip((ship_position_t)i, &r1, &c1, &r2, &c2);
+        shipManager.getShip((ship_position_t)i, &r1, &c1, &r2, &c2);
 
         for (int j = 0; j < 2; j++)
         {

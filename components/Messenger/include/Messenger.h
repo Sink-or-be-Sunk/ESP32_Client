@@ -6,6 +6,7 @@
 #include <esp_wifi.h>
 #include "Settings.h"
 #include "GameState.h"
+#include "ShipManager.h"
 
 /** This comes for ESP IDF definitions*/
 #define SSID_MAX_LEN 33

@@ -72,20 +72,6 @@ char GameState::get_attack_row_tag(void)
     return (this->attackSel == 1) ? 'R' : 'r';
 }
 
-void GameState::updateShip(ship_position_t type, uint8_t r1, uint8_t c1, uint8_t r2, uint8_t c2)
-{
-    this->ship_layout[type].position(r1, c1, r2, c2);
-}
-
-void GameState::getShip(ship_position_t type, uint8_t *r1, uint8_t *c1, uint8_t *r2, uint8_t *c2)
-{
-    ShipPosition pos = this->ship_layout[type];
-    *r1 = pos.front_r;
-    *c1 = pos.front_c;
-    *r2 = pos.back_r;
-    *c2 = pos.back_c;
-}
-
 void GameState::moveReceived(int c, int r, char *to, char result)
 {
     // TODO: NEED TO ADD SOMETHING HERE FOR DEALING WITH SUNK SHIPS
@@ -95,8 +81,7 @@ void GameState::moveReceived(int c, int r, char *to, char result)
         // confirming move you just made
         printf("Attack Board Updated\n");
 
-        this->attackBoard[c * BOARD_WIDTH + r] = result;
-        this->attackCoords[0] = c; // TODO: THIS IS PROBABLY REDUNDANT
+        this->attackCoords[0] = c; // TODO: THIS IS PROBABLY REDUNDANT, REMOVE
         this->attackCoords[1] = r;
         this->myTurn = false;
     }
@@ -107,7 +92,6 @@ void GameState::moveReceived(int c, int r, char *to, char result)
 
         this->opponentAttackCoords[0] = c;
         this->opponentAttackCoords[1] = r;
-        this->positionBoard[c * BOARD_WIDTH + r] = result;
         this->myTurn = true;
     }
 }
