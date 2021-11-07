@@ -20,6 +20,7 @@ private:
     ship_position_t type = INVALID;
 
 public:
+    bool isReady = 0;
     uint8_t front_r;
     uint8_t front_c;
     uint8_t back_r;

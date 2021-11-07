@@ -63,11 +63,12 @@ bool ShipManager::addPosition(int row, int col)
             ESP_LOGE(TAG, "Invalid ship size detected!");
             return false;
         }
-
         this->ships[dist].front_r = row;
         this->ships[dist].back_r = prevRow;
         this->ships[dist].front_c = col;
         this->ships[dist].back_r = prevCol;
+        this->ships[dist].isReady = true;
+
         return true;
     }
     else
@@ -164,4 +165,16 @@ void ShipManager::getShip(ship_position_t type, uint8_t *r1, uint8_t *c1, uint8_
     *c1 = pos.front_c;
     *r2 = pos.back_r;
     *c2 = pos.back_c;
+}
+
+bool ShipManager::isReady()
+{
+    for (int i = PATROL; i < CARRIER; i++)
+    {
+        if (!shipManager.ships[i].isReady)
+        {
+            return false;
+        }
+    }
+    return true;
 }

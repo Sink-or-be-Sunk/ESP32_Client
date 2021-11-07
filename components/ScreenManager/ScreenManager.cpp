@@ -108,6 +108,13 @@ void ScreenManager::render(void)
         display.display2("Please Scroll Up");
         break;
     }
+    case INVALID_SHIP_LAYOUT:
+    {
+        //               "-=-=-=-=-=-=-=-="
+        display.display1("Invalid Ship");
+        display.display2("Layout");
+        break;
+    }
     case OPPONENT_READY_UP:
     {
         //               "-=-=-=-=-=-=-=-="
@@ -502,10 +509,15 @@ void ScreenManager::enter(void)
             // gameState.updateShip(SUBMARINE, 1, 0, 1, 2);
             // gameState.updateShip(BATTLESHIP, 2, 0, 2, 3);
             // gameState.updateShip(CARRIER, 3, 0, 3, 4);
+            if (!shipManager.isReady())
+            {
+                this->splash(INVALID_SHIP_LAYOUT);
+                break;
+            }
+
             websocket.send(messenger.build_position_ships());
             gameState.state = IN_PROGRESS;
-            // this->state = ATTACK; //TODO: CHANGE TO WAITING FOR RESPONSE STATE
-            // this->render();
+            // TODO: NO IDEA IF I NEED TO DO SOMETHING ELSE HERE
             break;
         }
         case FRIENDS_LIST:
