@@ -57,6 +57,7 @@ public:
     SCREEN_STATE getState(void);
     void splash(SCREEN_STATE state);
     void splash(SCREEN_STATE splashState, SCREEN_STATE returnState);
+    void conditionalRender(SCREEN_STATE state);
 };
 
 extern ScreenManager screenManager;

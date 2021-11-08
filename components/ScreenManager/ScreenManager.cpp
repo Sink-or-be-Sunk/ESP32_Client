@@ -19,6 +19,14 @@ void ScreenManager::init(void)
     this->render();
 }
 
+void ScreenManager::conditionalRender(SCREEN_STATE state)
+{
+    if (this->state == state)
+    {
+        this->render();
+    }
+}
+
 void ScreenManager::render(void)
 {
     display.clear();
@@ -156,9 +164,20 @@ void ScreenManager::render(void)
     }
     case READY_UP_SHIPS:
     {
-        //               "-=-=-=-=-=-=-=-="
-        display.display1("Ready Up");
-        display.display2("Press Enter");
+        if (shipManager.isReady())
+        {
+            //               "-=-=-=-=-=-=-=-="
+            display.display1("Ready Up");
+            display.display2("Press Enter");
+        }
+        else
+        {
+            display.display1("Position Ships");
+            char buff[17];
+            //                           "-=-=-=-=-=-=-=-="
+            snprintf(buff, sizeof(buff), "%d Ships Left", shipManager.shipsRemaining());
+            display.display2(buff);
+        }
         break;
     }
     case INVITE_FRIEND:
@@ -505,19 +524,15 @@ void ScreenManager::enter(void)
         {
         case READY_UP_SHIPS:
         {
-            // gameState.updateShip(PATROL, 0, 0, 0, 1);
-            // gameState.updateShip(SUBMARINE, 1, 0, 1, 2);
-            // gameState.updateShip(BATTLESHIP, 2, 0, 2, 3);
-            // gameState.updateShip(CARRIER, 3, 0, 3, 4);
-            if (!shipManager.isReady())
+            if (shipManager.isReady())
+            {
+                websocket.send(messenger.build_position_ships());
+                gameState.state = IN_PROGRESS;
+            }
+            else
             {
                 this->splash(INVALID_SHIP_LAYOUT);
-                break;
             }
-
-            websocket.send(messenger.build_position_ships());
-            gameState.state = IN_PROGRESS;
-            // TODO: NO IDEA IF I NEED TO DO SOMETHING ELSE HERE
             break;
         }
         case FRIENDS_LIST:

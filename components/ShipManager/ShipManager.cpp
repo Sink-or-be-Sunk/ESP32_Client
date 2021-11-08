@@ -2,17 +2,21 @@
 
 static const char *TAG = "SHIPS";
 
-#define RESCAN_DELAY_MS 100
+// #define RESCAN_DELAY_MS 100
+#define RESCAN_DELAY_MS 2000
 
 #define BOARD_WIDTH 8
 
 #define MUX_ROW_SEL_0 GPIO_NUM_18
 #define MUX_ROW_SEL_1 GPIO_NUM_19
 #define MUX_ROW_SEL_2 GPIO_NUM_21
-#define MUX_COL_SEL_0 GPIO_NUM_32
+// #define MUX_COL_SEL_0 GPIO_NUM_32
+#define MUX_COL_SEL_0 GPIO_NUM_30
 #define MUX_COL_SEL_1 GPIO_NUM_26
-#define MUX_COL_SEL_2 GPIO_NUM_27
-#define BOAT_INPUT GPIO_NUM_5
+// #define MUX_COL_SEL_2 GPIO_NUM_27
+#define MUX_COL_SEL_2 GPIO_NUM_31
+// #define BOAT_INPUT GPIO_NUM_5
+#define BOAT_INPUT GPIO_NUM_13
 
 #define GPIO_BOAT_INPUT_MASK (1ULL << BOAT_INPUT)
 
@@ -69,6 +73,8 @@ bool ShipManager::addPosition(int row, int col)
         this->ships[dist].back_r = prevCol;
         this->ships[dist].isReady = true;
 
+        screenManager.conditionalRender(READY_UP_SHIPS); // re-render READY_UP_SHIPS screen
+
         return true;
     }
     else
@@ -111,7 +117,7 @@ static void ship_detect_task(void *args)
                     {
                         // TODO: HANDLE ERRORS HERE
                     }
-
+                    ESP_LOGI(TAG, "Boat Detected");
                     shipManager.filled |= mask;
                 }
 
@@ -169,12 +175,22 @@ void ShipManager::getShip(ship_position_t type, uint8_t *r1, uint8_t *c1, uint8_
 
 bool ShipManager::isReady()
 {
-    for (int i = PATROL; i < CARRIER; i++)
+    return this->shipsRemaining() == 0;
+}
+
+int ShipManager::shipsRemaining()
+{
+    int count = 0;
+    for (int i = PATROL; i <= CARRIER; i++)
     {
         if (!shipManager.ships[i].isReady)
         {
-            return false;
+            count++;
+        }
+        else
+        {
+            printf("ship ready: %d\n", i);
         }
     }
-    return true;
+    return count;
 }

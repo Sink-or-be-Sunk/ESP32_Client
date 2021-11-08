@@ -8,6 +8,8 @@
 #include "esp_log.h"
 #include "driver/gpio.h"
 
+#include "ScreenManager.h"
+
 #define NUM_SHIPS 4
 
 class ShipManager
@@ -26,6 +28,7 @@ public:
     void updateShip(ship_position_t type, uint8_t r1, uint8_t c1, uint8_t r2, uint8_t c2);
     void getShip(ship_position_t type, uint8_t *r1, uint8_t *c1, uint8_t *r2, uint8_t *c2);
     bool isReady();
+    int shipsRemaining();
 };
 
 extern ShipManager shipManager;
