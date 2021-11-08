@@ -7,14 +7,6 @@
 #include "ScreenManager.h"
 #include "LEDManager.h"
 
-// #define ROW_1_PIN GPIO_NUM_19
-// #define ROW_2_PIN GPIO_NUM_18
-// #define ROW_3_PIN GPIO_NUM_5
-// #define ROW_4_PIN GPIO_NUM_17
-// #define COL_1_PIN GPIO_NUM_16
-// #define COL_2_PIN GPIO_NUM_4
-// #define COL_3_PIN GPIO_NUM_0
-// #define COL_4_PIN GPIO_NUM_2
 #define ROW_1_PIN GPIO_NUM_15
 #define ROW_2_PIN GPIO_NUM_33
 #define ROW_3_PIN GPIO_NUM_27
@@ -22,7 +14,7 @@
 #define COL_1_PIN GPIO_NUM_23
 #define COL_2_PIN GPIO_NUM_22
 #define COL_3_PIN GPIO_NUM_14
-#define COL_4_PIN GPIO_NUM_32
+#define COL_4_PIN GPIO_NUM_39
 
 #define GPIO_ROW_MASK ((1ULL << ROW_1_PIN) | \
                        (1ULL << ROW_2_PIN) | \
@@ -46,7 +38,7 @@ static void handle_button_event(int row, int col)
     printf("key: %c\n", letter);
     switch (letter)
     {
-    case '6':
+    case '9':
     {
         screenManager.upArrow();
         break;
@@ -56,32 +48,32 @@ static void handle_button_event(int row, int col)
         screenManager.downArrow();
         break;
     }
-    case 'C':
+    case 'D':
     {
         screenManager.rightArrow();
         break;
     }
-    case '8':
+    case '0':
     {
         screenManager.leftArrow();
         break;
     }
-    case '9':
+    case '*':
     {
         screenManager.enter();
         break;
     }
-    case '0':
+    case '8':
     {
         screenManager.leftPage();
         break;
     }
-    case 'D':
+    case 'C':
     {
         screenManager.rightPage();
         break;
     }
-    case 'B':
+    case '7':
     {
         screenManager.back();
         break;

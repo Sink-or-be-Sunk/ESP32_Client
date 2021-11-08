@@ -7,16 +7,13 @@ static const char *TAG = "SHIPS";
 
 #define BOARD_WIDTH 8
 
-#define MUX_ROW_SEL_0 GPIO_NUM_18
-#define MUX_ROW_SEL_1 GPIO_NUM_19
-#define MUX_ROW_SEL_2 GPIO_NUM_21
-// #define MUX_COL_SEL_0 GPIO_NUM_32
-#define MUX_COL_SEL_0 GPIO_NUM_30
-#define MUX_COL_SEL_1 GPIO_NUM_26
-// #define MUX_COL_SEL_2 GPIO_NUM_27
-#define MUX_COL_SEL_2 GPIO_NUM_31
-// #define BOAT_INPUT GPIO_NUM_5
-#define BOAT_INPUT GPIO_NUM_13
+#define MUX_ROW_SEL_0 GPIO_NUM_21
+#define MUX_ROW_SEL_1 GPIO_NUM_26
+#define MUX_ROW_SEL_2 GPIO_NUM_25
+#define MUX_COL_SEL_0 GPIO_NUM_4
+#define MUX_COL_SEL_1 GPIO_NUM_13
+#define MUX_COL_SEL_2 GPIO_NUM_32
+#define BOAT_INPUT GPIO_NUM_34
 
 #define GPIO_BOAT_INPUT_MASK (1ULL << BOAT_INPUT)
 
@@ -107,9 +104,9 @@ static void ship_detect_task(void *args)
                     continue; // already filled
                 }
 
-                gpio_set_level(MUX_ROW_SEL_0, c & 0x1);
-                gpio_set_level(MUX_ROW_SEL_1, c & 0x2);
-                gpio_set_level(MUX_ROW_SEL_2, c & 0x4);
+                gpio_set_level(MUX_COL_SEL_0, c & 0x1);
+                gpio_set_level(MUX_COL_SEL_1, c & 0x2);
+                gpio_set_level(MUX_COL_SEL_2, c & 0x4);
 
                 if (gpio_get_level(BOAT_INPUT))
                 {
