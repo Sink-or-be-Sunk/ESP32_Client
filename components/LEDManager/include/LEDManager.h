@@ -16,6 +16,7 @@ public:
     void init(void);
     void start(void);
     void pause(void);
+    void update(const char *str);
 };
 
 extern LEDManager ledManager;

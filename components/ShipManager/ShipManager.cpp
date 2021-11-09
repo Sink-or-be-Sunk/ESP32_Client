@@ -26,27 +26,29 @@ static const char *TAG = "SHIPS";
 
 ShipManager shipManager; // singleton instance of class
 
+int ship = 0; // FIXME: REMOVE THIS, FOR DEBUGGING ONLY
+
 bool ShipManager::addPosition(int row, int col)
 {
     if (this->fullShip)
     {
         // have two positions, detect ships
-        int rowInLine = row - prevRow;
-        int colInLine = col - prevCol;
+        int rowInLine = row - this->prevRow;
+        int colInLine = col - this->prevCol;
         int dist;
         if (rowInLine == 0)
         {
             // vertical boat
-            dist = col - prevCol;
+            dist = col - this->prevCol;
             if (dist < 0)
             {
                 dist *= -1;
             }
         }
-        else if (colInLine)
+        else if (colInLine == 0)
         {
             // horizontal boat
-            dist = row - prevRow;
+            dist = row - this->prevRow;
             if (dist < 0)
             {
                 dist *= -1;
@@ -58,17 +60,28 @@ bool ShipManager::addPosition(int row, int col)
             return false;
         }
 
-        dist -= 2; // normalize with ship_position_t enum
+        dist -= 1; // normalize with ship_position_t enum
         if (dist > CARRIER || dist < PATROL)
         {
             ESP_LOGE(TAG, "Invalid ship size detected!");
             return false;
         }
+        if (this->ships[dist].isReady)
+        {
+            ESP_LOGE(TAG, "Repeat of ship shize detected: %d!", dist);
+            this->prevCol = 0;
+            this->prevRow = ship;
+            ESP_LOGE(TAG, "Setting: c: %d, r: %d", prevCol, prevRow);
+            return false;
+        }
         this->ships[dist].front_r = row;
-        this->ships[dist].back_r = prevRow;
+        this->ships[dist].back_r = this->prevRow;
         this->ships[dist].front_c = col;
-        this->ships[dist].back_r = prevCol;
+        this->ships[dist].back_c = this->prevCol;
         this->ships[dist].isReady = true;
+        this->fullShip = false;
+        ship++;
+        ESP_LOGI(TAG, "Ship Added: %d", dist);
 
         screenManager.conditionalRender(READY_UP_SHIPS); // re-render READY_UP_SHIPS screen
 
@@ -110,11 +123,11 @@ static void ship_detect_task(void *args)
 
                 if (gpio_get_level(BOAT_INPUT))
                 {
+                    ESP_LOGI(TAG, "Position Detected: (c:%d, r:%d)", c, r);
                     if (!shipManager.addPosition(r, c))
                     {
-                        // TODO: HANDLE ERRORS HERE
+                        // FIXME: ACTUALLY HANDLE ERRORS HERE
                     }
-                    ESP_LOGI(TAG, "Boat Detected");
                     shipManager.filled |= mask;
                 }
 

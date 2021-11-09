@@ -68,6 +68,7 @@ enum HEADERS
     POSITIONED_SHIPS,
     INVALID_LAYOUT,
     DATABASE_SUCCESS,
+    BOARD_UPDATE,
     // GAME_TYPE_APPROVED, //TODO: ADD THESE BACK IF/WHEN WE MAKE MULTIPLE GAME TYPES
     // INVALID_GAME_TYPE,
 
@@ -87,6 +88,7 @@ static void header_map_init()
     header_map["JOINED GAME"] = JOINED_GAME;
     header_map["MADE MOVE"] = MOVE_RESULT;
     header_map["DATABASE SUCCESS"] = DATABASE_SUCCESS;
+    header_map["BOARD UPDATE"] = BOARD_UPDATE;
 }
 
 void Websocket::start(void)
@@ -196,6 +198,17 @@ void Websocket::handle(const char *msg, uint8_t len)
             screenManager.splash(INVITE_SENT);
         }
         status = HEADERS::DATABASE_SUCCESS;
+        break;
+    }
+    case BOARD_UPDATE:
+    {
+        if (!cJSON_IsString(meta) || (meta->valuestring == NULL))
+        {
+            status = -1 * HEADERS::BOARD_UPDATE;
+            goto end;
+        }
+
+        ledManager.update(meta->valuestring);
         break;
     }
     case REGISTRATION:

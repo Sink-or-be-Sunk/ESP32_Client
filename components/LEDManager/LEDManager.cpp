@@ -161,3 +161,41 @@ void LEDManager::pause(void)
     // Clear LED strip (turn off all LEDs)
     ESP_ERROR_CHECK(strip->clear(strip, 100));
 }
+
+void LEDManager::update(const char *str)
+{
+    for (int i = 0; i < NUMBER_OF_LEDS; i++)
+    {
+        switch (str[i])
+        {
+        case 'E':
+        {
+            ESP_ERROR_CHECK(strip->set_pixel(strip, i, 0, 0, 0));
+            break;
+        }
+        case 'F':
+        {
+            ESP_ERROR_CHECK(strip->set_pixel(strip, i, 0, 0xff, 0));
+            break;
+        }
+        case 'H':
+        {
+            ESP_ERROR_CHECK(strip->set_pixel(strip, i, 0xff, 0, 0));
+            break;
+        }
+        case 'M':
+        {
+            ESP_ERROR_CHECK(strip->set_pixel(strip, i, 0xff, 0xff, 0xff));
+            break;
+        }
+        default:
+        {
+            ESP_LOGE(TAG, "Invalid Board Position: %c", str[i]);
+            break;
+        }
+        }
+    }
+
+    // Flush RGB values to LEDs
+    ESP_ERROR_CHECK(strip->refresh(strip, 100));
+}
