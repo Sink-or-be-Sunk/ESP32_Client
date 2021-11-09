@@ -9,6 +9,10 @@
 #include "esp_event.h"
 #include "esp_system.h"
 
+#include <freertos/FreeRTOS.h>
+// #include <freertos/queue.h>
+#include <freertos/task.h>
+
 #include <wifi_provisioning/manager.h>
 #include <wifi_provisioning/scheme_ble.h>
 

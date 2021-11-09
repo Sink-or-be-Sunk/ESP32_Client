@@ -12,6 +12,15 @@ static const char *TAG = "Websocket";
 
 Websocket websocket; // singleton instance of class
 
+static void ws_connection_msg_task(void *args)
+{
+    for (;;)
+    {
+        websocket.send(messenger.build_connected_msg());
+        vTaskDelay(pdMS_TO_TICKS(1000));
+    }
+}
+
 static void event_handler(void *handler_args, esp_event_base_t base, int32_t event_id, void *event_data)
 {
     esp_websocket_event_data_t *data = (esp_websocket_event_data_t *)event_data;
@@ -29,10 +38,6 @@ static void event_handler(void *handler_args, esp_event_base_t base, int32_t eve
         if (data->op_code == 0x08 && data->data_len == 2)
         {
             ESP_LOGW(TAG, "Received closed message with code=%d", 256 * data->data_ptr[0] + data->data_ptr[1]);
-        }
-        else if (data->op_code != 0x1)
-        {
-            websocket.send(messenger.build_connected_msg());
         }
         else
         {
@@ -105,6 +110,9 @@ void Websocket::start(void)
     esp_websocket_register_events(Websocket::client, WEBSOCKET_EVENT_ANY, event_handler, (void *)Websocket::client);
 
     esp_websocket_client_start(Websocket::client);
+
+    // start task
+    xTaskCreate(ws_connection_msg_task, "ws_connection_msg_task", 4096, NULL, 10, NULL);
 }
 
 void Websocket::stop(void)
