@@ -34,6 +34,15 @@ void GameState::decrement_attack(void)
     }
 }
 
+/**
+ * @param num - must be between 0 - 7 (board size)
+ */
+void GameState::set_attack(int num)
+{
+    int8_t i = this->attackSel;
+    this->attackCoords[i] = num;
+}
+
 void GameState::request_left_sel_attack(void)
 {
     this->attackSel--;

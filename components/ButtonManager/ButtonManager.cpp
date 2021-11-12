@@ -88,6 +88,36 @@ static void handle_button_event(int row, int col)
         ledManager.pause();
         break;
     }
+    case '3':
+    {
+        screenManager.press(2); // zero indexed row/col
+        break;
+    }
+    case 'A':
+    {
+        screenManager.press(3); // zero indexed row/col
+        break;
+    }
+    case '4':
+    {
+        screenManager.press(4); // zero indexed row/col
+        break;
+    }
+    case '5':
+    {
+        screenManager.press(5); // zero indexed row/col
+        break;
+    }
+    case '6':
+    {
+        screenManager.press(6); // zero indexed row/col
+        break;
+    }
+    case 'B':
+    {
+        screenManager.press(7); // zero indexed row/col
+        break;
+    }
     }
 }
 

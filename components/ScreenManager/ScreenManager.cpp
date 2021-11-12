@@ -569,6 +569,24 @@ void ScreenManager::enter(void)
     }
 }
 
+void ScreenManager::press(int num)
+{
+    switch (this->state)
+    {
+    case ATTACK:
+    {
+        gameState.set_attack(num);
+        this->render();
+        break;
+    }
+    default:
+    {
+        printf("Key %c Ignored!\n", num);
+        break;
+    }
+    }
+}
+
 void ScreenManager::back(void)
 {
     switch (gameState.state)

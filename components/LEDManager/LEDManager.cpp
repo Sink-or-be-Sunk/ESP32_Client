@@ -89,39 +89,12 @@ static void led_task(void *arg)
             ESP_ERROR_CHECK(strip->refresh(strip, 100));
             vTaskDelay(pdMS_TO_TICKS(EXAMPLE_CHASE_SPEED_MS));
         }
-        // // Write RGB values to strip driver
-        // ESP_ERROR_CHECK(strip->set_pixel(strip, 0, 255, 255, 255));
-
-        // // Flush RGB values to LEDs
-        // ESP_ERROR_CHECK(strip->refresh(strip, 100));
-        // vTaskDelay(pdMS_TO_TICKS(1000));
     }
-    // uint16_t start_rgb = 0;
-
-    // while (true)
-    // {
-    //     for (int i = 0; i < 3; i++)
-    //     {
-    //         for (int j = i; j < NUMBER_OF_LEDS; j += 3)
-    //         {
-    //             // Build RGB values
-    //             hue = j * 360 / NUMBER_OF_LEDS + start_rgb;
-    //             led_strip_hsv2rgb(hue, 100, 100, &red, &green, &blue);
-    //             // Write RGB values to strip driver
-    //             ESP_ERROR_CHECK(strip->set_pixel(strip, j, red, green, blue));
-    //         }
-    //         // Flush RGB values to LEDs
-    //         ESP_ERROR_CHECK(strip->refresh(strip, 100));
-    //         vTaskDelay(pdMS_TO_TICKS(EXAMPLE_CHASE_SPEED_MS));
-    //         strip->clear(strip, 50);
-    //         vTaskDelay(pdMS_TO_TICKS(EXAMPLE_CHASE_SPEED_MS));
-    //     }
-    //     start_rgb += 60;
-    // }
 }
 
 void LEDManager::init(void)
 {
+    ESP_LOGI(TAG, "Initializing...");
 
     rmt_config_t config = RMT_DEFAULT_CONFIG_TX(LED_PIN, RMT_TX_CHANNEL);
     // set counter clock to 40MHz
@@ -141,11 +114,12 @@ void LEDManager::init(void)
     // Clear LED strip (turn off all LEDs)
     ESP_ERROR_CHECK(strip->clear(strip, 100));
     // Show simple rainbow chasing pattern
-    ESP_LOGI(TAG, "LED Rainbow Chase Start");
 
     // start led task
     xTaskCreate(led_task, "led_task", 2048, NULL, 10, &this->handle);
     vTaskSuspend(this->handle);
+
+    ESP_LOGI(TAG, "Success");
 }
 
 void LEDManager::start(void)

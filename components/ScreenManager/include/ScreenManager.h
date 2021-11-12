@@ -58,6 +58,7 @@ public:
     void splash(SCREEN_STATE state);
     void splash(SCREEN_STATE splashState, SCREEN_STATE returnState);
     void conditionalRender(SCREEN_STATE state);
+    void press(int num);
 };
 
 extern ScreenManager screenManager;

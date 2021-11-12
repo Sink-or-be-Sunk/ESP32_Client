@@ -43,6 +43,7 @@ public:
     char get_attack_row_tag(void);
     char get_attack_col_tag(void);
     void moveReceived(int c, int r, char *to, char result);
+    void set_attack(int num);
 };
 
 extern GameState gameState;
