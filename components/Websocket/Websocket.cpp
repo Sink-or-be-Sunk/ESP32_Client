@@ -7,6 +7,7 @@
 
 #define INVITE_SENT_TAG "INVITE SENT"
 #define LIST_SENT_TAG "LIST SENT"
+#define GAME_OVER_TAG "GAME OVER"
 
 static const char *TAG = "Websocket";
 
@@ -166,13 +167,6 @@ void Websocket::handle(const char *msg, uint8_t len)
 
     meta = cJSON_GetObjectItemCaseSensitive(msg_json, "meta");
 
-    // if (!cJSON_IsString(meta) || (meta->valuestring == NULL))
-    // {
-    //     status = 405;
-    //     goto end;
-    // }
-    // printf("meta: \"%s\"\n", meta->valuestring);
-
     payload = cJSON_GetObjectItemCaseSensitive(msg_json, "payload");
 
     switch (header_map[header->valuestring])
@@ -309,9 +303,20 @@ void Websocket::handle(const char *msg, uint8_t len)
         // cJSON *result_ship = cJSON_GetObjectItemCaseSensitive(payload, "result_ship"); //TODO: ADD SHIP SUNK RESULT
         if (cJSON_IsNumber(move_c) && cJSON_IsNumber(move_r) && cJSON_IsString(to) && (to->valuestring != NULL) && cJSON_IsString(result) && (result->valuestring != NULL))
         {
-            // TODO: NEEDS IMPLEMENTATION FOR REGISTERING HIT FOR LEDS
             printf("C: \"%d\", R: \"%d\", to: \"%s\", result: \"%s\"\n", move_c->valueint, move_r->valueint, to->valuestring, result->valuestring);
             gameState.moveReceived(move_c->valueint, move_r->valueint, to->valuestring, result->valuestring[0]);
+
+            if (cJSON_IsString(meta) && (meta->valuestring != NULL))
+            {
+                // check if game is over
+                if (!strcmp(meta->valuestring, GAME_OVER_TAG))
+                {
+                    gameState.setState(SETUP);
+                    screenManager.splash(GAME_OVER, CREATE_GAME);
+                    break;
+                }
+            }
+
             screenManager.splash(MOVE_MADE);
         }
         else
@@ -325,7 +330,9 @@ void Websocket::handle(const char *msg, uint8_t len)
     }
     case INVALID_MOVE:
     {
-        // TODO: NEEDS IMPLEMENTATION
+        // TODO: ADD META INFO TO GAME STATE HERE
+
+        screenManager.splash(NOTIFY_INVALID_MOVE);
         status = HEADERS::INVALID_MOVE;
         break;
     }
@@ -368,7 +375,7 @@ void Websocket::handle(const char *msg, uint8_t len)
     }
     case POSITIONED_SHIPS:
     {
-        // TODO: NEEDS IMPLEMENTATION
+        screenManager.splash(NOTIFY_POSITION_SHIPS);
         status = HEADERS::POSITIONED_SHIPS;
         break;
     }

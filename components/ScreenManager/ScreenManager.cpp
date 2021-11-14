@@ -93,6 +93,7 @@ void ScreenManager::render(void)
             coordsPtr = gameState.attackCoords;
         }
 
+        // FIXME: lastMoveRes is not showing up on display
         char buff[17];
         printf("c: %d, r: %d, res: %s\n", coordsPtr[0], coordsPtr[1], gameState.lastMoveRes);
         //                 "-=-=-=-=-=-=-=-="
@@ -121,6 +122,29 @@ void ScreenManager::render(void)
         //               "-=-=-=-=-=-=-=-="
         display.display1("Invalid Ship");
         display.display2("Layout");
+        break;
+    }
+    case NOTIFY_POSITION_SHIPS:
+    {
+        //               "-=-=-=-=-=-=-=-="
+        display.display1("Ship Layout");
+        display.display2("Accepted!");
+        break;
+    }
+    case NOTIFY_INVALID_MOVE:
+    {
+        // TODO: ADD META INFO ABOUT MOVE HERE
+        //                "-=-=-=-=-=-=-=-="
+        display.display1("Invalid Move");
+        display.display2("Change,Try Again");
+        break;
+    }
+    case GAME_OVER:
+    {
+        // TODO: ADD WINNER INFO TO SCREEN
+        //                "-=-=-=-=-=-=-=-="
+        display.display1("Game Over");
+        // display.display2("Change,Try Again");
         break;
     }
     case OPPONENT_READY_UP:

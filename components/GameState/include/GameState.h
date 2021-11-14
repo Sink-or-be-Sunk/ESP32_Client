@@ -31,8 +31,7 @@ public:
     bool myTurn;                               // 1->mine, 0->theirs
     char lastMoveRes[MOVE_RESULT_BUFFER_SIZE]; // holds, HIT, MISS, SUNK
 
-    void
-    init(void);
+    void init(void);
     void setState(game_state_t state);
     void increment_attack(void);
     void decrement_attack(void);
