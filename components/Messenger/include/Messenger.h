@@ -56,6 +56,7 @@ public:
     char *build_join_game_msg(const char *game);
     char *build_position_ships(void);
     char *build_db_msg(DATABASE_REQ_TYPE type, const char *username);
+    char *build_leave_game_msg();
 };
 
 extern Messenger messenger;

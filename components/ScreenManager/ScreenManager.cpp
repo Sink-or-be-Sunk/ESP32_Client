@@ -147,6 +147,12 @@ void ScreenManager::render(void)
         // display.display2("Change,Try Again");
         break;
     }
+    case LEFT_GAME:
+    {
+        //                "-=-=-=-=-=-=-=-="
+        display.display1("Left Game");
+        break;
+    }
     case OPPONENT_READY_UP:
     {
         //               "-=-=-=-=-=-=-=-="
@@ -635,7 +641,7 @@ void ScreenManager::back(void)
     }
     case LOBBY:
     {
-        // TODO:
+        websocket.send(messenger.build_leave_game_msg());
         break;
     }
     case IN_PROGRESS:

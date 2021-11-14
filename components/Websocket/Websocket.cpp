@@ -75,6 +75,7 @@ enum HEADERS
     INVALID_LAYOUT,
     DATABASE_SUCCESS,
     BOARD_UPDATE,
+    LEAVE_GAME,
     // GAME_TYPE_APPROVED, //TODO: ADD THESE BACK IF/WHEN WE MAKE MULTIPLE GAME TYPES
     // INVALID_GAME_TYPE,
 
@@ -95,6 +96,7 @@ static void header_map_init()
     header_map["MADE MOVE"] = MOVE_RESULT;
     header_map["DATABASE SUCCESS"] = DATABASE_SUCCESS;
     header_map["BOARD UPDATE"] = BOARD_UPDATE;
+    header_map["LEFT GAME"] = LEAVE_GAME;
 }
 
 void Websocket::start(void)
@@ -286,6 +288,12 @@ void Websocket::handle(const char *msg, uint8_t len)
         gameState.setState(IN_PROGRESS);
         screenManager.setState(ATTACK);
         status = HEADERS::GAME_STARTED;
+        break;
+    }
+    case LEAVE_GAME:
+    {
+        gameState.setState(SETUP);
+        screenManager.splash(LEFT_GAME, CREATE_GAME);
         break;
     }
     case MOVE_RESULT:
