@@ -4,9 +4,15 @@ GameState gameState; // singleton instance of class
 
 void GameState::init(void)
 {
+    this->reset();
+}
+
+void GameState::reset(void)
+{
     this->attackSel = 0;
     strcpy(this->opponent, "OPPONENT ERROR");
     this->state = SETUP;
+    this->isWinner = false;
 }
 
 void GameState::setState(game_state_t state)
@@ -81,10 +87,11 @@ char GameState::get_attack_row_tag(void)
     return (this->attackSel == 1) ? 'R' : 'r';
 }
 
-void GameState::moveReceived(int c, int r, char *to, char result)
+void GameState::moveReceived(int c, int r, char *to, char *result)
 {
-    // TODO: NEED TO ADD SOMETHING HERE FOR DEALING WITH SUNK SHIPS
-    printf("result: %c\n", result);
+    printf("result: %s\n", result);
+    strncpy(this->lastMoveRes, result, MOVE_RESULT_BUFFER_SIZE);
+
     if (strcmp(settings.username, to))
     {
         // confirming move you just made

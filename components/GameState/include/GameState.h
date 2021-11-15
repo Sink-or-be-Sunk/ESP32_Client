@@ -7,7 +7,7 @@
 #define RESULT_MISS 'M'
 #define RESULT_SUNK 'S'
 
-#define MOVE_RESULT_BUFFER_SIZE 5
+#define MOVE_RESULT_BUFFER_SIZE 17
 
 enum game_state_t
 {
@@ -30,6 +30,7 @@ public:
     uint16_t board;
     bool myTurn;                               // 1->mine, 0->theirs
     char lastMoveRes[MOVE_RESULT_BUFFER_SIZE]; // holds, HIT, MISS, SUNK
+    bool isWinner;
 
     void init(void);
     void setState(game_state_t state);
@@ -41,8 +42,9 @@ public:
     uint8_t get_attack_col(void);
     char get_attack_row_tag(void);
     char get_attack_col_tag(void);
-    void moveReceived(int c, int r, char *to, char result);
+    void moveReceived(int c, int r, char *to, char *result);
     void set_attack(int num);
+    void reset(void);
 };
 
 extern GameState gameState;

@@ -93,12 +93,7 @@ void ScreenManager::render(void)
             coordsPtr = gameState.attackCoords;
         }
 
-        // FIXME: lastMoveRes is not showing up on display
-        char buff[17];
-        printf("c: %d, r: %d, res: %s\n", coordsPtr[0], coordsPtr[1], gameState.lastMoveRes);
-        //                 "-=-=-=-=-=-=-=-="
-        snprintf(buff, 16, "%s at c%c, r%c", gameState.lastMoveRes, coordsPtr[0] + 'A', coordsPtr[1] + '1');
-        display.display2(buff);
+        display.display2(gameState.lastMoveRes);
         break;
     }
     case INVITE_SENT:
@@ -139,14 +134,6 @@ void ScreenManager::render(void)
         display.display2("Change,Try Again");
         break;
     }
-    case GAME_OVER:
-    {
-        // TODO: ADD WINNER INFO TO SCREEN
-        //                "-=-=-=-=-=-=-=-="
-        display.display1("Game Over");
-        // display.display2("Change,Try Again");
-        break;
-    }
     case LEFT_GAME:
     {
         //                "-=-=-=-=-=-=-=-="
@@ -183,6 +170,14 @@ void ScreenManager::render(void)
         //               "-=-=-=-=-=-=-=-="
         display.display1("Create Game");
         display.display2("Press Enter");
+        break;
+    }
+    case GAME_OVER:
+    {
+        //               "-=-=-=-=-=-=-=-="
+        display.display1("Game Over");
+        display.display2(gameState.lastMoveRes);
+
         break;
     }
     case FIND_GAME:

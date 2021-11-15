@@ -7,7 +7,8 @@
 
 #define INVITE_SENT_TAG "INVITE SENT"
 #define LIST_SENT_TAG "LIST SENT"
-#define GAME_OVER_TAG "GAME OVER"
+#define GAME_OVER_LOSER_TAG "You Lost :("
+#define GAME_OVER_WINNER_TAG "You Won!"
 
 static const char *TAG = "Websocket";
 
@@ -97,6 +98,8 @@ static void header_map_init()
     header_map["DATABASE SUCCESS"] = DATABASE_SUCCESS;
     header_map["BOARD UPDATE"] = BOARD_UPDATE;
     header_map["LEFT GAME"] = LEAVE_GAME;
+    header_map["POSITIONED SHIPS"] = POSITIONED_SHIPS;
+    header_map["INVALID LAYOUT"] = INVALID_LAYOUT;
 }
 
 void Websocket::start(void)
@@ -145,7 +148,7 @@ void Websocket::handle(const char *msg, uint8_t len)
     const cJSON *header = NULL;
     const cJSON *payload = NULL;
     const cJSON *meta = NULL;
-    int status = -1;
+    int status = -404;
     printf("raw: %.*s\n", len, msg);
     cJSON *msg_json = cJSON_ParseWithLength(msg, len);
     if (msg_json == NULL)
@@ -213,6 +216,8 @@ void Websocket::handle(const char *msg, uint8_t len)
         }
 
         ledManager.update(meta->valuestring);
+        status = HEADERS::BOARD_UPDATE;
+
         break;
     }
     case REGISTRATION:
@@ -292,6 +297,7 @@ void Websocket::handle(const char *msg, uint8_t len)
     }
     case LEAVE_GAME:
     {
+        gameState.reset();
         gameState.setState(SETUP);
         screenManager.splash(LEFT_GAME, CREATE_GAME);
         break;
@@ -308,17 +314,18 @@ void Websocket::handle(const char *msg, uint8_t len)
         cJSON *move_r = cJSON_GetObjectItemCaseSensitive(payload, "r");
         cJSON *to = cJSON_GetObjectItemCaseSensitive(payload, "to");
         cJSON *result = cJSON_GetObjectItemCaseSensitive(payload, "result");
-        // cJSON *result_ship = cJSON_GetObjectItemCaseSensitive(payload, "result_ship"); //TODO: ADD SHIP SUNK RESULT
+        // cJSON *result_ship = cJSON_GetObjectItemCaseSensitive(payload, "result_ship");
         if (cJSON_IsNumber(move_c) && cJSON_IsNumber(move_r) && cJSON_IsString(to) && (to->valuestring != NULL) && cJSON_IsString(result) && (result->valuestring != NULL))
         {
-            printf("C: \"%d\", R: \"%d\", to: \"%s\", result: \"%s\"\n", move_c->valueint, move_r->valueint, to->valuestring, result->valuestring);
-            gameState.moveReceived(move_c->valueint, move_r->valueint, to->valuestring, result->valuestring[0]);
-
             if (cJSON_IsString(meta) && (meta->valuestring != NULL))
             {
+                printf("C: \"%d\", R: \"%d\", to: \"%s\", result: \"%s\"\n", move_c->valueint, move_r->valueint, to->valuestring, result->valuestring);
+                gameState.moveReceived(move_c->valueint, move_r->valueint, to->valuestring, meta->valuestring);
+
                 // check if game is over
-                if (!strcmp(meta->valuestring, GAME_OVER_TAG))
+                if (!strcmp(meta->valuestring, GAME_OVER_WINNER_TAG) || !strcmp(meta->valuestring, GAME_OVER_LOSER_TAG))
                 {
+                    gameState.reset();
                     gameState.setState(SETUP);
                     screenManager.splash(GAME_OVER, CREATE_GAME);
                     break;
@@ -389,7 +396,7 @@ void Websocket::handle(const char *msg, uint8_t len)
     }
     case INVALID_LAYOUT:
     {
-        // TODO: NEEDS IMPLEMENTATION
+        screenManager.splash(INVALID_SHIP_LAYOUT);
         status = HEADERS::INVALID_LAYOUT;
         break;
     }
