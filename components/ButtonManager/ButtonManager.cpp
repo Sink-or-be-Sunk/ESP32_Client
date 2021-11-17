@@ -7,14 +7,24 @@
 #include "ScreenManager.h"
 #include "LEDManager.h"
 
-#define ROW_1_PIN GPIO_NUM_15
-#define ROW_2_PIN GPIO_NUM_33
-#define ROW_3_PIN GPIO_NUM_27
-#define ROW_4_PIN GPIO_NUM_12
-#define COL_1_PIN GPIO_NUM_23
-#define COL_2_PIN GPIO_NUM_22
-#define COL_3_PIN GPIO_NUM_14
-#define COL_4_PIN GPIO_NUM_39
+// #define ROW_1_PIN GPIO_NUM_15
+// #define ROW_2_PIN GPIO_NUM_33
+// #define ROW_3_PIN GPIO_NUM_27
+// #define ROW_4_PIN GPIO_NUM_12
+// #define COL_1_PIN GPIO_NUM_23
+// #define COL_2_PIN GPIO_NUM_22
+// #define COL_3_PIN GPIO_NUM_14
+// #define COL_4_PIN GPIO_NUM_39
+
+#define COL_4_PIN GPIO_NUM_15
+#define COL_3_PIN GPIO_NUM_33
+#define COL_2_PIN GPIO_NUM_27
+#define COL_1_PIN GPIO_NUM_12
+
+#define ROW_4_PIN GPIO_NUM_23
+#define ROW_3_PIN GPIO_NUM_22
+#define ROW_2_PIN GPIO_NUM_14
+#define ROW_1_PIN GPIO_NUM_39
 
 #define GPIO_ROW_MASK ((1ULL << ROW_1_PIN) | \
                        (1ULL << ROW_2_PIN) | \
@@ -129,41 +139,41 @@ static void IRAM_ATTR gpio_isr_handler(void *arg)
 
 static void gpio_buttons_task(void *arg)
 {
-    uint32_t col;
+    uint32_t row;
     for (;;)
     {
-        if (xQueueReceive(gpio_evt_queue, &col, portMAX_DELAY))
+        if (xQueueReceive(gpio_evt_queue, &row, portMAX_DELAY))
         {
             // bring all rows low
-            gpio_set_level(ROW_1_PIN, 0);
-            gpio_set_level(ROW_2_PIN, 0);
-            gpio_set_level(ROW_3_PIN, 0);
-            gpio_set_level(ROW_4_PIN, 0);
+            gpio_set_level(COL_1_PIN, 0);
+            gpio_set_level(COL_2_PIN, 0);
+            gpio_set_level(COL_3_PIN, 0);
+            gpio_set_level(COL_4_PIN, 0);
 
-            for (int row = 0; row < 4; row++)
+            for (int col = 0; col < 4; col++)
             {
-                gpio_set_level(decode_row_pins[row], 1); // turn on row
+                gpio_set_level(decode_col_pins[col], 1); // turn on col
 
                 vTaskDelay(10 / portTICK_RATE_MS); // allow pin voltage to settle
 
-                if (gpio_get_level(decode_col_pins[col]))
+                if (gpio_get_level(decode_row_pins[row]))
                 {
                     handle_button_event(row, col);
-                    while (gpio_get_level(decode_col_pins[col]))
+                    while (gpio_get_level(decode_row_pins[row]))
                     {
                         vTaskDelay(10 / portTICK_PERIOD_MS); // wait for button to be released
                     }
                     break;
                 }
 
-                gpio_set_level(decode_row_pins[row], 0); // turn off row
+                gpio_set_level(decode_col_pins[col], 0); // turn off col
             }
 
-            // bring all rows high
-            gpio_set_level(ROW_1_PIN, 1);
-            gpio_set_level(ROW_2_PIN, 1);
-            gpio_set_level(ROW_3_PIN, 1);
-            gpio_set_level(ROW_4_PIN, 1);
+            // bring all cols high
+            gpio_set_level(COL_1_PIN, 1);
+            gpio_set_level(COL_2_PIN, 1);
+            gpio_set_level(COL_3_PIN, 1);
+            gpio_set_level(COL_4_PIN, 1);
         }
     }
 }
@@ -172,7 +182,7 @@ void button_manager_init(void)
 {
     gpio_config_t io_conf;
     io_conf = {
-        .pin_bit_mask = GPIO_ROW_MASK,
+        .pin_bit_mask = GPIO_COL_MASK,
         .mode = GPIO_MODE_OUTPUT,
         .pull_up_en = GPIO_PULLUP_DISABLE,
         .pull_down_en = GPIO_PULLDOWN_DISABLE,
@@ -180,7 +190,7 @@ void button_manager_init(void)
     };
     gpio_config(&io_conf);
     io_conf = {
-        .pin_bit_mask = GPIO_COL_MASK,
+        .pin_bit_mask = GPIO_ROW_MASK,
         .mode = GPIO_MODE_INPUT,
         .pull_up_en = GPIO_PULLUP_DISABLE,
         .pull_down_en = GPIO_PULLDOWN_ENABLE,
@@ -198,14 +208,14 @@ void button_manager_init(void)
     gpio_install_isr_service(0);
 
     // hook isr handler for specific gpio pin
-    gpio_isr_handler_add(COL_1_PIN, gpio_isr_handler, (void *)0);
-    gpio_isr_handler_add(COL_2_PIN, gpio_isr_handler, (void *)1);
-    gpio_isr_handler_add(COL_3_PIN, gpio_isr_handler, (void *)2);
-    gpio_isr_handler_add(COL_4_PIN, gpio_isr_handler, (void *)3);
+    gpio_isr_handler_add(ROW_1_PIN, gpio_isr_handler, (void *)0);
+    gpio_isr_handler_add(ROW_2_PIN, gpio_isr_handler, (void *)1);
+    gpio_isr_handler_add(ROW_3_PIN, gpio_isr_handler, (void *)2);
+    gpio_isr_handler_add(ROW_4_PIN, gpio_isr_handler, (void *)3);
 
     // set rows high to initiate interrupt on button press
-    gpio_set_level(ROW_1_PIN, 1);
-    gpio_set_level(ROW_2_PIN, 1);
-    gpio_set_level(ROW_3_PIN, 1);
-    gpio_set_level(ROW_4_PIN, 1);
+    gpio_set_level(COL_1_PIN, 1);
+    gpio_set_level(COL_2_PIN, 1);
+    gpio_set_level(COL_3_PIN, 1);
+    gpio_set_level(COL_4_PIN, 1);
 }
