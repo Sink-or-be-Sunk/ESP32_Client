@@ -7,43 +7,35 @@
 #include "ScreenManager.h"
 #include "LEDManager.h"
 
-// #define ROW_1_PIN GPIO_NUM_15
-// #define ROW_2_PIN GPIO_NUM_33
-// #define ROW_3_PIN GPIO_NUM_27
-// #define ROW_4_PIN GPIO_NUM_12
-// #define COL_1_PIN GPIO_NUM_23
-// #define COL_2_PIN GPIO_NUM_22
-// #define COL_3_PIN GPIO_NUM_14
-// #define COL_4_PIN GPIO_NUM_39
+#define ROW_0_PIN GPIO_NUM_39
+#define ROW_1_PIN GPIO_NUM_14
+#define ROW_2_PIN GPIO_NUM_22
+#define ROW_3_PIN GPIO_NUM_23
+// #define ROW_3_PIN GPIO_NUM_2
+#define COL_0_PIN GPIO_NUM_12
+#define COL_1_PIN GPIO_NUM_27
+#define COL_2_PIN GPIO_NUM_33
+#define COL_3_PIN GPIO_NUM_15
 
-#define COL_4_PIN GPIO_NUM_15
-#define COL_3_PIN GPIO_NUM_33
-#define COL_2_PIN GPIO_NUM_27
-#define COL_1_PIN GPIO_NUM_12
-
-#define ROW_4_PIN GPIO_NUM_23
-#define ROW_3_PIN GPIO_NUM_22
-#define ROW_2_PIN GPIO_NUM_14
-#define ROW_1_PIN GPIO_NUM_39
-
-#define GPIO_ROW_MASK ((1ULL << ROW_1_PIN) | \
+#define GPIO_ROW_MASK ((1ULL << ROW_0_PIN) | \
+                       (1ULL << ROW_1_PIN) | \
                        (1ULL << ROW_2_PIN) | \
-                       (1ULL << ROW_3_PIN) | \
-                       (1ULL << ROW_4_PIN))
+                       (1ULL << ROW_3_PIN))
 
-#define GPIO_COL_MASK ((1ULL << COL_1_PIN) | \
+#define GPIO_COL_MASK ((1ULL << COL_0_PIN) | \
+                       (1ULL << COL_1_PIN) | \
                        (1ULL << COL_2_PIN) | \
-                       (1ULL << COL_3_PIN) | \
-                       (1ULL << COL_4_PIN))
+                       (1ULL << COL_3_PIN))
 
-static gpio_num_t decode_row_pins[4] = {ROW_1_PIN, ROW_2_PIN, ROW_3_PIN, ROW_4_PIN};
-static gpio_num_t decode_col_pins[4] = {COL_1_PIN, COL_2_PIN, COL_3_PIN, COL_4_PIN};
+static gpio_num_t decode_row_pins[4] = {ROW_0_PIN, ROW_1_PIN, ROW_2_PIN, ROW_3_PIN};
+static gpio_num_t decode_col_pins[4] = {COL_0_PIN, COL_1_PIN, COL_2_PIN, COL_3_PIN};
 static char decode_letter[16] = {'1', '2', '3', 'A', '4', '5', '6', 'B', '7', '8', '9', 'C', '*', '0', '#', 'D'};
 
 static xQueueHandle gpio_evt_queue = NULL;
 
 static void handle_button_event(int row, int col)
 {
+    printf("row: %d, col: %d\n", row, col);
     char letter = decode_letter[row * 4 + col];
     printf("key: %c\n", letter);
     switch (letter)
@@ -144,11 +136,11 @@ static void gpio_buttons_task(void *arg)
     {
         if (xQueueReceive(gpio_evt_queue, &row, portMAX_DELAY))
         {
-            // bring all rows low
+            // bring all cols low
+            gpio_set_level(COL_0_PIN, 0);
             gpio_set_level(COL_1_PIN, 0);
             gpio_set_level(COL_2_PIN, 0);
             gpio_set_level(COL_3_PIN, 0);
-            gpio_set_level(COL_4_PIN, 0);
 
             for (int col = 0; col < 4; col++)
             {
@@ -170,10 +162,10 @@ static void gpio_buttons_task(void *arg)
             }
 
             // bring all cols high
+            gpio_set_level(COL_0_PIN, 1);
             gpio_set_level(COL_1_PIN, 1);
             gpio_set_level(COL_2_PIN, 1);
             gpio_set_level(COL_3_PIN, 1);
-            gpio_set_level(COL_4_PIN, 1);
         }
     }
 }
@@ -208,14 +200,14 @@ void button_manager_init(void)
     gpio_install_isr_service(0);
 
     // hook isr handler for specific gpio pin
-    gpio_isr_handler_add(ROW_1_PIN, gpio_isr_handler, (void *)0);
-    gpio_isr_handler_add(ROW_2_PIN, gpio_isr_handler, (void *)1);
-    gpio_isr_handler_add(ROW_3_PIN, gpio_isr_handler, (void *)2);
-    gpio_isr_handler_add(ROW_4_PIN, gpio_isr_handler, (void *)3);
+    gpio_isr_handler_add(ROW_0_PIN, gpio_isr_handler, (void *)0);
+    gpio_isr_handler_add(ROW_1_PIN, gpio_isr_handler, (void *)1);
+    gpio_isr_handler_add(ROW_2_PIN, gpio_isr_handler, (void *)2);
+    gpio_isr_handler_add(ROW_3_PIN, gpio_isr_handler, (void *)3);
 
     // set rows high to initiate interrupt on button press
+    gpio_set_level(COL_0_PIN, 1);
     gpio_set_level(COL_1_PIN, 1);
     gpio_set_level(COL_2_PIN, 1);
     gpio_set_level(COL_3_PIN, 1);
-    gpio_set_level(COL_4_PIN, 1);
 }
