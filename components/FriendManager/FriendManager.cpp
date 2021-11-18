@@ -1,5 +1,7 @@
 #include "FriendManager.h"
 
+static const char *TAG = "FRIENDS";
+
 FriendManager friendManager; // singleton instance of class
 
 void FriendManager::update(const cJSON *list)

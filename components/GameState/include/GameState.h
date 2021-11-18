@@ -1,5 +1,6 @@
 #pragma once
 #include <string.h>
+#include "esp_log.h"
 #include "ShipManager.h"
 #include "Settings.h"
 

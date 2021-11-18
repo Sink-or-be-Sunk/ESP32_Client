@@ -1,5 +1,7 @@
 #include "ScreenManager.h"
 
+static const char *TAG = "SCREEN";
+
 ScreenManager screenManager; // singleton instance of class
 
 void ScreenManager::setState(SCREEN_STATE state)
@@ -15,8 +17,12 @@ SCREEN_STATE ScreenManager::getState(void)
 
 void ScreenManager::init(void)
 {
+    ESP_LOGI(TAG, "Initializing...");
+
     this->state = WIFI_CONNECTING;
     this->render();
+
+    ESP_LOGI(TAG, "Success");
 }
 
 void ScreenManager::conditionalRender(SCREEN_STATE state)
@@ -83,13 +89,11 @@ void ScreenManager::render(void)
         {
             //               "-=-=-=-=-=-=-=-="
             display.display1("Attack Made At");
-            coordsPtr = gameState.opponentAttackCoords;
         }
         else
         {
             //               "-=-=-=-=-=-=-=-="
             display.display1("Your Move Result");
-            coordsPtr = gameState.attackCoords;
         }
 
         display.display2(gameState.lastMoveRes);

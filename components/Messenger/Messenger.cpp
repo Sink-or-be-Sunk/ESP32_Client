@@ -1,5 +1,7 @@
 #include "Messenger.h"
 
+static const char *TAG = "MESSENGER";
+
 #define REGISTRATION_TAG "REGISTRATION"
 #define REGISTRATION_ENQUEUE_TAG "ENQUEUE"
 #define REGISTRATION_CONFIRM_TAG "CONFIRM"
@@ -37,8 +39,12 @@ static void get_device_id(char *service_name)
 
 void Messenger::init(void)
 {
+    ESP_LOGI(TAG, "Initializing...");
+
     get_device_id(this->device_id);
     get_device_ssid(this->device_ssid);
+
+    ESP_LOGI(TAG, "Success");
 }
 
 char *Messenger::build_registration_msg(REGISTRATION_TYPE reg_type)

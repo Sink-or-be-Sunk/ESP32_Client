@@ -1,10 +1,16 @@
 #include "GameState.h"
 
+static const char *TAG = "GAMESTATE";
+
 GameState gameState; // singleton instance of class
 
 void GameState::init(void)
 {
+    ESP_LOGI(TAG, "Initializing...");
+
     this->reset();
+
+    ESP_LOGI(TAG, "Success");
 }
 
 void GameState::reset(void)

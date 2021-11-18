@@ -1,4 +1,5 @@
 #pragma once
+#include "esp_log.h"
 #include "Display.h"
 #include "Websocket.h"
 #include "Messenger.h"

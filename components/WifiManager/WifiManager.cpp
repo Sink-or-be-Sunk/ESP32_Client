@@ -167,6 +167,8 @@ static void wifi_prov_print_qr(const char *name, const char *pop, const char *tr
 
 void WifiManager::init(void)
 {
+    ESP_LOGI(TAG, "Initializing...");
+
     /* Initialize TCP/IP */
     ESP_ERROR_CHECK(esp_netif_init());
 
@@ -310,4 +312,6 @@ void WifiManager::init(void)
 
     /* Wait for Wi-Fi connection */
     xEventGroupWaitBits(wifi_event_group, WIFI_CONNECTED_EVENT, false, true, portMAX_DELAY);
+
+    ESP_LOGI(TAG, "Success");
 }

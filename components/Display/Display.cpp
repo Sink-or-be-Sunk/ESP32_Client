@@ -1,10 +1,14 @@
 #include "Display.h"
 
+static const char *TAG = "DISPLAY";
+
 Display display; // singleton instance of class
 
 // Initialize the display
 void Display::init_oled(void)
 {
+    ESP_LOGI(TAG, "Initializing...");
+
     vTaskDelay(100 / portTICK_RATE_MS);
     Display::send_cmd(0x38);
     Display::send_cmd(0x08);
@@ -13,6 +17,8 @@ void Display::init_oled(void)
     Display::send_cmd(0x06);
     Display::send_cmd(0x02);
     Display::send_cmd(0x0c);
+
+    ESP_LOGI(TAG, "Success");
 }
 
 void Display::clear(void)

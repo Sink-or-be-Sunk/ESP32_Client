@@ -1,6 +1,7 @@
 #pragma once
 #include "cJSON.h"
 #include "stdio.h"
+#include "esp_log.h"
 #include "Settings.h"
 
 #define FRIEND_BUFFER_SIZE 5

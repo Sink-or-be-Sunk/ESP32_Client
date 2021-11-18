@@ -6,6 +6,8 @@ Settings settings; // singleton instance of class
 
 void Settings::init(void)
 {
+    ESP_LOGI(TAG, "Initializing...");
+
     /* Initialize NVS partition */
     esp_err_t ret = nvs_flash_init();
     if (ret == ESP_ERR_NVS_NO_FREE_PAGES || ret == ESP_ERR_NVS_NEW_VERSION_FOUND)
@@ -32,6 +34,8 @@ void Settings::init(void)
     strcpy(this->username, username);
     ESP_LOGI(TAG, "Loaded Username: %s\n", this->username);
 #endif
+
+    ESP_LOGI(TAG, "Success");
 }
 
 nvs_handle_t Settings::open_handle()

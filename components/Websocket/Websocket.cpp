@@ -1,5 +1,7 @@
 #include "Websocket.h"
 
+static const char *TAG = "WEBSOCKET";
+
 // WEBSOCKET META TAGS
 #define REGISTRATION_WAITING_FOR_WEB_TAG "WAITING FOR WEB"
 
@@ -11,8 +13,6 @@
 #define GAME_OVER_WINNER_TAG "You Won!"
 #define SHIP_SUNK_TAG "SUNK"
 #define SHIP_HIT_TAG "HIT"
-
-static const char *TAG = "Websocket";
 
 Websocket websocket; // singleton instance of class
 
