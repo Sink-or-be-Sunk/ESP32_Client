@@ -19,6 +19,7 @@
 #include <esp_event.h>
 #include <nvs_flash.h>
 
+#include "Config.h"
 #include "Websocket.h"
 #include "ButtonManager.h"
 #include "WifiManager.h"
