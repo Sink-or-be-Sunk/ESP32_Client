@@ -28,6 +28,7 @@
 #include "LEDManager.h"
 #include "GameState.h"
 #include "ShipManager.h"
+#include "MotorManager.h"
 
 static const char *TAG = "MAIN";
 
@@ -55,6 +56,8 @@ extern "C" void app_main(void)
     gameState.init();
 
     shipManager.init();
+
+    motorManager.init();
 
     websocket.start();
 

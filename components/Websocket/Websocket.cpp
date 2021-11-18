@@ -9,6 +9,8 @@
 #define LIST_SENT_TAG "LIST SENT"
 #define GAME_OVER_LOSER_TAG "You Lost :("
 #define GAME_OVER_WINNER_TAG "You Won!"
+#define SHIP_SUNK_TAG "SUNK"
+#define SHIP_HIT_TAG "HIT"
 
 static const char *TAG = "Websocket";
 
@@ -315,23 +317,25 @@ void Websocket::handle(const char *msg, uint8_t len)
         cJSON *to = cJSON_GetObjectItemCaseSensitive(payload, "to");
         cJSON *result = cJSON_GetObjectItemCaseSensitive(payload, "result");
         // cJSON *result_ship = cJSON_GetObjectItemCaseSensitive(payload, "result_ship");
-        if (cJSON_IsNumber(move_c) && cJSON_IsNumber(move_r) && cJSON_IsString(to) && (to->valuestring != NULL) && cJSON_IsString(result) && (result->valuestring != NULL))
+        if (cJSON_IsNumber(move_c) && cJSON_IsNumber(move_r) && cJSON_IsString(to) && (to->valuestring != NULL) && cJSON_IsString(result) && (result->valuestring != NULL) && (cJSON_IsString(meta) && (meta->valuestring != NULL)))
         {
-            if (cJSON_IsString(meta) && (meta->valuestring != NULL))
-            {
-                printf("C: \"%d\", R: \"%d\", to: \"%s\", result: \"%s\"\n", move_c->valueint, move_r->valueint, to->valuestring, result->valuestring);
-                gameState.moveReceived(move_c->valueint, move_r->valueint, to->valuestring, meta->valuestring);
+            printf("C: \"%d\", R: \"%d\", to: \"%s\", result: \"%s\"\n", move_c->valueint, move_r->valueint, to->valuestring, result->valuestring);
+            gameState.moveReceived(move_c->valueint, move_r->valueint, to->valuestring, meta->valuestring);
 
-                // check if game is over
-                if (!strcmp(meta->valuestring, GAME_OVER_WINNER_TAG) || !strcmp(meta->valuestring, GAME_OVER_LOSER_TAG))
-                {
-                    gameState.reset();
-                    gameState.setState(SETUP);
-                    screenManager.splash(GAME_OVER, CREATE_GAME);
-                    break;
-                }
+            if (!strcmp(SHIP_SUNK_TAG, result->valuestring) || !strcmp(SHIP_HIT_TAG, result->valuestring))
+            {
+                // rumble hits/sinks reguardless of player
+                motorManager.rumble();
             }
 
+            // check if game is over
+            if (!strcmp(GAME_OVER_WINNER_TAG, meta->valuestring) || !strcmp(GAME_OVER_LOSER_TAG, meta->valuestring))
+            {
+                gameState.reset();
+                gameState.setState(SETUP);
+                screenManager.splash(GAME_OVER, CREATE_GAME);
+                break;
+            }
             screenManager.splash(MOVE_MADE);
         }
         else

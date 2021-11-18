@@ -21,6 +21,7 @@
 #include "ScreenManager.h"
 #include "FriendManager.h"
 #include "LEDManager.h"
+#include "MotorManager.h"
 
 // #define CONFIG_WEBSOCKET_URI "ws://sink-or-be-sunk.herokuapp.com"
 
