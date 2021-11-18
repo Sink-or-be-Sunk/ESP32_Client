@@ -29,7 +29,8 @@
 #define PIN_NUM_MISO GPIO_NUM_9
 #define PIN_NUM_MOSI GPIO_NUM_7
 #define PIN_NUM_SCLK GPIO_NUM_6
-#define PIN_NUM_CS GPIO_NUM_11
+// #define PIN_NUM_CS GPIO_NUM_11
+#define PIN_NUM_CS GPIO_NUM_22
 
 /*************** LED MANAGER ******************/
 // #define LED_PIN GPIO_NUM_17
@@ -50,7 +51,13 @@
 #define MUX_ROW_SEL_0 GPIO_NUM_18
 #define MUX_ROW_SEL_1 GPIO_NUM_19
 #define MUX_ROW_SEL_2 GPIO_NUM_21
-#define MUX_COL_SEL_0 GPIO_NUM_17
+#define MUX_COL_SEL_0 GPIO_NUM_17 // change
 #define MUX_COL_SEL_1 GPIO_NUM_4
-#define MUX_COL_SEL_2 GPIO_NUM_16
+#define MUX_COL_SEL_2 GPIO_NUM_16 // change
 #define BOAT_INPUT GPIO_NUM_5
+
+// hardware
+// io12
+// io13
+// io14
+// io15
