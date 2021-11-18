@@ -1,20 +1,8 @@
 #include "WifiManager.h"
 
-#include <wifi_provisioning/manager.h>
-#include <wifi_provisioning/scheme_ble.h>
-#include "qrcode.h"
+static const char *TAG = "WIFI";
 
-#include <freertos/FreeRTOS.h>
-#include <freertos/queue.h>
-#include <freertos/task.h>
-#include <freertos/event_groups.h>
-#include <esp_system.h>
-#include <nvs.h>
-#include <esp_log.h>
-#include <esp_wifi.h>
-#include <string.h>
-
-static const char *TAG = "WIFI_MANAGER";
+WifiManager wifiManager;
 
 #define PROV_QR_VERSION "v1"
 #define PROV_TRANSPORT_SOFTAP "softap"
@@ -110,14 +98,14 @@ static void event_handler(void *arg, esp_event_base_t event_base,
     }
 }
 
-static void wifi_init_sta(void) //TODO: REMOVE
+static void wifi_init_sta(void) // TODO: REMOVE
 {
     /* Start Wi-Fi in station mode */
     ESP_ERROR_CHECK(esp_wifi_set_mode(WIFI_MODE_STA));
     ESP_ERROR_CHECK(esp_wifi_start());
 }
 
-static void get_device_service_name(char *service_name, size_t max) //TODO: REMOVE
+static void get_device_service_name(char *service_name, size_t max) // TODO: REMOVE
 {
     uint8_t eth_mac[6];
     const char *ssid_prefix = "PROV_";
@@ -177,7 +165,7 @@ static void wifi_prov_print_qr(const char *name, const char *pop, const char *tr
     ESP_LOGI(TAG, "If QR code is not visible, copy paste the below URL in a browser.\n%s?data=%s", QRCODE_BASE_URL, payload);
 }
 
-void wifi_manager_init(void)
+void WifiManager::init(void)
 {
     /* Initialize TCP/IP */
     ESP_ERROR_CHECK(esp_netif_init());
@@ -241,7 +229,7 @@ void wifi_manager_init(void)
          *      - this should be a string with length > 0
          *      - NULL if not used
          */
-        const char *pop = "abcd1234"; //TODO: CHANGE THIS TO SOMETHING MORE SECURE
+        const char *pop = "abcd1234"; // TODO: CHANGE THIS TO SOMETHING MORE SECURE
 
         /* What is the service key (could be NULL)
          * This translates to :

@@ -52,7 +52,7 @@ extern "C" void app_main(void)
 
     buttonManager.init();
 
-    wifi_manager_init();
+    wifiManager.init();
 
     gameState.init();
 
@@ -64,5 +64,5 @@ extern "C" void app_main(void)
 
     screenManager.splash(HOME, CREATE_GAME);
 
-    // wifi_stop();
+    // wifi_stop(); //FIXME: REMOVE THIS, NEVER WILL BE USED
 }
