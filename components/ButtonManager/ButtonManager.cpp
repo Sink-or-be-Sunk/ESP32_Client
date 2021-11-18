@@ -1,11 +1,8 @@
 #include "ButtonManager.h"
-#include <freertos/FreeRTOS.h>
-#include <freertos/queue.h>
-#include <freertos/task.h>
-#include <freertos/event_groups.h>
-#include "driver/gpio.h"
-#include "ScreenManager.h"
-#include "LEDManager.h"
+
+static const char *TAG = "BUTTONS";
+
+ButtonManager buttonManager; // singleton instance of class
 
 #define ROW_0_PIN GPIO_NUM_39
 #define ROW_1_PIN GPIO_NUM_14
@@ -170,8 +167,10 @@ static void gpio_buttons_task(void *arg)
     }
 }
 
-void button_manager_init(void)
+void ButtonManager::init(void)
 {
+    ESP_LOGI(TAG, "Initializing...");
+
     gpio_config_t io_conf;
     io_conf = {
         .pin_bit_mask = GPIO_COL_MASK,
@@ -210,4 +209,6 @@ void button_manager_init(void)
     gpio_set_level(COL_1_PIN, 1);
     gpio_set_level(COL_2_PIN, 1);
     gpio_set_level(COL_3_PIN, 1);
+
+    ESP_LOGI(TAG, "Success");
 }

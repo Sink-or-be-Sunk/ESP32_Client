@@ -1,3 +1,17 @@
 #pragma once
+#include <freertos/FreeRTOS.h>
+#include <freertos/queue.h>
+#include <freertos/task.h>
+#include <freertos/event_groups.h>
+#include "driver/gpio.h"
+#include "esp_log.h"
+#include "ScreenManager.h"
+#include "LEDManager.h"
 
-void button_manager_init(void);
+class ButtonManager
+{
+public:
+    void init(void);
+};
+
+extern ButtonManager buttonManager;

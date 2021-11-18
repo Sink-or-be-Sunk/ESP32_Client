@@ -14,10 +14,10 @@ static void rumble_motor_task(void *args)
 {
     for (;;)
     {
-        ESP_LOGI(TAG, "Starting Rumble...");
+        ESP_LOGI(TAG, "Starting...");
         vTaskDelay(pdMS_TO_TICKS(RUMBLE_DURATION_MS));
         gpio_set_level(MOTOR_DRIVER_PIN, 0);
-        ESP_LOGI(TAG, "...Stopping Rumble");
+        ESP_LOGI(TAG, "...Stopping");
         vTaskSuspend(motorManager.handle);
     }
 }
