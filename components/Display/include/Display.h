@@ -6,6 +6,7 @@
 #include "driver/gpio.h"
 #include "driver/spi_common.h"
 #include "driver/spi_master.h"
+#include "Config.h"
 
 class Display
 {

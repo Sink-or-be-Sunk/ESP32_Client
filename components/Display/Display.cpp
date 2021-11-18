@@ -1,17 +1,8 @@
 #include "Display.h"
 
-// #define PIN_NUM_MISO GPIO_NUM_12
-// #define PIN_NUM_MOSI GPIO_NUM_13
-// #define PIN_NUM_SCLK GPIO_NUM_14
-// #define PIN_NUM_CS GPIO_NUM_15
-#define PIN_NUM_MISO GPIO_NUM_19
-#define PIN_NUM_MOSI GPIO_NUM_18
-#define PIN_NUM_SCLK GPIO_NUM_5
-#define PIN_NUM_CS GPIO_NUM_16
+Display display; // singleton instance of class
 
-Display display; //singleton instance of class
-
-//Initialize the display
+// Initialize the display
 void Display::init_oled(void)
 {
     vTaskDelay(100 / portTICK_RATE_MS);
@@ -33,7 +24,7 @@ void Display::clear(void)
 void Display::init(void)
 {
     esp_err_t ret;
-    //GPIO
+    // GPIO
     gpio_reset_pin(PIN_NUM_MISO);
     gpio_reset_pin(PIN_NUM_MOSI);
     gpio_reset_pin(PIN_NUM_SCLK);
@@ -43,7 +34,7 @@ void Display::init(void)
     gpio_set_direction(PIN_NUM_SCLK, GPIO_MODE_OUTPUT);
     gpio_set_direction(PIN_NUM_CS, GPIO_MODE_OUTPUT);
 
-    //SPI
+    // SPI
     spi_bus_config_t config;
     config.mosi_io_num = PIN_NUM_MOSI;
     config.miso_io_num = PIN_NUM_MISO;
@@ -58,15 +49,15 @@ void Display::init(void)
         .command_bits = 2,
         .address_bits = 0,
         .dummy_bits = 0,
-        .mode = 0, //SPI mode 0
+        .mode = 0, // SPI mode 0
         .duty_cycle_pos = 0,
         .cs_ena_pretrans = 0,
         .cs_ena_posttrans = 0,
-        .clock_speed_hz = 500 * 1000, //500KHz?
+        .clock_speed_hz = 500 * 1000, // 500KHz?
         .input_delay_ns = 0,
-        .spics_io_num = PIN_NUM_CS, //CS pin
+        .spics_io_num = PIN_NUM_CS, // CS pin
         .flags = 0,
-        .queue_size = 1, //We want to be able to queue 1 transactions at a time
+        .queue_size = 1, // We want to be able to queue 1 transactions at a time
     };
 
     spi_bus_add_device(SPI2_HOST, &spi_config, &this->handle);
@@ -78,14 +69,14 @@ void Display::send_cmd(const uint8_t cmd)
 {
     esp_err_t ret;
     spi_transaction_t t;
-    memset(&t, 0, sizeof(t)); //Zero out the transaction
-    t.length = 8;             //Command is 8 bits
+    memset(&t, 0, sizeof(t)); // Zero out the transaction
+    t.length = 8;             // Command is 8 bits
     t.cmd = 0x0;
-    //uint16_t cmd_fix = cmd;
-    t.tx_buffer = &cmd;                                  //The data is the cmd itself
-    t.user = (void *)0;                                  //D/C needs to be set to 0
-    ret = spi_device_polling_transmit(this->handle, &t); //Transmit!
-    assert(ret == ESP_OK);                               //Should have had no issues.
+    // uint16_t cmd_fix = cmd;
+    t.tx_buffer = &cmd;                                  // The data is the cmd itself
+    t.user = (void *)0;                                  // D/C needs to be set to 0
+    ret = spi_device_polling_transmit(this->handle, &t); // Transmit!
+    assert(ret == ESP_OK);                               // Should have had no issues.
 }
 
 void Display::send_data(const uint8_t data)
@@ -93,14 +84,14 @@ void Display::send_data(const uint8_t data)
     esp_err_t ret;
     spi_transaction_t t;
 
-    memset(&t, 0, sizeof(t)); //Zero out the transaction
-    t.length = 8;             //Len is in bytes, transaction length is in bits.
+    memset(&t, 0, sizeof(t)); // Zero out the transaction
+    t.length = 8;             // Len is in bytes, transaction length is in bits.
     t.cmd = 0x2;
-    //uint16_t data_fix = data;
-    t.tx_buffer = &data;                                 //Data               //Command is 8 bits
-    t.user = (void *)1;                                  //D/C needs to be set to 1
-    ret = spi_device_polling_transmit(this->handle, &t); //Transmit!
-    assert(ret == ESP_OK);                               //Should have had no issues.
+    // uint16_t data_fix = data;
+    t.tx_buffer = &data;                                 // Data               //Command is 8 bits
+    t.user = (void *)1;                                  // D/C needs to be set to 1
+    ret = spi_device_polling_transmit(this->handle, &t); // Transmit!
+    assert(ret == ESP_OK);                               // Should have had no issues.
 }
 
 void Display::display1(const char *str)

@@ -4,8 +4,6 @@ LEDManager ledManager;
 
 static const char *TAG = "LED";
 
-#define LED_PIN GPIO_NUM_17
-
 #define RMT_TX_CHANNEL RMT_CHANNEL_0
 #define EXAMPLE_CHASE_SPEED_MS (10)
 

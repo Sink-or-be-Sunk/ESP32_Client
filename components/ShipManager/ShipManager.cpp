@@ -7,14 +7,6 @@ static const char *TAG = "SHIPS";
 
 #define BOARD_WIDTH 8
 
-#define MUX_ROW_SEL_0 GPIO_NUM_21
-#define MUX_ROW_SEL_1 GPIO_NUM_26
-#define MUX_ROW_SEL_2 GPIO_NUM_25
-#define MUX_COL_SEL_0 GPIO_NUM_4
-#define MUX_COL_SEL_1 GPIO_NUM_13
-#define MUX_COL_SEL_2 GPIO_NUM_32
-#define BOAT_INPUT GPIO_NUM_34
-
 #define GPIO_BOAT_INPUT_MASK (1ULL << BOAT_INPUT)
 
 #define GPIO_MUX_SEL_MASK ((1ULL << MUX_ROW_SEL_0) | \

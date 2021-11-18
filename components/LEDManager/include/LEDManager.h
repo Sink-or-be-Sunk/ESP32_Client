@@ -6,6 +6,7 @@
 #include "esp_log.h"
 #include "driver/rmt.h"
 #include "led_strip.h"
+#include "Config.h"
 
 class LEDManager
 {

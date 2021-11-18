@@ -4,8 +4,6 @@ static const char *TAG = "MOTOR";
 
 #define RUMBLE_DURATION_MS 1000
 
-#define MOTOR_DRIVER_PIN GPIO_NUM_8
-
 #define GPIO_MOTOR_DRIVER_MASK (1ULL << MOTOR_DRIVER_PIN)
 
 MotorManager motorManager; // singleton instance of class

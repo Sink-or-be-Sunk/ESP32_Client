@@ -78,7 +78,6 @@ void ScreenManager::render(void)
     }
     case MOVE_MADE:
     {
-        int8_t *coordsPtr;
         if (gameState.myTurn) // NOTE: These are flipped because after I make a move
         // it will no longer be my turn, i.e. myTurn is false
         {
