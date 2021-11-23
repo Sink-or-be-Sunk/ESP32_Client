@@ -24,7 +24,7 @@
 #define LED_PIN GPIO_NUM_17
 
 /*************** MOTOR MANAGER ******************/
-#define MOTOR_DRIVER_PIN GPIO_NUM_8
+#define MOTOR_DRIVER_PIN GPIO_NUM_2
 
 /*************** SHIP MANAGER ******************/
 #define MUX_ROW_SEL_0 GPIO_NUM_21
