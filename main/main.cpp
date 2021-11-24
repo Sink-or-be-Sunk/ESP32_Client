@@ -57,7 +57,7 @@ extern "C" void app_main(void)
 
     gameState.init();
 
-    // shipManager.init();
+    shipManager.init();
 
     motorManager.init();
 
