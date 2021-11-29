@@ -1,7 +1,35 @@
 #pragma once
 
-#define DEVELOPEMENT_PINS
+/*************************************************/
+/***************** SYSTEM FUNCTIONS **************/
+/*************************************************/
+void get_device_ssid(char result[SSID_MAX_LEN]);
 
+void get_device_id(char *service_name);
+
+/*************************************************/
+/************** CONFIGURATION OPTIONS ************/
+/*************************************************/
+// NOTE: THESE CONFIGS ARE CONSOLIDATED FROM VARIOUS
+// Kconfig.projbuild files
+
+// ifdef (comment to toggle values)
+#define DEVELOPEMENT_PINS
+#define STORAGE_RESET_ALL
+#define WIFI_RESET_PROV_MGR_ON_FAILURE
+// #define WIFI_PROV_SHOW_QR
+// #define WIFI_RESET_PROVISIONED
+
+// number
+#define WIFI_PROV_MGR_MAX_RETRY_CNT 5
+#define WIFI_NO_CONNECT_RETRY_CNT 5
+
+// string
+#define WEBSOCKET_URI "ws://sink-or-be-sunk.herokuapp.com"
+
+/*************************************************/
+/************* DEVICE PIN DEFINITIONS ************/
+/*************************************************/
 #ifdef DEVELOPEMENT_PINS
 /*************** BUTTON MANAGER ******************/
 #define ROW_0_PIN GPIO_NUM_33

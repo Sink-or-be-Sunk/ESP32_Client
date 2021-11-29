@@ -5,6 +5,8 @@
 #include <stdint.h>
 #include <esp_log.h>
 #include <string.h>
+
+#include "System.h"
 namespace SETTING_STR_LEN
 {
     constexpr int USERNAME = 32;

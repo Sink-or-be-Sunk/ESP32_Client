@@ -7,7 +7,7 @@
 #include "driver/spi_common.h"
 #include "driver/spi_master.h"
 #include "esp_log.h"
-#include "Config.h"
+#include "System.h"
 
 class Display
 {

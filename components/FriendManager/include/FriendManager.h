@@ -3,6 +3,7 @@
 #include "stdio.h"
 #include "esp_log.h"
 #include "Settings.h"
+#include "System.h"
 
 #define FRIEND_BUFFER_SIZE 5
 

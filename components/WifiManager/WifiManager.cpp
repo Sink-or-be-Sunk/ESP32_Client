@@ -17,7 +17,7 @@ static EventGroupHandle_t wifi_event_group;
 static void event_handler(void *arg, esp_event_base_t event_base,
                           int32_t event_id, void *event_data)
 {
-#ifdef CONFIG_WIFI_RESET_PROV_MGR_ON_FAILURE
+#ifdef WIFI_RESET_PROV_MGR_ON_FAILURE
     static int retries;
 #endif
     static int no_connect_retries;
@@ -44,9 +44,9 @@ static void event_handler(void *arg, esp_event_base_t event_base,
             ESP_LOGE(TAG, "Provisioning failed!\n\tReason : %s"
                           "\n\tPlease reset to factory and retry provisioning",
                      (*reason == WIFI_PROV_STA_AUTH_ERROR) ? "Wi-Fi station authentication failed" : "Wi-Fi access-point not found");
-#ifdef CONFIG_WIFI_RESET_PROV_MGR_ON_FAILURE
+#ifdef WIFI_RESET_PROV_MGR_ON_FAILURE
             retries++;
-            if (retries >= CONFIG_WIFI_PROV_MGR_MAX_RETRY_CNT)
+            if (retries >= WIFI_PROV_MGR_MAX_RETRY_CNT)
             {
                 ESP_LOGI(TAG, "Failed to connect with provisioned AP, reseting provisioned credentials");
                 wifi_prov_mgr_reset_sm_state_on_failure();
@@ -57,7 +57,7 @@ static void event_handler(void *arg, esp_event_base_t event_base,
         }
         case WIFI_PROV_CRED_SUCCESS:
             ESP_LOGI(TAG, "Provisioning successful");
-#ifdef CONFIG_WIFI_RESET_PROV_MGR_ON_FAILURE
+#ifdef WIFI_RESET_PROV_MGR_ON_FAILURE
             retries = 0;
 #endif
             break;
@@ -82,8 +82,8 @@ static void event_handler(void *arg, esp_event_base_t event_base,
     }
     else if (event_base == WIFI_EVENT && event_id == WIFI_EVENT_STA_DISCONNECTED)
     {
-        printf("retries: %d, %d\n", no_connect_retries, CONFIG_WIFI_NO_CONNECT_RETRY_CNT);
-        if (no_connect_retries < CONFIG_WIFI_NO_CONNECT_RETRY_CNT)
+        printf("retries: %d, %d\n", no_connect_retries, WIFI_NO_CONNECT_RETRY_CNT);
+        if (no_connect_retries < WIFI_NO_CONNECT_RETRY_CNT)
         {
             no_connect_retries++;
             ESP_LOGI(TAG, "Disconnected. Connecting to the AP again...");
@@ -157,7 +157,7 @@ static void wifi_prov_print_qr(const char *name, const char *pop, const char *tr
                                            ",\"transport\":\"%s\"}",
                  PROV_QR_VERSION, name, transport);
     }
-#ifdef CONFIG_WIFI_PROV_SHOW_QR
+#ifdef WIFI_PROV_SHOW_QR
     ESP_LOGI(TAG, "Scan this QR code from the provisioning application for Provisioning.");
     esp_qrcode_config_t cfg = ESP_QRCODE_CONFIG_DEFAULT();
     esp_qrcode_generate(&cfg, payload);
@@ -199,7 +199,7 @@ void WifiManager::init(void)
     ESP_ERROR_CHECK(wifi_prov_mgr_init(config));
 
     bool provisioned = false;
-#ifdef CONFIG_WIFI_RESET_PROVISIONED
+#ifdef WIFI_RESET_PROVISIONED
     wifi_prov_mgr_reset_provisioning();
 #else
     /* Let's find out if the device is provisioned */
