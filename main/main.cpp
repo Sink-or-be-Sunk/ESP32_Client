@@ -55,7 +55,7 @@ extern "C" void app_main(void)
 
     wifiManager.init();
 
-    settings.updateSSID();
+    settings.update(); // needs to occur after wifi connection established
 
     gameState.init();
 

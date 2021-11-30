@@ -33,7 +33,7 @@ public:
     char ssid[SETTING_STR_LEN::SSID];
 
     void init(void);
-    void updateSSID(void);
+    void update(void);
     void unset(const char *key);
     void save();
 };
