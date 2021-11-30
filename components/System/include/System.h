@@ -1,13 +1,6 @@
 #pragma once
 
 /*************************************************/
-/***************** SYSTEM FUNCTIONS **************/
-/*************************************************/
-void get_device_ssid(char result[SSID_MAX_LEN]);
-
-void get_device_id(char *service_name);
-
-/*************************************************/
 /************** CONFIGURATION OPTIONS ************/
 /*************************************************/
 // NOTE: THESE CONFIGS ARE CONSOLIDATED FROM VARIOUS
@@ -15,7 +8,7 @@ void get_device_id(char *service_name);
 
 // ifdef (comment to toggle values)
 #define DEVELOPEMENT_PINS
-#define STORAGE_RESET_ALL
+// #define STORAGE_RESET_ALL
 #define WIFI_RESET_PROV_MGR_ON_FAILURE
 // #define WIFI_PROV_SHOW_QR
 // #define WIFI_RESET_PROVISIONED
@@ -25,7 +18,8 @@ void get_device_id(char *service_name);
 #define WIFI_NO_CONNECT_RETRY_CNT 5
 
 // string
-#define WEBSOCKET_URI "ws://sink-or-be-sunk.herokuapp.com"
+// #define WEBSOCKET_URI "ws://sink-or-be-sunk.herokuapp.com"
+#define WEBSOCKET_URI "ws://prep-exceed-conservation-scenarios.trycloudflare.com/"
 
 /*************************************************/
 /************* DEVICE PIN DEFINITIONS ************/

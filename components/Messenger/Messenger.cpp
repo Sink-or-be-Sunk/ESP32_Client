@@ -25,8 +25,7 @@ void Messenger::init(void)
 {
     ESP_LOGI(TAG, "Initializing...");
 
-    get_device_id(this->device_id);
-    get_device_ssid(this->device_ssid);
+    // FIXME: REMOVE THIS, NOT NEEDED
 
     ESP_LOGI(TAG, "Success");
 }
@@ -47,9 +46,7 @@ char *Messenger::build_registration_msg(REGISTRATION_TYPE reg_type)
         goto end;
     }
 
-    char device_id[13];
-    get_device_id(device_id);
-    id = cJSON_CreateString(device_id);
+    id = cJSON_CreateString(settings.username);
     if (id == NULL)
     {
         goto end;
@@ -88,9 +85,7 @@ char *Messenger::build_registration_msg(REGISTRATION_TYPE reg_type)
     }
     cJSON_AddItemToObject(data, "type", type);
 
-    char device_ssid[SSID_MAX_LEN];
-    get_device_ssid(device_ssid);
-    ssid = cJSON_CreateString(device_ssid);
+    ssid = cJSON_CreateString(settings.ssid);
     if (ssid == NULL)
     {
         goto end;

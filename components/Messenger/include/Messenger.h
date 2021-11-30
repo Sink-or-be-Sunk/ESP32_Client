@@ -10,12 +10,7 @@
 #include "ShipManager.h"
 #include "System.h"
 
-/** This comes for ESP IDF definitions*/
-#define SSID_MAX_LEN 33
-#define DEVICE_ID_MAX_LEN 13
-
 // TODO: CREATE NAMESPACE FOR ALL THESE ENUMS TO AVOID NAME COLLISIONS
-
 enum GAME_REQ_TYPE
 {
     NEW_GAME,
@@ -44,8 +39,6 @@ enum ATTACK_TYPE
 class Messenger
 {
 private:
-    char device_id[DEVICE_ID_MAX_LEN];
-    char device_ssid[SSID_MAX_LEN];
     char *register_base(const char *type_str, const char *username);
     char *build_game_msg(GAME_REQ_TYPE type, cJSON *data);
 

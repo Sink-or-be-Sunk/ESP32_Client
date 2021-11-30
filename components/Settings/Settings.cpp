@@ -1,8 +1,24 @@
 #include "Settings.h"
 
-static const char *TAG = "STORAGE";
+static const char *TAG = "SETTINGS";
 
 Settings settings; // singleton instance of class
+
+static void get_device_ssid(char result[SETTING_STR_LEN::SSID])
+{
+    wifi_ap_record_t ap;
+    esp_wifi_sta_get_ap_info(&ap);
+    snprintf(result, SETTING_STR_LEN::SSID, "%s", ap.ssid);
+}
+
+static void get_device_id(char *service_name)
+{
+    uint8_t eth_mac[6];
+    esp_wifi_get_mac(WIFI_IF_STA, eth_mac);
+    snprintf(service_name, 13, "%02X%02X%02X%02X%02X%02X",
+             eth_mac[0], eth_mac[1], eth_mac[2],
+             eth_mac[3], eth_mac[4], eth_mac[5]);
+}
 
 void Settings::init(void)
 {
@@ -19,22 +35,23 @@ void Settings::init(void)
         /* Retry nvs_flash_init */
         ESP_ERROR_CHECK(nvs_flash_init());
     }
+    strncpy(this->ssid, "DEFAULT_SSID", SETTING_STR_LEN::SSID);
 
 #ifdef STORAGE_RESET_ALL
     ESP_LOGW(TAG, "Resetting User NVS Settings");
     Settings::unset(SETTING_HEADERS::USERNAME);
 
     ESP_LOGW(TAG, "Setting Default Values");
-    this->username = something;
+    get_device_id(this->username);
 
     Settings::save();
 #else
     nvs_handle_t handle = Settings::open_handle();
 
+    // FIXME: THIS CAN BE REMOVED TO REPLACE WITH JUST THIS->USERNAME
     size_t len = SETTING_STR_LEN::USERNAME;
     char username[SETTING_STR_LEN::USERNAME];
     Settings::read_str(handle, SETTING_HEADERS::USERNAME, username, &len);
-
     strncpy(this->username, username, len);
     ESP_LOGI(TAG, "Loaded Username: %s", this->username);
 #endif
@@ -45,7 +62,7 @@ void Settings::init(void)
 nvs_handle_t Settings::open_handle()
 {
     // Open
-    ESP_LOGI(TAG, "\nOpening Non-Volatile Storage (NVS) handle... ");
+    ESP_LOGI(TAG, "Opening Non-Volatile Storage (NVS) handle... ");
     nvs_handle_t my_handle;
     esp_err_t err = nvs_open("storage", NVS_READWRITE, &my_handle);
     if (err != ESP_OK)
@@ -58,6 +75,11 @@ nvs_handle_t Settings::open_handle()
         ESP_LOGI(TAG, "Done");
         return my_handle;
     }
+}
+
+void Settings::updateSSID(void)
+{
+    get_device_ssid(this->ssid);
 }
 
 void Settings::save()

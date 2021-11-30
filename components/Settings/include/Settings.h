@@ -5,11 +5,15 @@
 #include <stdint.h>
 #include <esp_log.h>
 #include <string.h>
+#include <esp_wifi.h>
 
 #include "System.h"
+
 namespace SETTING_STR_LEN
 {
+    /** These come from ESP IDF definitions*/
     constexpr int USERNAME = 32;
+    constexpr int SSID = 33;
 };
 
 namespace SETTING_HEADERS
@@ -26,8 +30,10 @@ private:
 
 public:
     char username[SETTING_STR_LEN::USERNAME];
+    char ssid[SETTING_STR_LEN::SSID];
 
     void init(void);
+    void updateSSID(void);
     void unset(const char *key);
     void save();
 };

@@ -55,6 +55,8 @@ extern "C" void app_main(void)
 
     wifiManager.init();
 
+    settings.updateSSID();
+
     gameState.init();
 
     shipManager.init();
