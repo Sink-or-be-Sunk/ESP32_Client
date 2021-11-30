@@ -2,19 +2,21 @@
 
 static const char *TAG = "SETTINGS";
 
+#define DEFAULT_USERNAME "DEFAULT_USERNAME"
+
 Settings settings; // singleton instance of class
 
 static void get_device_ssid(char result[SETTING_STR_LEN::SSID])
 {
     wifi_ap_record_t ap;
-    esp_wifi_sta_get_ap_info(&ap);
+    ESP_ERROR_CHECK(esp_wifi_sta_get_ap_info(&ap));
     snprintf(result, SETTING_STR_LEN::SSID, "%s", ap.ssid);
 }
 
 static void get_device_id(char *service_name)
 {
     uint8_t eth_mac[6];
-    esp_wifi_get_mac(WIFI_IF_STA, eth_mac);
+    ESP_ERROR_CHECK(esp_wifi_get_mac(WIFI_IF_STA, eth_mac));
     snprintf(service_name, 13, "%02X%02X%02X%02X%02X%02X",
              eth_mac[0], eth_mac[1], eth_mac[2],
              eth_mac[3], eth_mac[4], eth_mac[5]);
@@ -35,16 +37,13 @@ void Settings::init(void)
         /* Retry nvs_flash_init */
         ESP_ERROR_CHECK(nvs_flash_init());
     }
+    // TODO: THESE ARE ALWAYS OVERWRITTEN (NEED TO WAIT FOR WIFI CONNECTION)
+    strncpy(this->username, DEFAULT_USERNAME, SETTING_STR_LEN::USERNAME);
     strncpy(this->ssid, "DEFAULT_SSID", SETTING_STR_LEN::SSID);
 
 #ifdef STORAGE_RESET_ALL
     ESP_LOGW(TAG, "Resetting User NVS Settings");
     Settings::unset(SETTING_HEADERS::USERNAME);
-
-    ESP_LOGW(TAG, "Setting Default Values");
-    get_device_id(this->username);
-
-    Settings::save();
 #else
     nvs_handle_t handle = Settings::open_handle();
 
@@ -77,9 +76,14 @@ nvs_handle_t Settings::open_handle()
     }
 }
 
-void Settings::updateSSID(void)
+void Settings::update(void)
 {
     get_device_ssid(this->ssid);
+    if (!strcmp(DEFAULT_USERNAME, this->username))
+    {
+        ESP_LOGW(TAG, "Defaulting username to device id");
+        get_device_id(this->username);
+    }
 }
 
 void Settings::save()
@@ -105,7 +109,7 @@ void Settings::unset(const char *key)
         ESP_LOGI(TAG, "Done\n");
         break;
     case ESP_ERR_NVS_NOT_FOUND:
-        ESP_LOGE(TAG, "The value is not initialized yet!");
+        ESP_LOGW(TAG, "The value is not initialized yet!");
         break;
     default:
         ESP_LOGE(TAG, "Error (%s) reading!", esp_err_to_name(err));

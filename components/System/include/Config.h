@@ -4,20 +4,33 @@
 // Kconfig.projbuild files
 
 /**
- * Toggles between production and developement mode
- * @type: bool
- * comment this to change pins and websocket to production mode
- */
-#define PRODUCTION_MODE
-
-/**
  * Toggles between Production and Development Pin Configuration
  * @type: bool
  * Comment this to set pins to production
  */
-#ifndef PRODUCTION_MODE
-#define DEVELOPEMENT_PINS
+// #define DEVELOPEMENT_PINS
+
+/**
+ * Websocket Server URI
+ * @type: string
+ * changing this uri will change the endpoint that the device
+ * attempts to connect for gameplay, registration, etc...
+ */
+#define PRODUCTION_SERVER
+#ifdef PRODUCTION_SERVER
+#define WEBSOCKET_URI "ws://sink-or-be-sunk.herokuapp.com"
+#else
+#define WEBSOCKET_URI "ws://traditions-sim-article-falls.trycloudflare.com/"
 #endif
+
+/**
+ * Hardcode ship positions for development purposes
+ * @type: bool
+ * Sets the ship positions to hardcoded values to allow for
+ * testing the system without physical hardware for ship
+ * detection
+ */
+#define HARDCODE_SHIP_POSITIONS
 
 /**
  * Reset Non-Volatile Storage to Factory Defaults
@@ -73,26 +86,3 @@
  * threshold is reached.
  */
 #define WIFI_NO_CONNECT_RETRY_CNT 5
-
-/**
- * Websocket Server URI
- * @type: string
- * changing this uri will change the endpoint that the device
- * attempts to connect for gameplay, registration, etc...
- */
-#ifdef PRODUCTION_MODE
-#define WEBSOCKET_URI "ws://sink-or-be-sunk.herokuapp.com"
-#else
-#define WEBSOCKET_URI "ws://traditions-sim-article-falls.trycloudflare.com/"
-#endif
-
-// TODO: THE FOLLOWING CONFIGS ARE NOT FOUND IN KCONFIG.PROJBUILD FILES
-
-/**
- * Hardcode ship positions for development purposes
- * @type: bool
- * Sets the ship positions to hardcoded values to allow for
- * testing the system without physical hardware for ship
- * detection
- */
-#define HARDCODE_SHIP_POSITIONS
