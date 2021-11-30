@@ -72,4 +72,15 @@
  * attempts to connect for gameplay, registration, etc...
  */
 // #define WEBSOCKET_URI "ws://sink-or-be-sunk.herokuapp.com"
-#define WEBSOCKET_URI "ws://prep-exceed-conservation-scenarios.trycloudflare.com/"
+#define WEBSOCKET_URI "ws://traditions-sim-article-falls.trycloudflare.com/"
+
+// TODO: THE FOLLOWING CONFIGS ARE NOT FOUND IN KCONFIG.PROJBUILD FILES
+
+/**
+ * Hardcode ship positions for development purposes
+ * @type: bool
+ * Sets the ship positions to hardcoded values to allow for
+ * testing the system without physical hardware for ship
+ * detection
+ */
+#define HARDCODE_SHIP_POSITIONS

@@ -90,6 +90,20 @@ bool ShipManager::addPosition(int row, int col)
 
 static void ship_detect_task(void *args)
 {
+#ifdef HARDCODE_SHIP_POSITIONS
+    ESP_LOGW(TAG, "Ship positions set to developement values");
+    int hc_row[] = {0, 0, 1, 1, 2, 2, 3, 3};
+    int hc_col[] = {0, 1, 0, 2, 0, 3, 0, 4};
+    int ships = 4 * 2;
+    for (int i = 0; i < ships; i++)
+    {
+        shipManager.addPosition(hc_row[i], hc_col[i]);
+    }
+    for (;;)
+    {
+        vTaskDelay(pdMS_TO_TICKS(1000)); // RTOS task cannot return
+    }
+#else
     for (;;)
     {
         for (int r = 0; r < BOARD_WIDTH; r++)
@@ -129,6 +143,7 @@ static void ship_detect_task(void *args)
 
         vTaskDelay(pdMS_TO_TICKS(RESCAN_DELAY_MS));
     }
+#endif
 }
 
 void ShipManager::init(void)
