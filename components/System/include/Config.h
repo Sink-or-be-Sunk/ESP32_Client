@@ -8,7 +8,7 @@
  * @type: bool
  * Comment this to set pins to production
  */
-#define DEVELOPEMENT_PINS
+// #define DEVELOPEMENT_PINS
 
 /**
  * Reset Non-Volatile Storage to Factory Defaults
