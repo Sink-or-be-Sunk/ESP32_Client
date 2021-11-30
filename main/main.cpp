@@ -19,7 +19,7 @@
 #include <esp_event.h>
 #include <nvs_flash.h>
 
-#include "Config.h"
+#include "System.h"
 #include "Websocket.h"
 #include "ButtonManager.h"
 #include "WifiManager.h"
@@ -54,6 +54,8 @@ extern "C" void app_main(void)
     buttonManager.init();
 
     wifiManager.init();
+
+    settings.updateSSID();
 
     gameState.init();
 

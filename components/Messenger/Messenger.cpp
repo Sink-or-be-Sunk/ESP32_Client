@@ -21,28 +21,11 @@ static const char *TAG = "MESSENGER";
 
 Messenger messenger; // singleton instance of class
 
-static void get_device_ssid(char result[SSID_MAX_LEN])
-{
-    wifi_ap_record_t ap;
-    esp_wifi_sta_get_ap_info(&ap);
-    snprintf(result, SSID_MAX_LEN, "%s", ap.ssid);
-}
-
-static void get_device_id(char *service_name)
-{
-    uint8_t eth_mac[6];
-    esp_wifi_get_mac(WIFI_IF_STA, eth_mac);
-    snprintf(service_name, DEVICE_ID_MAX_LEN, "%02X%02X%02X%02X%02X%02X",
-             eth_mac[0], eth_mac[1], eth_mac[2],
-             eth_mac[3], eth_mac[4], eth_mac[5]);
-}
-
 void Messenger::init(void)
 {
     ESP_LOGI(TAG, "Initializing...");
 
-    get_device_id(this->device_id);
-    get_device_ssid(this->device_ssid);
+    // FIXME: REMOVE THIS, NOT NEEDED
 
     ESP_LOGI(TAG, "Success");
 }
@@ -63,9 +46,7 @@ char *Messenger::build_registration_msg(REGISTRATION_TYPE reg_type)
         goto end;
     }
 
-    char device_id[13];
-    get_device_id(device_id);
-    id = cJSON_CreateString(device_id);
+    id = cJSON_CreateString(settings.username);
     if (id == NULL)
     {
         goto end;
@@ -104,9 +85,7 @@ char *Messenger::build_registration_msg(REGISTRATION_TYPE reg_type)
     }
     cJSON_AddItemToObject(data, "type", type);
 
-    char device_ssid[SSID_MAX_LEN];
-    get_device_ssid(device_ssid);
-    ssid = cJSON_CreateString(device_ssid);
+    ssid = cJSON_CreateString(settings.ssid);
     if (ssid == NULL)
     {
         goto end;

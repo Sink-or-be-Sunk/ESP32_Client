@@ -14,6 +14,8 @@
 #include <esp_wifi.h>
 #include <string.h>
 
+#include "System.h"
+
 class WifiManager
 {
 public:

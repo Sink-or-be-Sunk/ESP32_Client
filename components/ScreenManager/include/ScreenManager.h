@@ -5,6 +5,7 @@
 #include "Messenger.h"
 #include "GameState.h"
 #include "FriendManager.h"
+#include "System.h"
 
 enum SCREEN_STATE
 {

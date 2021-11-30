@@ -3,6 +3,7 @@
 #include "esp_log.h"
 #include "ShipManager.h"
 #include "Settings.h"
+#include "System.h"
 
 #define RESULT_HIT 'H'
 #define RESULT_MISS 'M'

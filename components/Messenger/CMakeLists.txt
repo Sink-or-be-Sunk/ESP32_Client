@@ -1,3 +1,3 @@
 idf_component_register(SRCS "Messenger.cpp"
                     INCLUDE_DIRS "include"
-                    REQUIRES cJSON Settings GameState ShipManager)
+                    REQUIRES cJSON Settings GameState ShipManager System)

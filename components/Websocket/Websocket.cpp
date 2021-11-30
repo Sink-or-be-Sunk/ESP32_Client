@@ -110,7 +110,7 @@ void Websocket::start(void)
 
     esp_websocket_client_config_t websocket_cfg = {};
 
-    websocket_cfg.uri = CONFIG_WEBSOCKET_URI;
+    websocket_cfg.uri = WEBSOCKET_URI;
 
     ESP_LOGI(TAG, "Connecting to %s...", websocket_cfg.uri);
 

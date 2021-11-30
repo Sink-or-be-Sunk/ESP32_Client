@@ -1,3 +1,3 @@
 idf_component_register(SRCS "FriendManager.cpp"
                     INCLUDE_DIRS "include" 
-                    REQUIRES Settings cJSON)
+                    REQUIRES Settings cJSON System)

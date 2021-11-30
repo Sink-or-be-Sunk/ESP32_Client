@@ -7,7 +7,7 @@
 #include "esp_log.h"
 #include "ScreenManager.h"
 #include "LEDManager.h"
-#include "Config.h"
+#include "System.h"
 
 class ButtonManager
 {

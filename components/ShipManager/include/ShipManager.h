@@ -9,7 +9,7 @@
 #include "driver/gpio.h"
 
 #include "ScreenManager.h"
-#include "Config.h"
+#include "System.h"
 
 #define NUM_SHIPS 4
 
