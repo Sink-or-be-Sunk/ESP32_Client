@@ -4,11 +4,20 @@
 // Kconfig.projbuild files
 
 /**
+ * Toggles between production and developement mode
+ * @type: bool
+ * comment this to change pins and websocket to production mode
+ */
+#define PRODUCTION_MODE
+
+/**
  * Toggles between Production and Development Pin Configuration
  * @type: bool
  * Comment this to set pins to production
  */
-// #define DEVELOPEMENT_PINS
+#ifndef PRODUCTION_MODE
+#define DEVELOPEMENT_PINS
+#endif
 
 /**
  * Reset Non-Volatile Storage to Factory Defaults
@@ -71,8 +80,11 @@
  * changing this uri will change the endpoint that the device
  * attempts to connect for gameplay, registration, etc...
  */
-// #define WEBSOCKET_URI "ws://sink-or-be-sunk.herokuapp.com"
+#ifdef PRODUCTION_MODE
+#define WEBSOCKET_URI "ws://sink-or-be-sunk.herokuapp.com"
+#else
 #define WEBSOCKET_URI "ws://traditions-sim-article-falls.trycloudflare.com/"
+#endif
 
 // TODO: THE FOLLOWING CONFIGS ARE NOT FOUND IN KCONFIG.PROJBUILD FILES
 
