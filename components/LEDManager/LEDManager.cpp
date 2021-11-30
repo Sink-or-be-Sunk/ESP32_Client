@@ -160,6 +160,11 @@ void LEDManager::update(const char *str)
             ESP_ERROR_CHECK(strip->set_pixel(strip, i, 0xff, 0xff, 0xff));
             break;
         }
+        case 'S':
+        {
+            ESP_ERROR_CHECK(strip->set_pixel(strip, i, 0xff, 0xa5, 0x00));
+            break;
+        }
         default:
         {
             ESP_LOGE(TAG, "Invalid Board Position: %c", str[i]);
