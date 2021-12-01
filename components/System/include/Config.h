@@ -33,6 +33,13 @@
 #define HARDCODE_SHIP_POSITIONS
 
 /**
+ * Add LED rainbow demo in project for testing the led strips
+ * @type: bool
+ * Comment this to toggle the led demo for testing
+ */
+#define LED_RAINBOW_DEMO
+
+/**
  * Reset Non-Volatile Storage to Factory Defaults
  * @type: bool
  * This erases the NVS that corresponds with saved user

@@ -11,6 +11,9 @@ static const char *TAG = "LED";
 
 led_strip_t *strip;
 
+// FIXME: REMOVE THE LED RAINBOW DEMO FROM FINAL PROJECT BUILD (see config.h #define LED_RAINBOW_DEMO)
+// TODO: OR MAYBE CHANGE THE RAINBOW INTO SOME WATER SPLASH FOR USE IN GAMEPLAY SOMETIME
+
 /**
  * @brief Simple helper function, converting HSV color space to RGB color space
  *
