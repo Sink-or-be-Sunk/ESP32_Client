@@ -40,7 +40,7 @@ void FriendManager::update(const cJSON *list)
     }
 
 end:
-    printf("Friend Manager Ended with status: %d\n", status);
+    ESP_LOGW(TAG, "Friend Manager Ended with status: %d\n", status);
 }
 
 const char *FriendManager::getCurDisplayName()

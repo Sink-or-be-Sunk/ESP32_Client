@@ -2,7 +2,7 @@
 /*************************************************/
 /************* DEVICE PIN DEFINITIONS ************/
 /*************************************************/
-#ifdef DEVELOPEMENT_PINS
+#ifndef PRODUCTION_PINS
 /*************** BUTTON MANAGER ******************/
 #define ROW_0_PIN GPIO_NUM_33
 #define ROW_1_PIN GPIO_NUM_32

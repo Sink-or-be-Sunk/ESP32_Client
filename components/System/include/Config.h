@@ -8,7 +8,7 @@
  * @type: bool
  * Comment this to set pins to production
  */
-// #define DEVELOPEMENT_PINS
+// #define PRODUCTION_PINS
 
 /**
  * Websocket Server URI
