@@ -3,6 +3,7 @@
 static const char *TAG = "SETTINGS";
 
 #define DEFAULT_USERNAME "DEFAULT_USERNAME"
+#define DEFAULT_SSID "DEFAULT_SSID"
 
 Settings settings; // singleton instance of class
 
@@ -39,7 +40,7 @@ void Settings::init(void)
     }
     // TODO: THESE ARE ALWAYS OVERWRITTEN (NEED TO WAIT FOR WIFI CONNECTION)
     strncpy(this->username, DEFAULT_USERNAME, SETTING_STR_LEN::USERNAME);
-    strncpy(this->ssid, "DEFAULT_SSID", SETTING_STR_LEN::SSID);
+    strncpy(this->ssid, DEFAULT_SSID, SETTING_STR_LEN::SSID);
 
 #ifdef STORAGE_RESET_ALL
     ESP_LOGW(TAG, "Resetting User NVS Settings");
@@ -47,11 +48,8 @@ void Settings::init(void)
 #else
     nvs_handle_t handle = Settings::open_handle();
 
-    // FIXME: THIS CAN BE REMOVED TO REPLACE WITH JUST THIS->USERNAME
     size_t len = SETTING_STR_LEN::USERNAME;
-    char username[SETTING_STR_LEN::USERNAME];
-    Settings::read_str(handle, SETTING_HEADERS::USERNAME, username, &len);
-    strncpy(this->username, username, len);
+    Settings::read_str(handle, SETTING_HEADERS::USERNAME, this->username, &len);
     ESP_LOGI(TAG, "Loaded Username: %s", this->username);
 #endif
 
@@ -112,7 +110,7 @@ void Settings::unset(const char *key)
         ESP_LOGW(TAG, "The value is not initialized yet!");
         break;
     default:
-        ESP_LOGE(TAG, "Error (%s) reading!", esp_err_to_name(err));
+        ESP_LOGE(TAG, "Error (%s) erasing <%s>!", esp_err_to_name(err), key);
     }
 
     // Close
@@ -131,10 +129,10 @@ void Settings::read_str(nvs_handle_t handle, const char *key, char *val, size_t 
         ESP_LOGI(TAG, "%s = %s: len=%d\n", key, val, *len);
         break;
     case ESP_ERR_NVS_NOT_FOUND:
-        ESP_LOGE(TAG, "The value is not initialized yet!");
+        ESP_LOGW(TAG, "The value is not initialized yet! Keeping Default Value");
         break;
     default:
-        ESP_LOGE(TAG, "Error (%s) reading!", esp_err_to_name(err));
+        ESP_LOGE(TAG, "Error (%s) reading <%s>!", esp_err_to_name(err), key);
     }
 
     // Close
@@ -152,7 +150,7 @@ void Settings::write_str(nvs_handle_t handle, const char *key, char *val)
     }
     else
     {
-        ESP_LOGE(TAG, "Error (%s) writing!", esp_err_to_name(err));
+        ESP_LOGE(TAG, "Error (%s) writing <%s>!", esp_err_to_name(err), key);
     }
 
     // Commit written value.
