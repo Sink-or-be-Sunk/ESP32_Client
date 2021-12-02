@@ -625,8 +625,7 @@ void ScreenManager::back(void)
         {
         case WAITING_PAIRING:
         {
-            this->state = INIT_PAIRING;
-            this->render();
+            websocket.send(messenger.build_registration_msg(DEQUEUE));
             break;
         }
         default:

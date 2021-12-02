@@ -20,7 +20,7 @@
 #ifdef PRODUCTION_SERVER
 #define WEBSOCKET_URI "ws://sink-or-be-sunk.herokuapp.com"
 #else
-#define WEBSOCKET_URI "ws://parameters-charged-uncle-monte.trycloudflare.com"
+#define WEBSOCKET_URI "ws://beijing-comprehensive-downloadable-origin.trycloudflare.com"
 #endif
 
 /**

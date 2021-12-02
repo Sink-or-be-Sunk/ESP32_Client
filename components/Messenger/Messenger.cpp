@@ -5,6 +5,7 @@ static const char *TAG = "MESSENGER";
 #define REGISTRATION_TAG "REGISTRATION"
 #define REGISTRATION_ENQUEUE_TAG "ENQUEUE"
 #define REGISTRATION_CONFIRM_TAG "CONFIRM"
+#define REGISTRATION_DEQUEUE_TAG "DEQUEUE"
 
 #define DATABASE_TAG "DATABASE"
 #define DATABASE_INVITE_TAG "INVITE TO GAME"
@@ -77,6 +78,11 @@ char *Messenger::build_registration_msg(REGISTRATION_TYPE reg_type)
     case CONFIRM:
     {
         type = cJSON_CreateString(REGISTRATION_CONFIRM_TAG);
+        break;
+    }
+    case DEQUEUE:
+    {
+        type = cJSON_CreateString(REGISTRATION_DEQUEUE_TAG);
         break;
     }
     }
