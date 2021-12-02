@@ -8,7 +8,7 @@
  * @type: bool
  * Comment this to set pins to production
  */
-// #define PRODUCTION_PINS
+#define PRODUCTION_PINS
 
 /**
  * Websocket Server URI
@@ -16,7 +16,7 @@
  * changing this uri will change the endpoint that the device
  * attempts to connect for gameplay, registration, etc...
  */
-// #define PRODUCTION_SERVER
+#define PRODUCTION_SERVER
 #ifdef PRODUCTION_SERVER
 #define WEBSOCKET_URI "ws://sink-or-be-sunk.herokuapp.com"
 #else
