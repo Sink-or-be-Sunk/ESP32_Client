@@ -23,6 +23,7 @@ enum REGISTRATION_TYPE
 {
     ENQUEUE,
     CONFIRM,
+    DEQUEUE,
 };
 
 enum DATABASE_REQ_TYPE

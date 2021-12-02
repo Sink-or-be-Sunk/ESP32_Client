@@ -79,6 +79,7 @@ enum HEADERS
     DATABASE_SUCCESS,
     BOARD_UPDATE,
     LEAVE_GAME,
+    TERMINATED_REGISTER,
     // GAME_TYPE_APPROVED, //TODO: ADD THESE BACK IF/WHEN WE MAKE MULTIPLE GAME TYPES
     // INVALID_GAME_TYPE,
 
@@ -102,6 +103,7 @@ static void header_map_init()
     header_map["LEFT GAME"] = LEAVE_GAME;
     header_map["POSITIONED SHIPS"] = POSITIONED_SHIPS;
     header_map["INVALID LAYOUT"] = INVALID_LAYOUT;
+    header_map["TERMINATED REGISTER"] = TERMINATED_REGISTER;
 }
 
 void Websocket::start(void)
@@ -244,6 +246,12 @@ void Websocket::handle(const char *msg, uint8_t len)
     {
         // TODO: NEEDS IMPLEMENTATION
         status = HEADERS::REGISTRATION;
+        break;
+    }
+    case TERMINATED_REGISTER:
+    {
+        screenManager.setState(INIT_PAIRING);
+        status = HEADERS::TERMINATED_REGISTER;
         break;
     }
     case REGISTER_PENDING:
