@@ -67,6 +67,7 @@ static void handle_button_event(int row, int col)
         screenManager.back();
         break;
     }
+#ifdef LED_RAINBOW_DEMO
     case '1':
     {
         ledManager.start();
@@ -77,6 +78,18 @@ static void handle_button_event(int row, int col)
         ledManager.pause();
         break;
     }
+#else
+    case '1':
+    {
+        screenManager.press(0); // zero indexed row/col
+        break;
+    }
+    case '2':
+    {
+        screenManager.press(1); // zero indexed row/col
+        break;
+    }
+#endif
     case '3':
     {
         screenManager.press(2); // zero indexed row/col

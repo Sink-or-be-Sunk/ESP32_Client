@@ -14,6 +14,7 @@ static const char *TAG = "MESSENGER";
 #define GAME_MAKE_MOVE_TAG "MAKE MOVE"
 #define GAME_POSITION_SHIPS_TAG "POSITION SHIPS"
 #define GAME_JOIN_GAME_TAG "JOIN GAME"
+#define DEVICE_INIT_CONNECTED_TAG "INIT CONNECTION"
 #define DEVICE_CONNECTED_TAG "CONNECTED"
 #define LEAVE_GAME_TAG "LEAVE GAME"
 
@@ -105,7 +106,7 @@ end:
     return string;
 }
 
-char *Messenger::build_connected_msg()
+char *Messenger::build_connected_msg(bool init)
 {
     char *string = NULL; // point to output (built) string
     cJSON *msg = NULL;   // main json wrapper object
@@ -125,7 +126,14 @@ char *Messenger::build_connected_msg()
     }
     cJSON_AddItemToObject(msg, "id", id);
 
-    req = cJSON_CreateString(DEVICE_CONNECTED_TAG);
+    if (init)
+    {
+        req = cJSON_CreateString(DEVICE_INIT_CONNECTED_TAG);
+    }
+    else
+    {
+        req = cJSON_CreateString(DEVICE_CONNECTED_TAG);
+    }
     if (req == NULL)
     {
         goto end;

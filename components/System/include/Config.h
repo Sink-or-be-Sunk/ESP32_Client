@@ -20,7 +20,7 @@
 #ifdef PRODUCTION_SERVER
 #define WEBSOCKET_URI "ws://sink-or-be-sunk.herokuapp.com"
 #else
-#define WEBSOCKET_URI "ws://traditions-sim-article-falls.trycloudflare.com/"
+#define WEBSOCKET_URI "ws://parameters-charged-uncle-monte.trycloudflare.com"
 #endif
 
 /**
@@ -31,6 +31,13 @@
  * detection
  */
 #define HARDCODE_SHIP_POSITIONS
+
+/**
+ * Add LED rainbow demo in project for testing the led strips
+ * @type: bool
+ * Comment this to toggle the led demo for testing
+ */
+#define LED_RAINBOW_DEMO
 
 /**
  * Reset Non-Volatile Storage to Factory Defaults
@@ -49,6 +56,16 @@
  * service after retries are exhausted.
  */
 #define WIFI_RESET_PROV_MGR_ON_FAILURE
+
+/**
+ * Number of websocket packets that can be dropped before causing a
+ * system restart
+ * @type: int
+ * Changes the number of packets that are dropped when trying to send
+ * the connection handshake packet.  When >= THIS packets are dropped
+ * the system will restart to attempt to reestablish a connection
+ */
+#define WS_PACKET_DROPPED_LIMIT 10
 
 /**
  * Max retries before reseting provisioning state machine
