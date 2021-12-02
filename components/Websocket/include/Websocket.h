@@ -28,11 +28,12 @@ class Websocket
 {
 private:
     esp_websocket_client_handle_t client;
+    int dropped;
 
 public:
     void start(void);
     void stop(void);
-    int send(char *msg);
+    void send(char *msg);
     void handle(const char *msg, uint8_t len);
 };
 

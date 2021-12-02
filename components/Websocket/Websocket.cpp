@@ -20,7 +20,7 @@ static void ws_connection_msg_task(void *args)
 {
     for (;;)
     {
-        websocket.send(messenger.build_connected_msg());
+        websocket.send(messenger.build_connected_msg(false));
         vTaskDelay(pdMS_TO_TICKS(1000));
     }
 }
@@ -108,6 +108,8 @@ void Websocket::start(void)
 {
     header_map_init();
 
+    this->dropped = 0;
+
     esp_websocket_client_config_t websocket_cfg = {};
 
     websocket_cfg.uri = WEBSOCKET_URI;
@@ -121,6 +123,8 @@ void Websocket::start(void)
 
     // start task
     xTaskCreate(ws_connection_msg_task, "ws_connection_msg_task", 4096, NULL, 10, NULL);
+
+    websocket.send(messenger.build_connected_msg(true));
 }
 
 void Websocket::stop(void)
@@ -135,14 +139,28 @@ void Websocket::stop(void)
 /**
  * @param - msg: this must be the output of a Messenger.h function call!
  */
-int Websocket::send(char *msg)
+void Websocket::send(char *msg)
 {
     // wrapper for wifi client send to ws
     size_t len = strlen(msg);
     ESP_LOGI(TAG, "Sending %s", msg);
     int res = esp_websocket_client_send_text(Websocket::client, msg, len, portMAX_DELAY);
     free(msg);
-    return res;
+
+    if (res == ESP_FAIL)
+    {
+        this->dropped++;
+        ESP_LOGW(TAG, "Dropped %d Packets", this->dropped);
+    }
+    else
+    {
+        this->dropped = 0;
+    }
+
+    if (this->dropped >= WS_PACKET_DROPPED_LIMIT)
+    {
+        esp_restart(); // connection failed, restart
+    }
 }
 
 void Websocket::handle(const char *msg, uint8_t len)
