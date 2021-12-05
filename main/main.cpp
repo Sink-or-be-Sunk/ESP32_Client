@@ -56,6 +56,7 @@ extern "C" void app_main(void)
     wifiManager.init();
 
     settings.update(); // needs to occur after wifi connection established
+    screenManager.splash(HOME, CREATE_GAME);
 
     gameState.init();
 
@@ -64,8 +65,6 @@ extern "C" void app_main(void)
     motorManager.init();
 
     websocket.start();
-
-    screenManager.splash(HOME, CREATE_GAME);
 
     // wifi_stop(); //FIXME: REMOVE THIS, NEVER WILL BE USED
 }

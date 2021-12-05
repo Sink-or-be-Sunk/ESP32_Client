@@ -30,7 +30,7 @@
  * testing the system without physical hardware for ship
  * detection
  */
-#define HARDCODE_SHIP_POSITIONS
+// #define HARDCODE_SHIP_POSITIONS
 
 /**
  * Add LED rainbow demo in project for testing the led strips
