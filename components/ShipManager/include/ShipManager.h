@@ -26,7 +26,8 @@ public:
 
     void init();
     bool addPosition(int row, int col);
-    void updateShip(ship_position_t type, uint8_t r1, uint8_t c1, uint8_t r2, uint8_t c2);
+    void removePosition(int row, int col, int *row_pair, int *col_pair);
+    // void updateShip(ship_position_t type, uint8_t r1, uint8_t c1, uint8_t r2, uint8_t c2);
     void getShip(ship_position_t type, uint8_t *r1, uint8_t *c1, uint8_t *r2, uint8_t *c2);
     bool isReady();
     int shipsRemaining();
