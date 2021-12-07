@@ -8,7 +8,7 @@
  * @type: bool
  * Comment this to set pins to production
  */
-#define PRODUCTION_PINS
+// #define PRODUCTION_PINS
 
 /**
  * Websocket Server URI
@@ -35,9 +35,17 @@
 /**
  * Add LED rainbow demo in project for testing the led strips
  * @type: bool
- * Comment this to toggle the led demo for testing
+ * Pressing button 1 turns on the led light show
+ * Pressing button 2 turns the lights off
  */
 #define LED_RAINBOW_DEMO
+
+/**
+ * Add Motor Rumble Demo to Project
+ * @type: bool
+ * pressing button 3 will cause the motor to rumble
+ */
+#define MOTOR_RUMBLE_DEMO
 
 /**
  * Reset Non-Volatile Storage to Factory Defaults

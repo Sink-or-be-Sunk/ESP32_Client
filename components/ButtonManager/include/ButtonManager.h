@@ -8,6 +8,7 @@
 #include "ScreenManager.h"
 #include "LEDManager.h"
 #include "System.h"
+#include "MotorManager.h"
 
 class ButtonManager
 {

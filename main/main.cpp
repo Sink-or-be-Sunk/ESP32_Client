@@ -51,6 +51,8 @@ extern "C" void app_main(void)
 
     ledManager.init();
 
+    motorManager.init();
+
     buttonManager.init();
 
     wifiManager.init();
@@ -61,8 +63,6 @@ extern "C" void app_main(void)
     gameState.init();
 
     shipManager.init();
-
-    motorManager.init();
 
     websocket.start();
 

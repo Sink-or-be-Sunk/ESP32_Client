@@ -21,10 +21,10 @@
 #define PIN_NUM_CS GPIO_NUM_15
 
 /*************** LED MANAGER ******************/
-#define LED_PIN GPIO_NUM_25
+#define LED_PIN GPIO_NUM_4
 
 /*************** MOTOR MANAGER ******************/
-#define MOTOR_DRIVER_PIN GPIO_NUM_2
+#define MOTOR_DRIVER_PIN GPIO_NUM_25
 
 /*************** SHIP MANAGER ******************/
 #define MUX_ROW_SEL_0 GPIO_NUM_18
