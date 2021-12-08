@@ -55,16 +55,20 @@ extern "C" void app_main(void)
 
     buttonManager.init();
 
+    shipManager.init();
+
+#ifdef DEBUG_SHIP_POSITIONS
+    screenManager.splash(HOME, SHIP_POSITION_DEBUG);
+#else
     wifiManager.init();
 
     settings.update(); // needs to occur after wifi connection established
     screenManager.splash(HOME, CREATE_GAME);
 
-    gameState.init();
-
-    shipManager.init();
-
     websocket.start();
+
+    gameState.init();
+#endif
 
     // wifi_stop(); //FIXME: REMOVE THIS, NEVER WILL BE USED
 }

@@ -132,10 +132,10 @@ static void ship_detect_task(void *args)
         }
         else
         {
-            ESP_LOGE(TAG, "c:%d, r:%d = 1", shipManager.col, shipManager.row);
+            ESP_LOGE(TAG, "c:%d, r:%d = 0", shipManager.col, shipManager.row);
         }
 
-        vTaskDelay(pdMS_TO_TICKS(1000));
+        vTaskDelay(pdMS_TO_TICKS(250));
     }
 #else
     for (;;)

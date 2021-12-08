@@ -244,8 +244,8 @@ void ScreenManager::render(void)
         display.display1("Ship Pos Debug");
         char buff[17];
         snprintf(buff, sizeof(buff), "Coords: C%c, R%c",
-                 shipManager.col + 'A',
-                 shipManager.row + '1');
+                 shipManager.col + '0',
+                 shipManager.row + '0');
         display.display2(buff);
         break;
     }
