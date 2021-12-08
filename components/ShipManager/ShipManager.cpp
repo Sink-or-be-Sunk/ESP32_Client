@@ -66,12 +66,11 @@ bool ShipManager::addPosition(int row, int col)
             ESP_LOGE(TAG, "Setting: c: %d, r: %d", prevCol, prevRow);
             return false;
         }
-        // this->ships[dist].front_r = row;
-        // this->ships[dist].back_r = this->prevRow;
-        // this->ships[dist].front_c = col;
-        // this->ships[dist].back_c = this->prevCol;
-        // this->ships[dist].isReady = true;
-        this->ships[dist].position(row, col, this->prevRow, this->prevCol);
+        this->ships[dist].front_r = row;
+        this->ships[dist].back_r = this->prevRow;
+        this->ships[dist].front_c = col;
+        this->ships[dist].back_c = this->prevCol;
+        this->ships[dist].isReady = true;
         this->fullShip = false;
         ship++;
         ESP_LOGI(TAG, "Ship Added: %d", dist);
@@ -87,19 +86,6 @@ bool ShipManager::addPosition(int row, int col)
         this->fullShip = true;
         return true;
     }
-}
-
-void ShipManager::removePosition(int row, int col, int *row_pair, int *col_pair)
-{
-    for (int i = PATROL; i <= CARRIER; i++)
-    {
-        ShipPosition ship = shipManager.ships[i];
-        if (ship.remove(row, col, row_pair, col_pair))
-        {
-            return;
-        }
-    }
-    ESP_LOGE(TAG, "Cannot remove position: r:%d, c:%d", row, col);
 }
 
 static void ship_detect_task(void *args)
@@ -132,35 +118,23 @@ static void ship_detect_task(void *args)
             {
                 int mask = (1 << c) << (r * 8);
 
+                if (shipManager.filled & mask)
+                {
+                    continue; // already filled
+                }
+
                 gpio_set_level(MUX_COL_SEL_0, c & 0x1);
                 gpio_set_level(MUX_COL_SEL_1, c & 0x2);
                 gpio_set_level(MUX_COL_SEL_2, c & 0x4);
 
                 if (gpio_get_level(BOAT_INPUT))
                 {
-
-                    if (shipManager.filled & mask)
+                    ESP_LOGI(TAG, "Position Detected: (c:%d, r:%d)", c, r);
+                    if (!shipManager.addPosition(r, c))
                     {
-                        // previously filled
+                        // FIXME: ACTUALLY HANDLE ERRORS HERE
                     }
-                    else
-                    {
-                        ESP_LOGW(TAG, "Position Detected: (c:%d, r:%d)", c, r);
-                        if (!shipManager.addPosition(r, c))
-                        {
-                            // FIXME: ACTUALLY HANDLE ERRORS HERE
-                        }
-                        shipManager.filled |= mask;
-                    }
-                }
-                else if (shipManager.filled & mask)
-                {
-                    // ship has been removed
-                    int rp;
-                    int cp;
-                    shipManager.removePosition(r, c, &rp, &cp);
-                    int mask_p = (1 << cp) << (rp * 8);
-                    shipManager.filled &= !mask_p;
+                    shipManager.filled |= mask;
                 }
 
                 vTaskDelay(pdMS_TO_TICKS(10)); // allow time for signal to settle in mux
@@ -202,16 +176,18 @@ void ShipManager::init(void)
     ESP_LOGI(TAG, "Success!");
 }
 
-// void ShipManager::updateShip(ship_position_t type, uint8_t r1, uint8_t c1, uint8_t r2, uint8_t c2)
-// {
-//     this->ships[type].position(r1, c1, r2, c2);
-// }
+void ShipManager::updateShip(ship_position_t type, uint8_t r1, uint8_t c1, uint8_t r2, uint8_t c2)
+{
+    this->ships[type].position(r1, c1, r2, c2);
+}
 
 void ShipManager::getShip(ship_position_t type, uint8_t *r1, uint8_t *c1, uint8_t *r2, uint8_t *c2)
 {
     ShipPosition pos = this->ships[type];
-
-    pos.get(r1, c1, r2, c2);
+    *r1 = pos.front_r;
+    *c1 = pos.front_c;
+    *r2 = pos.back_r;
+    *c2 = pos.back_c;
 }
 
 bool ShipManager::isReady()

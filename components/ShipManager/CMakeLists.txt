@@ -1,3 +1,3 @@
-idf_component_register(SRCS "ShipPosition.cpp" "ShipManager.cpp"
+idf_component_register(SRCS "ShipManager.cpp"
                     INCLUDE_DIRS "include"
                     REQUIRES freertos driver ScreenManager System)
