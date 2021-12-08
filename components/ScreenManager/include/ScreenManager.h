@@ -1,11 +1,12 @@
 #pragma once
+#include "System.h"
 #include "esp_log.h"
 #include "Display.h"
 #include "Websocket.h"
 #include "Messenger.h"
 #include "GameState.h"
 #include "FriendManager.h"
-#include "System.h"
+#include "ShipManager.h"
 
 enum SCREEN_STATE
 {
@@ -41,6 +42,11 @@ enum SCREEN_STATE
 
     // GAME IN PROGRESS
     ATTACK
+
+#ifdef DEBUG_SHIP_POSITIONS
+    ,
+    SHIP_POSITION_DEBUG
+#endif
 };
 
 class ScreenManager

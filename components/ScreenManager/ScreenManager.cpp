@@ -237,6 +237,19 @@ void ScreenManager::render(void)
         display.display2(buff);
         break;
     }
+#ifdef DEBUG_SHIP_POSITIONS
+    case SHIP_POSITION_DEBUG:
+    {
+        //               "-=-=-=-=-=-=-=-="
+        display.display1("Ship Pos Debug");
+        char buff[17];
+        snprintf(buff, sizeof(buff), "Coords: C%c, R%c",
+                 shipManager.col + 'A',
+                 shipManager.row + '1');
+        display.display2(buff);
+        break;
+    }
+#endif
     }
 }
 
@@ -382,6 +395,7 @@ void ScreenManager::leftPage(void)
 
 void ScreenManager::rightArrow(void)
 {
+#ifndef DEBUG_SHIP_POSITIONS
     switch (this->state)
     {
     case ATTACK:
@@ -396,10 +410,15 @@ void ScreenManager::rightArrow(void)
         break;
     }
     }
+#else
+    shipManager.right();
+    this->render();
+#endif
 }
 
 void ScreenManager::leftArrow(void)
 {
+#ifndef DEBUG_SHIP_POSITIONS
     switch (this->state)
     {
     case ATTACK:
@@ -414,10 +433,15 @@ void ScreenManager::leftArrow(void)
         break;
     }
     }
+#else
+    shipManager.left();
+    this->render();
+#endif
 }
 
 void ScreenManager::upArrow(void)
 {
+#ifndef DEBUG_SHIP_POSITIONS
     switch (this->state)
     {
     case ATTACK:
@@ -468,10 +492,16 @@ void ScreenManager::upArrow(void)
         break;
     }
     }
+
+#else
+    shipManager.up();
+    this->render();
+#endif
 }
 
 void ScreenManager::downArrow(void)
 {
+#ifndef DEBUG_SHIP_POSITIONS
     switch (this->state)
     {
     case ATTACK:
@@ -505,6 +535,11 @@ void ScreenManager::downArrow(void)
         break;
     }
     }
+
+#else
+    shipManager.down();
+    this->render();
+#endif
 }
 
 void ScreenManager::enter(void)

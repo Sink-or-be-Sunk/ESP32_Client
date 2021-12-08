@@ -30,7 +30,20 @@
  * testing the system without physical hardware for ship
  * detection
  */
-#define HARDCODE_SHIP_POSITIONS
+// #define HARDCODE_SHIP_POSITIONS
+
+/**
+ * Check individual row/col pins are functioning properly
+ * @type: bool
+ * Use the arrow keys to cycle through the rows and column
+ * selects from the mux array to check the conditions of each
+ * pin
+ */
+#define DEBUG_SHIP_POSITIONS
+
+#if defined(HARDCODE_SHIP_POSITIONS) && defined(DEBUG_SHIP_POSITIONS)
+#error YOU CANNOT HAVE THESE TWO CONDITIONS DEFINED AT THE SAME TIE
+#endif
 
 /**
  * Add LED rainbow demo in project for testing the led strips

@@ -22,8 +22,15 @@ private:
     uint8_t prevCol;
 
 public:
+#ifdef DEBUG_SHIP_POSITIONS
+    int row;
+    int col;
+    void up(void);
+    void down(void);
+    void left(void);
+    void right(void);
+#endif
     uint64_t filled = 0; // each bit coresponds to spot on board
-
     void init();
     bool addPosition(int row, int col);
     void updateShip(ship_position_t type, uint8_t r1, uint8_t c1, uint8_t r2, uint8_t c2);

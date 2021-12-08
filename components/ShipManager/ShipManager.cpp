@@ -88,9 +88,25 @@ bool ShipManager::addPosition(int row, int col)
     }
 }
 
+static void set_row(int r)
+{
+    gpio_set_level(MUX_ROW_SEL_0, r & 0x1);
+    gpio_set_level(MUX_ROW_SEL_1, r & 0x2);
+    gpio_set_level(MUX_ROW_SEL_2, r & 0x4);
+    vTaskDelay(pdMS_TO_TICKS(10)); // allow time for signal to settle in mux
+}
+
+static void set_col(int c)
+{
+    gpio_set_level(MUX_COL_SEL_0, c & 0x1);
+    gpio_set_level(MUX_COL_SEL_1, c & 0x2);
+    gpio_set_level(MUX_COL_SEL_2, c & 0x4);
+    vTaskDelay(pdMS_TO_TICKS(10)); // allow time for signal to settle in mux
+}
+
 static void ship_detect_task(void *args)
 {
-#ifdef HARDCODE_SHIP_POSITIONS
+#if defined(HARDCODE_SHIP_POSITIONS)
     ESP_LOGW(TAG, "Ship positions set to developement values");
     int hc_row[] = {0, 1, 6, 6, 1, 4, 0, 4};
     int hc_col[] = {6, 6, 6, 4, 3, 3, 0, 0};
@@ -103,16 +119,30 @@ static void ship_detect_task(void *args)
     {
         vTaskDelay(pdMS_TO_TICKS(1000)); // RTOS task cannot return
     }
+#elif defined(DEBUG_SHIP_POSITIONS)
+    ESP_LOGW(TAG, "Monitoring In Debug Mode");
+    for (;;)
+    {
+        set_row(shipManager.row);
+        set_col(shipManager.col);
+
+        if (gpio_get_level(BOAT_INPUT))
+        {
+            ESP_LOGI(TAG, "c:%d, r:%d = 1", shipManager.col, shipManager.row);
+        }
+        else
+        {
+            ESP_LOGE(TAG, "c:%d, r:%d = 1", shipManager.col, shipManager.row);
+        }
+
+        vTaskDelay(pdMS_TO_TICKS(1000));
+    }
 #else
     for (;;)
     {
         for (int r = 0; r < BOARD_WIDTH; r++)
         {
-            gpio_set_level(MUX_ROW_SEL_0, r & 0x1);
-            gpio_set_level(MUX_ROW_SEL_1, r & 0x2);
-            gpio_set_level(MUX_ROW_SEL_2, r & 0x4);
-
-            vTaskDelay(pdMS_TO_TICKS(10)); // allow time for signal to settle in mux
+            set_row(r);
 
             for (int c = 0; c < BOARD_WIDTH; c++)
             {
@@ -123,9 +153,7 @@ static void ship_detect_task(void *args)
                     continue; // already filled
                 }
 
-                gpio_set_level(MUX_COL_SEL_0, c & 0x1);
-                gpio_set_level(MUX_COL_SEL_1, c & 0x2);
-                gpio_set_level(MUX_COL_SEL_2, c & 0x4);
+                set_col(c);
 
                 if (gpio_get_level(BOAT_INPUT))
                 {
@@ -136,8 +164,6 @@ static void ship_detect_task(void *args)
                     }
                     shipManager.filled |= mask;
                 }
-
-                vTaskDelay(pdMS_TO_TICKS(10)); // allow time for signal to settle in mux
             }
         }
 
@@ -211,3 +237,40 @@ int ShipManager::shipsRemaining()
     }
     return count;
 }
+
+#ifdef DEBUG_SHIP_POSITIONS
+
+void ShipManager::right(void)
+{
+    shipManager.col++;
+    if (shipManager.col > 7)
+    {
+        shipManager.col = 7;
+    }
+}
+void ShipManager::left(void)
+{
+    shipManager.col--;
+    if (shipManager.col < 0)
+    {
+        shipManager.col = 0;
+    }
+}
+void ShipManager::up(void)
+{
+    shipManager.row--;
+    if (shipManager.row < 0)
+    {
+        shipManager.row = 0;
+    }
+}
+void ShipManager::down(void)
+{
+    shipManager.row++;
+    if (shipManager.row > 7)
+    {
+        shipManager.row = 7;
+    }
+}
+
+#endif
