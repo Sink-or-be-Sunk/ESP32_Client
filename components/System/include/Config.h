@@ -30,7 +30,7 @@
  * testing the system without physical hardware for ship
  * detection
  */
-// #define HARDCODE_SHIP_POSITIONS
+#define HARDCODE_SHIP_POSITIONS
 
 /**
  * Add LED rainbow demo in project for testing the led strips
@@ -38,14 +38,14 @@
  * Pressing button 1 turns on the led light show
  * Pressing button 2 turns the lights off
  */
-#define LED_RAINBOW_DEMO
+// #define LED_RAINBOW_DEMO
 
 /**
  * Add Motor Rumble Demo to Project
  * @type: bool
  * pressing button 3 will cause the motor to rumble
  */
-#define MOTOR_RUMBLE_DEMO
+// #define MOTOR_RUMBLE_DEMO
 
 /**
  * Reset Non-Volatile Storage to Factory Defaults
