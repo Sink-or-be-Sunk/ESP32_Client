@@ -83,7 +83,7 @@ static void ship_detect_task(void *args)
 
                 if (gpio_get_level(BOAT_INPUT))
                 {
-                    ESP_LOGW(TAG, "Position Detected: (c:%d, r:%d)", c, r);
+                    ESP_LOGW(TAG, "Position Detected: c:%d, r:%d", c, r);
                     if (shipManager.addPosition(r, c))
                     {
                         // valid add
@@ -177,6 +177,16 @@ void ShipManager::notify_leds(void)
     ledManager.update(str);
 }
 
+/**
+ * Adds position to queue (size two).  Once queue
+ * is full, the two points are analyzed to find the ship
+ * size.  If the size is valid, the ships array is updated
+ *
+ * @param row row to add
+ * @param col col to add
+ * @returns - true if the position can be added, false
+ * if the position causes some error when adding
+ */
 bool ShipManager::addPosition(int row, int col)
 {
     if (this->fullShip)
@@ -223,7 +233,7 @@ bool ShipManager::addPosition(int row, int col)
         this->fullShip = false; // reset queue
         ESP_LOGW(TAG, "Ship Added: %d", dist);
 
-        screenManager.conditionalRender(READY_UP_SHIPS); // re-render READY_UP_SHIPS screen
+        screenManager.conditionalRender(READY_UP_SHIPS);
 
         return true;
     }
@@ -236,8 +246,16 @@ bool ShipManager::addPosition(int row, int col)
     }
 }
 
+/**
+ * Removes ship at given row,col pair if present
+ * Does nothing otherwise
+ * @param row row of ship to remove
+ * @param col col of ship to remove
+ */
 void ShipManager::removePosition(int row, int col)
 {
+    this->fullShip = false; // reset queue
+
     for (int i = PATROL; i < CARRIER; i++)
     {
         ShipPosition ship = this->ships[i];

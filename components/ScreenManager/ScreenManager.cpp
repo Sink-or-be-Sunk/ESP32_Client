@@ -31,6 +31,10 @@ void ScreenManager::conditionalRender(SCREEN_STATE state)
     {
         this->render();
     }
+    else
+    {
+        ESP_LOGE(TAG, "Conditional Render Failed");
+    }
 }
 
 void ScreenManager::render(void)
