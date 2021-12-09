@@ -98,6 +98,11 @@ char GameState::get_attack_row_tag(void)
     return (this->attackSel == 1) ? 'R' : 'r';
 }
 
+void GameState::moveReceived(char *result)
+{
+    strncpy(this->lastMoveRes, result, MOVE_RESULT_BUFFER_SIZE);
+}
+
 void GameState::moveReceived(int c, int r, char *to, char *result)
 {
     printf("result: %s\n", result);

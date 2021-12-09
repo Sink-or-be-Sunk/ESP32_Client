@@ -131,10 +131,9 @@ void ScreenManager::render(void)
     }
     case NOTIFY_INVALID_MOVE:
     {
-        // TODO: ADD META INFO ABOUT MOVE HERE
         //                "-=-=-=-=-=-=-=-="
         display.display1("Invalid Move");
-        display.display2("Change,Try Again");
+        display.display2(gameState.lastMoveRes);
         break;
     }
     case LEFT_GAME:

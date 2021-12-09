@@ -103,6 +103,7 @@ static void header_map_init()
     header_map["LEFT GAME"] = LEAVE_GAME;
     header_map["POSITIONED SHIPS"] = POSITIONED_SHIPS;
     header_map["INVALID LAYOUT"] = INVALID_LAYOUT;
+    header_map["INVALID MOVE"] = INVALID_MOVE;
     header_map["TERMINATED REGISTER"] = TERMINATED_REGISTER;
 }
 
@@ -375,8 +376,12 @@ void Websocket::handle(const char *msg, uint8_t len)
     }
     case INVALID_MOVE:
     {
-        // TODO: ADD META INFO TO GAME STATE HERE
+        if (!cJSON_IsString(meta) || (meta->valuestring == NULL))
+        {
+            status = -1 * HEADERS::INVALID_MOVE;
+        }
 
+        gameState.invalidMove(meta->valuestring);
         screenManager.splash(NOTIFY_INVALID_MOVE);
         status = HEADERS::INVALID_MOVE;
         break;
