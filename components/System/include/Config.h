@@ -38,7 +38,7 @@
  * Pressing button 1 turns on the led light show
  * Pressing button 2 turns the lights off
  */
-// #define LED_RAINBOW_DEMO
+#define LED_RAINBOW_DEMO
 
 /**
  * Add Motor Rumble Demo to Project
@@ -110,4 +110,4 @@
  * erased and internal state machine is reset after this
  * threshold is reached.
  */
-#define WIFI_NO_CONNECT_RETRY_CNT 5
+#define WIFI_NO_CONNECT_RETRY_CNT 24
