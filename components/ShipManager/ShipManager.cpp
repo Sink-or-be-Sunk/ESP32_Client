@@ -243,7 +243,7 @@ void ShipManager::removePosition(int row, int col)
         ShipPosition ship = this->ships[i];
         if (ship.remove(row, col))
         {
-            ESP_LOGW(TAG, "Removed Ship <%d>", i);
+            ESP_LOGW(TAG, "Removed Ship <%d> Position r:%d,c:%d", i, row, col);
             return;
         }
     }
