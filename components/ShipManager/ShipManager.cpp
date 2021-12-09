@@ -18,8 +18,6 @@ static const char *TAG = "SHIPS";
 
 ShipManager shipManager; // singleton instance of class
 
-int ship = 0; // FIXME: REMOVE THIS, FOR DEBUGGING ONLY
-
 static void set_row(int r)
 {
     gpio_set_level(MUX_ROW_SEL_0, r & 0x1);
@@ -81,26 +79,27 @@ static void ship_detect_task(void *args)
             {
                 int mask = (1 << c) << (r * 8);
 
-                if (shipManager.filled & mask)
-                {
-                    continue; // already filled
-                }
-
                 set_col(c);
 
                 if (gpio_get_level(BOAT_INPUT))
                 {
-                    shipManager.notify_leds();
                     ESP_LOGW(TAG, "Position Detected: (c:%d, r:%d)", c, r);
-                    if (!shipManager.addPosition(r, c))
+                    if (shipManager.addPosition(r, c))
                     {
-                        // FIXME: ACTUALLY HANDLE ERRORS HERE
+                        // valid add
+                        shipManager.filled |= mask;
                     }
-                    shipManager.filled |= mask;
+                }
+                else if (shipManager.filled & mask)
+                {
+                    // position has been removed
+                    shipManager.removePosition(r, c);
+                    shipManager.filled &= ~mask;
                 }
             }
         }
 
+        shipManager.notify_leds();
         vTaskDelay(pdMS_TO_TICKS(RESCAN_DELAY_MS));
     }
 #endif
@@ -110,7 +109,14 @@ void ShipManager::init(void)
 {
     ESP_LOGI(TAG, "Initializing...");
 
+    this->filled = 0;
     this->fullShip = false;
+    this->prevRow = -1;
+    this->prevCol = -1;
+    for (int i = PATROL; i < CARRIER; i++)
+    {
+        this->ships[i].init();
+    }
 
     gpio_config_t io_conf;
     io_conf = {
@@ -183,24 +189,21 @@ bool ShipManager::addPosition(int row, int col)
         {
             // vertical boat
             dist = col - this->prevCol;
-            if (dist < 0)
-            {
-                dist *= -1;
-            }
         }
         else if (colInLine == 0)
         {
             // horizontal boat
             dist = row - this->prevRow;
-            if (dist < 0)
-            {
-                dist *= -1;
-            }
         }
         else
         {
             ESP_LOGE(TAG, "Invalid set of positions detected!");
             return false;
+        }
+
+        if (dist < 0)
+        {
+            dist *= -1;
         }
 
         dist -= 1; // normalize with ship_position_t enum
@@ -212,19 +215,13 @@ bool ShipManager::addPosition(int row, int col)
         if (this->ships[dist].isReady)
         {
             ESP_LOGE(TAG, "Repeat of ship shize detected: %d!", dist);
-            this->prevCol = 0;
-            this->prevRow = ship;
-            ESP_LOGE(TAG, "Setting: c: %d, r: %d", prevCol, prevRow);
             return false;
         }
-        this->ships[dist].front_r = row;
-        this->ships[dist].back_r = this->prevRow;
-        this->ships[dist].front_c = col;
-        this->ships[dist].back_c = this->prevCol;
-        this->ships[dist].isReady = true;
-        this->fullShip = false;
-        ship++;
-        ESP_LOGI(TAG, "Ship Added: %d", dist);
+
+        this->ships[dist].position(row, col, this->prevRow, this->prevCol);
+
+        this->fullShip = false; // reset queue
+        ESP_LOGW(TAG, "Ship Added: %d", dist);
 
         screenManager.conditionalRender(READY_UP_SHIPS); // re-render READY_UP_SHIPS screen
 
@@ -239,9 +236,18 @@ bool ShipManager::addPosition(int row, int col)
     }
 }
 
-void ShipManager::updateShip(ship_position_t type, uint8_t r1, uint8_t c1, uint8_t r2, uint8_t c2)
+void ShipManager::removePosition(int row, int col)
 {
-    this->ships[type].position(r1, c1, r2, c2);
+    for (int i = PATROL; i < CARRIER; i++)
+    {
+        ShipPosition ship = this->ships[i];
+        if (ship.remove(row, col))
+        {
+            ESP_LOGW(TAG, "Removed Ship <%d>", i);
+            return;
+        }
+    }
+    ESP_LOGE(TAG, "Removed Position r:%d,c:%d", row, col);
 }
 
 bool ShipManager::getShip(ship_position_t type, uint8_t *r1, uint8_t *c1, uint8_t *r2, uint8_t *c2)

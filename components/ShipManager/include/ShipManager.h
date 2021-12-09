@@ -14,6 +14,18 @@
 
 #define NUM_SHIPS 4
 
+/**
+ * Ship Position and Index in ShipManager Array
+ */
+enum ship_position_t
+{
+    INVALID = -1,
+    PATROL = 0,
+    SUBMARINE = 1,
+    BATTLESHIP = 2,
+    CARRIER = 3,
+};
+
 class ShipManager
 {
 private:
@@ -34,7 +46,7 @@ public:
     uint64_t filled = 0; // each bit coresponds to spot on board
     void init();
     bool addPosition(int row, int col);
-    void updateShip(ship_position_t type, uint8_t r1, uint8_t c1, uint8_t r2, uint8_t c2);
+    void removePosition(int row, int col);
     bool getShip(ship_position_t type, uint8_t *r1, uint8_t *c1, uint8_t *r2, uint8_t *c2);
     bool isReady();
     int shipsRemaining();
