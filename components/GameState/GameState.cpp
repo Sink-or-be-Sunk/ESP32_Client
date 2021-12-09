@@ -98,7 +98,7 @@ char GameState::get_attack_row_tag(void)
     return (this->attackSel == 1) ? 'R' : 'r';
 }
 
-void GameState::moveReceived(char *result)
+void GameState::invalidMove(char *result)
 {
     strncpy(this->lastMoveRes, result, MOVE_RESULT_BUFFER_SIZE);
 }
