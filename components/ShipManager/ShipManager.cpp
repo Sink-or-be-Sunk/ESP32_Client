@@ -288,10 +288,10 @@ void ShipManager::removePosition(int row, int col)
 
     for (int i = PATROL; i <= CARRIER; i++)
     {
-        ShipPosition ship = this->ships[i];
-        if (ship.remove(row, col))
+        if (this->ships[i].remove(row, col))
         {
             ESP_LOGW(TAG, "Removed Ship <%d> Position r:%d,c:%d", i, row, col);
+            ESP_LOGE(TAG, "ship: (r:%d,c:%d) (r:%d,c:%d)", this->ships[i].front_r, this->ships[i].front_c, this->ships[i].back_r, this->ships[i].back_c);
             return;
         }
     }
