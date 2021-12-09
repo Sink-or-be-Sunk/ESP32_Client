@@ -8,8 +8,9 @@
 #include "esp_log.h"
 #include "driver/gpio.h"
 
-#include "ScreenManager.h"
 #include "System.h"
+#include "ScreenManager.h"
+#include "LEDManager.h"
 
 #define NUM_SHIPS 4
 
@@ -34,9 +35,10 @@ public:
     void init();
     bool addPosition(int row, int col);
     void updateShip(ship_position_t type, uint8_t r1, uint8_t c1, uint8_t r2, uint8_t c2);
-    void getShip(ship_position_t type, uint8_t *r1, uint8_t *c1, uint8_t *r2, uint8_t *c2);
+    bool getShip(ship_position_t type, uint8_t *r1, uint8_t *c1, uint8_t *r2, uint8_t *c2);
     bool isReady();
     int shipsRemaining();
+    void notify_leds();
 };
 
 extern ShipManager shipManager;

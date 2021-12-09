@@ -90,6 +90,7 @@ static void ship_detect_task(void *args)
 
                 if (gpio_get_level(BOAT_INPUT))
                 {
+                    shipManager.notify_leds();
                     ESP_LOGW(TAG, "Position Detected: (c:%d, r:%d)", c, r);
                     if (!shipManager.addPosition(r, c))
                     {
@@ -133,6 +134,41 @@ void ShipManager::init(void)
     xTaskCreate(ship_detect_task, "ship_detect_task", 4096, NULL, 10, NULL);
 
     ESP_LOGI(TAG, "Success!");
+}
+
+void ShipManager::notify_leds(void)
+{
+    char str[NUMBER_OF_LEDS];
+
+    // build blank led string
+    for (int i = 0; i < NUMBER_OF_LEDS; i++)
+    {
+        str[i] = led_position_t::EMPTY;
+    }
+
+    // add positioned ships
+    for (int i = PATROL; i <= CARRIER; i++)
+    {
+        uint8_t r1;
+        uint8_t r2;
+        uint8_t c1;
+        uint8_t c2;
+        if (this->getShip((ship_position_t)i, &r1, &c1, &r2, &c2))
+        {
+            str[r1 * BOARD_WIDTH + c1] = led_position_t::POSITION;
+            str[r2 * BOARD_WIDTH + c2] = led_position_t::POSITION;
+        }
+    }
+
+    // add partial ship
+    if (!this->fullShip)
+    {
+        int r = BOARD_WIDTH - 1 - this->prevRow;
+        int c = this->prevCol;
+        str[r * BOARD_WIDTH + c] = led_position_t::POSITION;
+    }
+
+    ledManager.update(str);
 }
 
 bool ShipManager::addPosition(int row, int col)
@@ -208,13 +244,14 @@ void ShipManager::updateShip(ship_position_t type, uint8_t r1, uint8_t c1, uint8
     this->ships[type].position(r1, c1, r2, c2);
 }
 
-void ShipManager::getShip(ship_position_t type, uint8_t *r1, uint8_t *c1, uint8_t *r2, uint8_t *c2)
+bool ShipManager::getShip(ship_position_t type, uint8_t *r1, uint8_t *c1, uint8_t *r2, uint8_t *c2)
 {
     ShipPosition pos = this->ships[type];
     *r1 = BOARD_WIDTH - 1 - pos.front_r; // convert to coordinates used by server
     *c1 = pos.front_c;
     *r2 = BOARD_WIDTH - 1 - pos.back_r; // convert to coordinates used by server
     *c2 = pos.back_c;
+    return pos.isReady;
 }
 
 bool ShipManager::isReady()

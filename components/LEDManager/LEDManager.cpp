@@ -7,8 +7,6 @@ static const char *TAG = "LED";
 #define RMT_TX_CHANNEL RMT_CHANNEL_0
 #define EXAMPLE_CHASE_SPEED_MS (10)
 
-#define NUMBER_OF_LEDS 128
-
 led_strip_t *strip;
 
 // FIXME: REMOVE THE LED RAINBOW DEMO FROM FINAL PROJECT BUILD (see config.h #define LED_RAINBOW_DEMO)
@@ -143,29 +141,34 @@ void LEDManager::update(const char *str)
     {
         switch (str[i])
         {
-        case 'E':
+        case led_position_t::EMPTY:
         {
-            ESP_ERROR_CHECK(strip->set_pixel(strip, i, 0, 0, 0));
+            ESP_ERROR_CHECK(strip->set_pixel(strip, i, 0, 0, 0x0f)); // TODO: DO WE WANT BLUE FOR EMPTY?
             break;
         }
-        case 'F':
+        case led_position_t::FULL:
         {
             ESP_ERROR_CHECK(strip->set_pixel(strip, i, 0, 0xff, 0));
             break;
         }
-        case 'H':
+        case led_position_t::HIT:
         {
             ESP_ERROR_CHECK(strip->set_pixel(strip, i, 0xff, 0, 0));
             break;
         }
-        case 'M':
+        case led_position_t::MISS:
         {
             ESP_ERROR_CHECK(strip->set_pixel(strip, i, 0xff, 0xff, 0xff));
             break;
         }
-        case 'S':
+        case led_position_t::SUNK:
         {
             ESP_ERROR_CHECK(strip->set_pixel(strip, i, 0xff, 0xa5, 0x00));
+            break;
+        }
+        case led_position_t::POSITION:
+        {
+            ESP_ERROR_CHECK(strip->set_pixel(strip, i, 0xff, 0x00, 0xff));
             break;
         }
         default:

@@ -8,6 +8,18 @@
 #include "led_strip.h"
 #include "System.h"
 
+#define NUMBER_OF_LEDS 128
+
+namespace led_position_t
+{
+    constexpr char EMPTY = 'E';
+    constexpr char FULL = 'F';
+    constexpr char HIT = 'H';
+    constexpr char MISS = 'M';
+    constexpr char SUNK = 'S';
+    constexpr char POSITION = 'P';
+}
+
 class LEDManager
 {
 private:
