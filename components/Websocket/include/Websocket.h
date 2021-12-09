@@ -23,6 +23,7 @@
 #include "FriendManager.h"
 #include "LEDManager.h"
 #include "MotorManager.h"
+#include "ShipManager.h"
 
 class Websocket
 {

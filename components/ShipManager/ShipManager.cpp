@@ -148,9 +148,14 @@ void ShipManager::init(void)
     gpio_config(&io_conf);
 
     // start task
-    xTaskCreate(ship_detect_task, "ship_detect_task", 4096, NULL, 10, NULL);
+    xTaskCreate(ship_detect_task, "ship_detect_task", 4096, NULL, 10, &this->handle);
 
     ESP_LOGI(TAG, "Success!");
+}
+
+void ShipManager::stopChecking()
+{
+    vTaskSuspend(this->handle);
 }
 
 void ShipManager::fill(int r, int c)

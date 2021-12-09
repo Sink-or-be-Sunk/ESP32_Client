@@ -59,17 +59,17 @@ extern "C" void app_main(void)
 
     gameState.init();
 
-    gameState.setState(LOBBY);
-    screenManager.splash(HOME, READY_UP_SHIPS);
+    // gameState.setState(LOBBY);
+    // screenManager.splash(HOME, READY_UP_SHIPS);
 #ifdef DEBUG_SHIP_POSITIONS
     screenManager.splash(HOME, SHIP_POSITION_DEBUG);
 #else
-    // wifiManager.init();
+    wifiManager.init();
 
-    // settings.update(); // needs to occur after wifi connection established
-    // screenManager.splash(HOME, CREATE_GAME);
+    settings.update(); // needs to occur after wifi connection established
+    screenManager.splash(HOME, CREATE_GAME);
 
-    // websocket.start();
+    websocket.start();
 #endif
 
     // wifi_stop(); //FIXME: REMOVE THIS, NEVER WILL BE USED

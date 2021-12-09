@@ -30,6 +30,7 @@ enum ship_position_t
 class ShipManager
 {
 private:
+    TaskHandle_t handle;
     ShipPosition ships[NUM_SHIPS]; // NOTE: indexed by ship_position_t
     bool fullShip;
     int prevRow;
@@ -55,6 +56,7 @@ public:
     bool isFilled(int r, int c);
     void fill(int r, int c);
     void clear(int r, int c);
+    void stopChecking();
 };
 
 extern ShipManager shipManager;

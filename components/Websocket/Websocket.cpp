@@ -243,6 +243,7 @@ void Websocket::handle(const char *msg, uint8_t len)
             goto end;
         }
 
+        shipManager.stopChecking();
         ledManager.update(meta->valuestring);
         status = HEADERS::BOARD_UPDATE;
 
@@ -430,6 +431,7 @@ void Websocket::handle(const char *msg, uint8_t len)
     }
     case POSITIONED_SHIPS:
     {
+        shipManager.stopChecking();
         screenManager.splash(NOTIFY_POSITION_SHIPS);
         status = HEADERS::POSITIONED_SHIPS;
         break;
