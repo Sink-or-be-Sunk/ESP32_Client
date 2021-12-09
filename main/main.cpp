@@ -51,21 +51,20 @@ extern "C" void app_main(void)
 
     ledManager.init();
 
+    motorManager.init();
+
     buttonManager.init();
 
     wifiManager.init();
 
     settings.update(); // needs to occur after wifi connection established
+    screenManager.splash(HOME, CREATE_GAME);
 
     gameState.init();
 
     shipManager.init();
 
-    motorManager.init();
-
     websocket.start();
-
-    screenManager.splash(HOME, CREATE_GAME);
 
     // wifi_stop(); //FIXME: REMOVE THIS, NEVER WILL BE USED
 }

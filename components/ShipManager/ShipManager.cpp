@@ -92,8 +92,8 @@ static void ship_detect_task(void *args)
 {
 #ifdef HARDCODE_SHIP_POSITIONS
     ESP_LOGW(TAG, "Ship positions set to developement values");
-    int hc_row[] = {0, 0, 1, 1, 2, 2, 3, 3};
-    int hc_col[] = {0, 1, 0, 2, 0, 3, 0, 4};
+    int hc_row[] = {0, 1, 6, 6, 1, 4, 0, 4};
+    int hc_col[] = {6, 6, 6, 4, 3, 3, 0, 0};
     int ships = 4 * 2;
     for (int i = 0; i < ships; i++)
     {
@@ -130,7 +130,7 @@ static void ship_detect_task(void *args)
                 if (gpio_get_level(BOAT_INPUT))
                 {
                     ESP_LOGI(TAG, "Position Detected: (c:%d, r:%d)", c, r);
-                    if (!shipManager.addPosition(r, c))
+                    if (!shipManager.addPosition(r, 7 - c))
                     {
                         // FIXME: ACTUALLY HANDLE ERRORS HERE
                     }

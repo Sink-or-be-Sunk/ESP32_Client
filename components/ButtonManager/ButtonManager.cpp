@@ -90,11 +90,19 @@ static void handle_button_event(int row, int col)
         break;
     }
 #endif
+#ifdef MOTOR_RUMBLE_DEMO
+    case '3':
+    {
+        motorManager.rumble();
+        break;
+    }
+#else
     case '3':
     {
         screenManager.press(2); // zero indexed row/col
         break;
     }
+#endif
     case 'A':
     {
         screenManager.press(3); // zero indexed row/col
