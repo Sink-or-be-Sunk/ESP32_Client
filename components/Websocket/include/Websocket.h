@@ -34,6 +34,7 @@ public:
     void start(void);
     void stop(void);
     void send(char *msg);
+    void sendQuiet(char *msg);
     void handle(const char *msg, uint8_t len);
 };
 

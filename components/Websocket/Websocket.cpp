@@ -20,7 +20,7 @@ static void ws_connection_msg_task(void *args)
 {
     for (;;)
     {
-        websocket.send(messenger.build_connected_msg(false));
+        websocket.sendQuiet(messenger.build_connected_msg(false));
         vTaskDelay(pdMS_TO_TICKS(1000));
     }
 }
@@ -139,14 +139,10 @@ void Websocket::stop(void)
     header_map.clear();
 }
 
-/**
- * @param - msg: this must be the output of a Messenger.h function call!
- */
-void Websocket::send(char *msg)
+void Websocket::sendQuiet(char *msg)
 {
     // wrapper for wifi client send to ws
     size_t len = strlen(msg);
-    ESP_LOGI(TAG, "Sending %s", msg);
     int res = esp_websocket_client_send_text(Websocket::client, msg, len, portMAX_DELAY);
     free(msg);
 
@@ -164,6 +160,15 @@ void Websocket::send(char *msg)
     {
         esp_restart(); // connection failed, restart
     }
+}
+
+/**
+ * @param - msg: this must be the output of a Messenger.h function call!
+ */
+void Websocket::send(char *msg)
+{
+    ESP_LOGI(TAG, "Sending %s", msg);
+    this->sendQuiet(msg);
 }
 
 void Websocket::handle(const char *msg, uint8_t len)
