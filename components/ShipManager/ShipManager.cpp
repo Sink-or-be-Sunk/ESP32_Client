@@ -3,7 +3,7 @@
 static const char *TAG = "SHIPS";
 
 // #define RESCAN_DELAY_MS 100
-#define RESCAN_DELAY_MS 2000
+#define RESCAN_DELAY_MS 500
 
 #define GPIO_BOAT_INPUT_MASK (1ULL << BOAT_INPUT)
 
@@ -178,27 +178,29 @@ void ShipManager::notify_leds(void)
         str[i] = led_position_t::EMPTY;
     }
 
+    char color = this->isReady() ? led_position_t::FULL : led_position_t::PENDING;
+
     // add positioned ships
     for (int i = PATROL; i <= CARRIER; i++)
     {
-        uint8_t r1;
-        uint8_t r2;
-        uint8_t c1;
-        uint8_t c2;
+        int r1;
+        int r2;
+        int c1;
+        int c2;
         if (this->getShip((ship_position_t)i, &r1, &c1, &r2, &c2))
         {
-            str[r1 * BOARD_WIDTH + c1] = led_position_t::POSITION;
-            str[r2 * BOARD_WIDTH + c2] = led_position_t::POSITION;
+            str[r1 * BOARD_WIDTH + c1] = color;
+            str[r2 * BOARD_WIDTH + c2] = color;
         }
     }
 
-    // add partial ship
-    if (!this->fullShip)
-    {
-        int r = BOARD_WIDTH - 1 - this->prevRow;
-        int c = this->prevCol;
-        str[r * BOARD_WIDTH + c] = led_position_t::POSITION;
-    }
+    // add partial ship //FIXME: THIS DOESN'T WORK, MAYBE DON'T EVEN WANT IT THO BECAUSE WHAT EVEN IS A PARTIAL SHIP?
+    // if (!this->fullShip)
+    // {
+    //     int r = this->prevRow;
+    //     int c = this->prevCol;
+    //     str[r * BOARD_WIDTH + c] = led_position_t::PENDING;
+    // }
 
     ledManager.update(str);
 }
@@ -291,21 +293,20 @@ void ShipManager::removePosition(int row, int col)
         if (this->ships[i].remove(row, col))
         {
             ESP_LOGW(TAG, "Removed Ship <%d> Position r:%d,c:%d", i, row, col);
-            ESP_LOGE(TAG, "ship: (r:%d,c:%d) (r:%d,c:%d)", this->ships[i].front_r, this->ships[i].front_c, this->ships[i].back_r, this->ships[i].back_c);
             return;
         }
     }
     ESP_LOGE(TAG, "Removed Position r:%d,c:%d", row, col);
+    screenManager.conditionalRender(READY_UP_SHIPS);
 }
 
-bool ShipManager::getShip(ship_position_t type, uint8_t *r1, uint8_t *c1, uint8_t *r2, uint8_t *c2)
+bool ShipManager::getShip(ship_position_t type, int *r1, int *c1, int *r2, int *c2)
 {
-    ShipPosition pos = this->ships[type];
-    *r1 = pos.front_r; // convert to coordinates used by server
-    *c1 = pos.front_c;
-    *r2 = pos.back_r; // convert to coordinates used by server
-    *c2 = pos.back_c;
-    return pos.isReady;
+    *r1 = this->ships[type].front_r; // convert to coordinates used by server
+    *c1 = this->ships[type].front_c;
+    *r2 = this->ships[type].back_r; // convert to coordinates used by server
+    *c2 = this->ships[type].back_c;
+    return this->ships[type].isReady;
 }
 
 bool ShipManager::isReady()

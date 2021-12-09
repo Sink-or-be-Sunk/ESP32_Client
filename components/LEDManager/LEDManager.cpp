@@ -166,7 +166,7 @@ void LEDManager::update(const char *str)
             ESP_ERROR_CHECK(strip->set_pixel(strip, i, 0xff, 0xa5, 0x00));
             break;
         }
-        case led_position_t::POSITION:
+        case led_position_t::PENDING:
         {
             ESP_ERROR_CHECK(strip->set_pixel(strip, i, 0xff, 0x00, 0xff));
             break;

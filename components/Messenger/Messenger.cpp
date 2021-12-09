@@ -331,10 +331,10 @@ char *Messenger::build_position_ships(void)
 {
     cJSON *data = NULL; // data: request object wrapper
     cJSON *pos = NULL;  // position object
-    uint8_t r1;
-    uint8_t c1;
-    uint8_t r2;
-    uint8_t c2;
+    int r1;
+    int c1;
+    int r2;
+    int c2;
 
     data = cJSON_CreateArray();
     if (data == NULL)

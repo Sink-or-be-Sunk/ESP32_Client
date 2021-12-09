@@ -17,7 +17,7 @@ namespace led_position_t
     constexpr char HIT = 'H';
     constexpr char MISS = 'M';
     constexpr char SUNK = 'S';
-    constexpr char POSITION = 'P';
+    constexpr char PENDING = 'P';
 }
 
 class LEDManager

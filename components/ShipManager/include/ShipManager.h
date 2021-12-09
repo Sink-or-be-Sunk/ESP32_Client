@@ -32,8 +32,8 @@ class ShipManager
 private:
     ShipPosition ships[NUM_SHIPS]; // NOTE: indexed by ship_position_t
     bool fullShip;
-    uint8_t prevRow;
-    uint8_t prevCol;
+    int prevRow;
+    int prevCol;
     bool filled[BOARD_WIDTH][BOARD_WIDTH];
 
 public:
@@ -48,7 +48,7 @@ public:
     void init();
     bool addPosition(int row, int col);
     void removePosition(int row, int col);
-    bool getShip(ship_position_t type, uint8_t *r1, uint8_t *c1, uint8_t *r2, uint8_t *c2);
+    bool getShip(ship_position_t type, int *r1, int *c1, int *r2, int *c2);
     bool isReady();
     int shipsRemaining();
     void notify_leds();
