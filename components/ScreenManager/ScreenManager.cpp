@@ -255,7 +255,7 @@ void ScreenManager::render(void)
 
 void ScreenManager::rightPage(void)
 {
-    switch (gameState.state)
+    switch (gameState.getState())
     {
     case SETUP:
     {
@@ -325,7 +325,7 @@ void ScreenManager::rightPage(void)
 
 void ScreenManager::leftPage(void)
 {
-    switch (gameState.state)
+    switch (gameState.getState())
     {
     case SETUP:
     {
@@ -458,7 +458,7 @@ void ScreenManager::upArrow(void)
         }
         else
         {
-            switch (gameState.state)
+            switch (gameState.getState())
             {
             case SETUP:
             {
@@ -544,7 +544,7 @@ void ScreenManager::downArrow(void)
 
 void ScreenManager::enter(void)
 {
-    switch (gameState.state)
+    switch (gameState.getState())
     {
     case SETUP:
     {
@@ -590,7 +590,7 @@ void ScreenManager::enter(void)
             if (shipManager.isReady())
             {
                 websocket.send(messenger.build_position_ships());
-                gameState.state = IN_PROGRESS;
+                gameState.setState(IN_PROGRESS);
             }
             else
             {
@@ -652,7 +652,7 @@ void ScreenManager::press(int num)
 
 void ScreenManager::back(void)
 {
-    switch (gameState.state)
+    switch (gameState.getState())
     {
     case SETUP:
     {

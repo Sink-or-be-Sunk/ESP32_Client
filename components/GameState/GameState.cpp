@@ -26,6 +26,11 @@ void GameState::setState(game_state_t state)
     this->state = state;
 }
 
+game_state_t GameState::getState(void)
+{
+    return this->state;
+}
+
 void GameState::increment_attack(void)
 {
     int8_t i = this->attackSel;

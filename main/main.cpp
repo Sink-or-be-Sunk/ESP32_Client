@@ -57,6 +57,10 @@ extern "C" void app_main(void)
 
     shipManager.init();
 
+    gameState.init();
+
+    gameState.setState(LOBBY);
+    screenManager.splash(HOME, READY_UP_SHIPS);
 #ifdef DEBUG_SHIP_POSITIONS
     screenManager.splash(HOME, SHIP_POSITION_DEBUG);
 #else
@@ -66,8 +70,6 @@ extern "C" void app_main(void)
     screenManager.splash(HOME, CREATE_GAME);
 
     websocket.start();
-
-    gameState.init();
 #endif
 
     // wifi_stop(); //FIXME: REMOVE THIS, NEVER WILL BE USED
