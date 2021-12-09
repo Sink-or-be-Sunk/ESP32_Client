@@ -281,7 +281,7 @@ void ScreenManager::rightPage(void)
         }
         default:
         {
-            printf("Right Page Ignored!\n");
+            ESP_LOGI(TAG, "Right Page Ignored!");
             break;
         }
         }
@@ -303,7 +303,7 @@ void ScreenManager::rightPage(void)
         }
         default:
         {
-            printf("Right Page Ignored!\n");
+            ESP_LOGI(TAG, "Right Page Ignored!");
             break;
         }
         }
@@ -315,7 +315,7 @@ void ScreenManager::rightPage(void)
         {
         default:
         {
-            printf("Right Page Ignored!\n");
+            ESP_LOGI(TAG, "Right Page Ignored!");
             break;
         }
         }
@@ -351,7 +351,7 @@ void ScreenManager::leftPage(void)
         }
         default:
         {
-            printf("Left Page Ignored!\n");
+            ESP_LOGI(TAG, "Left Page Ignored!");
             break;
         }
         }
@@ -373,7 +373,7 @@ void ScreenManager::leftPage(void)
         }
         default:
         {
-            printf("Left Page Ignored!\n");
+            ESP_LOGI(TAG, "Left Page Ignored!");
             break;
         }
         }
@@ -385,7 +385,7 @@ void ScreenManager::leftPage(void)
         {
         default:
         {
-            printf("Left Page Ignored!\n");
+            ESP_LOGI(TAG, "Left Page Ignored!");
             break;
         }
         }
@@ -409,7 +409,7 @@ void ScreenManager::rightArrow(void)
     }
     default:
     {
-        printf("Ignoring Right Arrow\n");
+        ESP_LOGI(TAG, "Right Arrow Ignored");
         break;
     }
     }
@@ -432,7 +432,7 @@ void ScreenManager::leftArrow(void)
     }
     default:
     {
-        printf("Ignoring Left Arrow\n");
+        ESP_LOGI(TAG, "Left Arrow Ignored");
         break;
     }
     }
@@ -477,7 +477,7 @@ void ScreenManager::upArrow(void)
             }
             default:
             {
-                printf("Error: Invalid state change from friends list");
+                ESP_LOGI(TAG, "Error: Invalid state change from friends list");
                 break;
             }
             }
@@ -491,7 +491,7 @@ void ScreenManager::upArrow(void)
     }
     default:
     {
-        printf("Up Arrow Ignored!\n");
+        ESP_LOGI(TAG, "Up Arrow Ignored!");
         break;
     }
     }
@@ -534,7 +534,7 @@ void ScreenManager::downArrow(void)
     }
     default:
     {
-        printf("Down Arrow Ignored!\n");
+        ESP_LOGI(TAG, "Down Arrow Ignored!");
         break;
     }
     }
@@ -578,7 +578,7 @@ void ScreenManager::enter(void)
         }
         default:
         {
-            printf("Enter Ignored!\n");
+            ESP_LOGI(TAG, "Enter Ignored!");
             break;
         }
         }
@@ -609,7 +609,7 @@ void ScreenManager::enter(void)
         }
         default:
         {
-            printf("Enter Ignored!\n");
+            ESP_LOGI(TAG, "Enter Ignored!");
             break;
         }
         }
@@ -626,7 +626,7 @@ void ScreenManager::enter(void)
         }
         default:
         {
-            printf("Enter Ignored!\n");
+            ESP_LOGI(TAG, "Enter Ignored!");
             break;
         }
         }
@@ -647,7 +647,7 @@ void ScreenManager::press(int num)
     }
     default:
     {
-        printf("Key %c Ignored!\n", num);
+        ESP_LOGI(TAG, "Key %c Ignored!", num);
         break;
     }
     }
@@ -668,7 +668,7 @@ void ScreenManager::back(void)
         }
         default:
         {
-            printf("back ignored!\n");
+            ESP_LOGI(TAG, "back ignored!");
             break;
         }
         }

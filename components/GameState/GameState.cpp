@@ -105,13 +105,13 @@ void GameState::invalidMove(char *result)
 
 void GameState::moveReceived(int c, int r, char *to, char *result)
 {
-    printf("result: %s\n", result);
+    ESP_LOGI(TAG, "result: %s\n", result);
     strncpy(this->lastMoveRes, result, MOVE_RESULT_BUFFER_SIZE);
 
     if (strcmp(settings.username, to))
     {
         // confirming move you just made
-        printf("Attack Board Updated\n");
+        ESP_LOGI(TAG, "Attack Board Updated");
 
         this->attackCoords[0] = c; // TODO: THIS IS PROBABLY REDUNDANT, REMOVE
         this->attackCoords[1] = r;
@@ -120,7 +120,7 @@ void GameState::moveReceived(int c, int r, char *to, char *result)
     else
     {
         // move from opponent
-        printf("Opponent Board updated\n");
+        ESP_LOGI(TAG, "Opponent Board updated");
 
         this->opponentAttackCoords[0] = c;
         this->opponentAttackCoords[1] = r;

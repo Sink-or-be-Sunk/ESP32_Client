@@ -82,7 +82,7 @@ static void event_handler(void *arg, esp_event_base_t event_base,
     }
     else if (event_base == WIFI_EVENT && event_id == WIFI_EVENT_STA_DISCONNECTED)
     {
-        printf("retries: %d, %d\n", no_connect_retries, WIFI_NO_CONNECT_RETRY_CNT);
+        ESP_LOGW(TAG, "retries: %d of %d", no_connect_retries, WIFI_NO_CONNECT_RETRY_CNT);
         if (no_connect_retries < WIFI_NO_CONNECT_RETRY_CNT)
         {
             no_connect_retries++;

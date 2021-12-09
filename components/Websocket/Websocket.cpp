@@ -50,7 +50,7 @@ static void event_handler(void *handler_args, esp_event_base_t base, int32_t eve
                 websocket.handle(data->data_ptr, data->data_len);
             }
         }
-        ESP_LOGW(TAG, "Total payload length=%d, data_len=%d, current payload offset=%d\r\n", data->payload_len, data->data_len, data->payload_offset);
+        ESP_LOGW(TAG, "Total payload length=%d, data_len=%d, current payload offset=%d", data->payload_len, data->data_len, data->payload_offset);
 
         break;
     case WEBSOCKET_EVENT_ERROR:
@@ -177,14 +177,14 @@ void Websocket::handle(const char *msg, uint8_t len)
     const cJSON *payload = NULL;
     const cJSON *meta = NULL;
     int status = -404;
-    printf("raw: %.*s\n", len, msg);
+    ESP_LOGI(TAG, "raw: %.*s", len, msg);
     cJSON *msg_json = cJSON_ParseWithLength(msg, len);
     if (msg_json == NULL)
     {
         const char *error_ptr = cJSON_GetErrorPtr();
         if (error_ptr != NULL)
         {
-            fprintf(stderr, "Error before: %s\n", error_ptr);
+            ESP_LOGE(TAG, "Error before: %s", error_ptr);
         }
         status = 501;
         goto end;
@@ -196,7 +196,7 @@ void Websocket::handle(const char *msg, uint8_t len)
         status = 404;
         goto end;
     }
-    printf("header: \"%s\"\n", header->valuestring);
+    ESP_LOGI(TAG, "header: %s", header->valuestring);
 
     meta = cJSON_GetObjectItemCaseSensitive(msg_json, "meta");
 
@@ -206,7 +206,7 @@ void Websocket::handle(const char *msg, uint8_t len)
     {
     case CONNECTED:
     {
-        printf("Connected to Websocket\n");
+        ESP_LOGI(TAG, "Connected to Websocket");
         status = HEADERS::CONNECTED;
         break;
     }
@@ -270,7 +270,7 @@ void Websocket::handle(const char *msg, uint8_t len)
             }
             else
             {
-                printf("Error: tried to confirm pairing when not requested");
+                ESP_LOGE(TAG, "Error: tried to confirm pairing when not requested");
             }
             status = HEADERS::REGISTER_PENDING;
         }
@@ -293,7 +293,7 @@ void Websocket::handle(const char *msg, uint8_t len)
 
         if (cJSON_IsString(username) && (username->valuestring != NULL))
         {
-            printf("username: \"%s\"\n", username->valuestring);
+            ESP_LOGI(TAG, "username: %s", username->valuestring);
             strncpy(settings.username, username->valuestring, SETTING_STR_LEN::USERNAME);
             settings.save();
             screenManager.splash(DEVICE_PAIRED, REBOOT);
@@ -351,7 +351,7 @@ void Websocket::handle(const char *msg, uint8_t len)
         // cJSON *result_ship = cJSON_GetObjectItemCaseSensitive(payload, "result_ship");
         if (cJSON_IsNumber(move_c) && cJSON_IsNumber(move_r) && cJSON_IsString(to) && (to->valuestring != NULL) && cJSON_IsString(result) && (result->valuestring != NULL) && (cJSON_IsString(meta) && (meta->valuestring != NULL)))
         {
-            printf("C: \"%d\", R: \"%d\", to: \"%s\", result: \"%s\"\n", move_c->valueint, move_r->valueint, to->valuestring, result->valuestring);
+            ESP_LOGI(TAG, "C: \"%d\", R: \"%d\", to: \"%s\", result: \"%s\"", move_c->valueint, move_r->valueint, to->valuestring, result->valuestring);
             gameState.moveReceived(move_c->valueint, move_r->valueint, to->valuestring, meta->valuestring);
 
             if (!strcmp(SHIP_SUNK_TAG, result->valuestring) || !strcmp(SHIP_HIT_TAG, result->valuestring))
@@ -403,19 +403,19 @@ void Websocket::handle(const char *msg, uint8_t len)
 
         if (cJSON_IsString(opponent) && (opponent->valuestring != NULL))
         {
-            printf("opponent: \"%s\"\n", opponent->valuestring);
+            ESP_LOGI(TAG, "opponent: \"%s\"", opponent->valuestring);
 
             gameState.setState(LOBBY);
 
             if (strcmp(JOINED_EMPTY_GAME_TAG, opponent->valuestring))
             {
-                printf("Two players in lobby\n");
+                ESP_LOGI(TAG, "Two players in lobby");
                 strncpy(gameState.opponent, opponent->valuestring, SETTING_STR_LEN::USERNAME);
                 screenManager.splash(PLAYER_IN_LOBBY, READY_UP_SHIPS);
             }
             else
             {
-                printf("Joined Own Game\n");
+                ESP_LOGI(TAG, "Joined Own Game");
                 screenManager.setState(INVITE_FRIEND);
             }
         }
@@ -445,5 +445,5 @@ void Websocket::handle(const char *msg, uint8_t len)
 end:
     cJSON_Delete(msg_json);
     // return status;
-    printf("status: %d\n", status);
+    ESP_LOGI(TAG, "status: %d", status);
 }
