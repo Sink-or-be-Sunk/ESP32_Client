@@ -39,7 +39,7 @@
  * selects from the mux array to check the conditions of each
  * pin
  */
-#define DEBUG_SHIP_POSITIONS
+// #define DEBUG_SHIP_POSITIONS
 
 #if defined(HARDCODE_SHIP_POSITIONS) && defined(DEBUG_SHIP_POSITIONS)
 #error YOU CANNOT HAVE THESE TWO CONDITIONS DEFINED AT THE SAME TIE

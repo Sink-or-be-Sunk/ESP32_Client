@@ -158,7 +158,7 @@ static void ship_detect_task(void *args)
                 if (gpio_get_level(BOAT_INPUT))
                 {
                     ESP_LOGI(TAG, "Position Detected: (c:%d, r:%d)", c, r);
-                    if (!shipManager.addPosition(r, 7 - c))
+                    if (!shipManager.addPosition(7 - r, c))
                     {
                         // FIXME: ACTUALLY HANDLE ERRORS HERE
                     }
