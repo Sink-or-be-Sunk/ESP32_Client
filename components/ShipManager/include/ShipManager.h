@@ -13,6 +13,7 @@
 #include "LEDManager.h"
 
 #define NUM_SHIPS 4
+#define BOARD_WIDTH 8
 
 /**
  * Ship Position and Index in ShipManager Array
@@ -33,6 +34,7 @@ private:
     bool fullShip;
     uint8_t prevRow;
     uint8_t prevCol;
+    bool filled[BOARD_WIDTH][BOARD_WIDTH];
 
 public:
 #ifdef DEBUG_SHIP_POSITIONS
@@ -43,7 +45,6 @@ public:
     void left(void);
     void right(void);
 #endif
-    uint64_t filled = 0; // each bit coresponds to spot on board
     void init();
     bool addPosition(int row, int col);
     void removePosition(int row, int col);
@@ -51,6 +52,9 @@ public:
     bool isReady();
     int shipsRemaining();
     void notify_leds();
+    bool isFilled(int r, int c);
+    void fill(int r, int c);
+    void clear(int r, int c);
 };
 
 extern ShipManager shipManager;

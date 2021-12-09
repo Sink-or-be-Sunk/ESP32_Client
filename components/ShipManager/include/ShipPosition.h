@@ -1,19 +1,20 @@
 #pragma once
 
 #include <stdint.h>
+#include "esp_log.h"
 
 class ShipPosition
 {
 private:
 public:
-    bool isReady = 0;
-    uint8_t front_r;
-    uint8_t front_c;
-    uint8_t back_r;
-    uint8_t back_c;
+    bool isReady;
+    int front_r;
+    int front_c;
+    int back_r;
+    int back_c;
 
     void init();
     bool remove(int row, int col);
 
-    void position(uint8_t r1, uint8_t c1, uint8_t r2, uint8_t c2);
+    void position(int r1, int c1, int r2, int c2);
 };

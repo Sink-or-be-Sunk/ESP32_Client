@@ -5,8 +5,6 @@ static const char *TAG = "SHIPS";
 // #define RESCAN_DELAY_MS 100
 #define RESCAN_DELAY_MS 2000
 
-#define BOARD_WIDTH 8
-
 #define GPIO_BOAT_INPUT_MASK (1ULL << BOAT_INPUT)
 
 #define GPIO_MUX_SEL_MASK ((1ULL << MUX_ROW_SEL_0) | \
@@ -77,24 +75,31 @@ static void ship_detect_task(void *args)
 
             for (int c = 0; c < BOARD_WIDTH; c++)
             {
-                int mask = (1 << c) << (r * 8);
+                int filled = shipManager.isFilled(r, c);
 
                 set_col(c);
 
+                // ESP_LOGI(TAG, "r:%d, c:%d, filled: %d", r, c, filled);
+
                 if (gpio_get_level(BOAT_INPUT))
                 {
-                    ESP_LOGW(TAG, "Position Detected: c:%d, r:%d", c, r);
+                    if (filled)
+                    {
+                        continue; // already detected
+                    }
+                    ESP_LOGW(TAG, "Position Detected: r:%d, c:%d", r, c);
                     if (shipManager.addPosition(r, c))
                     {
                         // valid add
-                        shipManager.filled |= mask;
+                        shipManager.fill(r, c);
                     }
                 }
-                else if (shipManager.filled & mask)
+                else if (filled)
                 {
                     // position has been removed
+                    ESP_LOGW(TAG, "Removing Position r:%d,c:%d", r, c);
                     shipManager.removePosition(r, c);
-                    shipManager.filled &= ~mask;
+                    shipManager.clear(r, c);
                 }
             }
         }
@@ -109,11 +114,17 @@ void ShipManager::init(void)
 {
     ESP_LOGI(TAG, "Initializing...");
 
-    this->filled = 0;
+    for (int r = 0; r < BOARD_WIDTH; r++)
+    {
+        for (int c = 0; c < BOARD_WIDTH; c++)
+        {
+            this->clear(r, c);
+        }
+    }
     this->fullShip = false;
     this->prevRow = -1;
     this->prevCol = -1;
-    for (int i = PATROL; i < CARRIER; i++)
+    for (int i = PATROL; i <= CARRIER; i++)
     {
         this->ships[i].init();
     }
@@ -140,6 +151,21 @@ void ShipManager::init(void)
     xTaskCreate(ship_detect_task, "ship_detect_task", 4096, NULL, 10, NULL);
 
     ESP_LOGI(TAG, "Success!");
+}
+
+void ShipManager::fill(int r, int c)
+{
+    this->filled[r][c] = true;
+}
+
+void ShipManager::clear(int r, int c)
+{
+    this->filled[r][c] = false;
+}
+
+bool ShipManager::isFilled(int r, int c)
+{
+    return this->filled[r][c];
 }
 
 void ShipManager::notify_leds(void)
@@ -231,7 +257,9 @@ bool ShipManager::addPosition(int row, int col)
         this->ships[dist].position(row, col, this->prevRow, this->prevCol);
 
         this->fullShip = false; // reset queue
-        ESP_LOGW(TAG, "Ship Added: %d", dist);
+        this->prevRow = -1;
+        this->prevCol = -1;
+        ESP_LOGW(TAG, "Ship Added: %d (r:%d,c:%d), (r:%d,c:%d)", dist, row, col, this->prevRow, this->prevCol);
 
         screenManager.conditionalRender(READY_UP_SHIPS);
 
@@ -255,8 +283,10 @@ bool ShipManager::addPosition(int row, int col)
 void ShipManager::removePosition(int row, int col)
 {
     this->fullShip = false; // reset queue
+    this->prevRow = -1;
+    this->prevCol = -1;
 
-    for (int i = PATROL; i < CARRIER; i++)
+    for (int i = PATROL; i <= CARRIER; i++)
     {
         ShipPosition ship = this->ships[i];
         if (ship.remove(row, col))
@@ -271,9 +301,9 @@ void ShipManager::removePosition(int row, int col)
 bool ShipManager::getShip(ship_position_t type, uint8_t *r1, uint8_t *c1, uint8_t *r2, uint8_t *c2)
 {
     ShipPosition pos = this->ships[type];
-    *r1 = BOARD_WIDTH - 1 - pos.front_r; // convert to coordinates used by server
+    *r1 = pos.front_r; // convert to coordinates used by server
     *c1 = pos.front_c;
-    *r2 = BOARD_WIDTH - 1 - pos.back_r; // convert to coordinates used by server
+    *r2 = pos.back_r; // convert to coordinates used by server
     *c2 = pos.back_c;
     return pos.isReady;
 }

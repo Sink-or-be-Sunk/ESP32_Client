@@ -303,7 +303,7 @@ static cJSON *build_one_ship_position(const char *t, uint8_t r, uint8_t c)
         goto end;
     }
 
-    row = cJSON_CreateNumber(r);
+    row = cJSON_CreateNumber(BOARD_WIDTH - 1 - r); // FIXME: CHANGE THIS ON THE SERVER BECAUSE THIS IS SUPER CONFUSING
     if (row == NULL)
     {
         goto end;
