@@ -7,19 +7,18 @@ static const char *TAG = "LED";
 #define RMT_TX_CHANNEL RMT_CHANNEL_0
 #define EXAMPLE_CHASE_SPEED_MS (10)
 
+#define LED_REFRESH 1000
+
 led_strip_t *strip;
 
-// FIXME: REMOVE THE LED RAINBOW DEMO FROM FINAL PROJECT BUILD (see config.h #define LED_RAINBOW_DEMO)
-// TODO: OR MAYBE CHANGE THE RAINBOW INTO SOME WATER SPLASH FOR USE IN GAMEPLAY SOMETIME
-
+#ifdef LED_RAINBOW_DEMO
 /**
  * @brief Simple helper function, converting HSV color space to RGB color space
  *
  * Wiki: https://en.wikipedia.org/wiki/HSL_and_HSV
  *
  */
-static void
-led_strip_hsv2rgb(uint32_t h, uint32_t s, uint32_t v, uint32_t *r, uint32_t *g, uint32_t *b)
+static void led_strip_hsv2rgb(uint32_t h, uint32_t s, uint32_t v, uint32_t *r, uint32_t *g, uint32_t *b)
 {
     h %= 360; // h -> [0,360]
     uint32_t rgb_max = v * 2.55f;
@@ -65,9 +64,12 @@ led_strip_hsv2rgb(uint32_t h, uint32_t s, uint32_t v, uint32_t *r, uint32_t *g, 
         break;
     }
 }
+#endif
 
 static void led_task(void *arg)
 {
+#ifdef LED_RAINBOW_DEMO
+    ledManager.pause();
     uint32_t red = 0;
     uint32_t green = 0;
     uint32_t blue = 0;
@@ -89,6 +91,13 @@ static void led_task(void *arg)
             vTaskDelay(pdMS_TO_TICKS(EXAMPLE_CHASE_SPEED_MS));
         }
     }
+#else
+    for (;;)
+    {
+        ESP_ERROR_CHECK(strip->refresh(strip, 100));
+        vTaskDelay(pdMS_TO_TICKS(LED_REFRESH));
+    }
+#endif
 }
 
 void LEDManager::init(void)
@@ -116,7 +125,6 @@ void LEDManager::init(void)
 
     // start led task
     xTaskCreate(led_task, "led_task", 2048, NULL, 10, &this->handle);
-    vTaskSuspend(this->handle);
 
     ESP_LOGI(TAG, "Success");
 }
