@@ -104,7 +104,7 @@ char *Messenger::build_registration_msg(REGISTRATION_TYPE reg_type)
     string = cJSON_Print(msg);
     if (string == NULL)
     {
-        fprintf(stderr, "Failed to print obj.\n");
+        ESP_LOGE(TAG, "Failed to print registration msg");
     }
 
 end:
@@ -149,7 +149,7 @@ char *Messenger::build_connected_msg(bool init)
     string = cJSON_Print(msg);
     if (string == NULL)
     {
-        fprintf(stderr, "Failed to print obj.\n");
+        ESP_LOGE(TAG, "Failed to print connected msg");
     }
 
 end:
@@ -213,7 +213,7 @@ char *Messenger::build_game_msg(GAME_REQ_TYPE type, cJSON *data)
     string = cJSON_Print(msg);
     if (string == NULL)
     {
-        fprintf(stderr, "Failed to print obj.\n");
+        ESP_LOGE(TAG, "Failed to print game msg");
     }
 
 end:
@@ -303,7 +303,7 @@ static cJSON *build_one_ship_position(const char *t, uint8_t r, uint8_t c)
         goto end;
     }
 
-    row = cJSON_CreateNumber(r);
+    row = cJSON_CreateNumber(BOARD_WIDTH - 1 - r); // FIXME: CHANGE THIS ON THE SERVER BECAUSE THIS IS SUPER CONFUSING
     if (row == NULL)
     {
         goto end;
@@ -331,10 +331,10 @@ char *Messenger::build_position_ships(void)
 {
     cJSON *data = NULL; // data: request object wrapper
     cJSON *pos = NULL;  // position object
-    uint8_t r1;
-    uint8_t c1;
-    uint8_t r2;
-    uint8_t c2;
+    int r1;
+    int c1;
+    int r2;
+    int c2;
 
     data = cJSON_CreateArray();
     if (data == NULL)
@@ -376,7 +376,6 @@ char *Messenger::build_position_ships(void)
                 goto end;
             }
             cJSON_AddItemToArray(data, pos);
-            printf("array size: %d\n", cJSON_GetArraySize(data));
         }
     }
 
@@ -452,7 +451,7 @@ char *Messenger::build_db_msg(DATABASE_REQ_TYPE type, const char *username)
     string = cJSON_Print(msg);
     if (string == NULL)
     {
-        fprintf(stderr, "Failed to print obj.\n");
+        ESP_LOGE(TAG, "Failed to print db msg");
     }
 
 end:
@@ -490,7 +489,7 @@ char *Messenger::build_leave_game_msg()
     string = cJSON_Print(msg);
     if (string == NULL)
     {
-        fprintf(stderr, "Failed to print obj.\n");
+        ESP_LOGE(TAG, "Failed to print leave game msg");
     }
 
 end:

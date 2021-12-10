@@ -31,6 +31,10 @@ void ScreenManager::conditionalRender(SCREEN_STATE state)
     {
         this->render();
     }
+    else
+    {
+        ESP_LOGE(TAG, "Conditional Render Failed");
+    }
 }
 
 void ScreenManager::render(void)
@@ -131,10 +135,9 @@ void ScreenManager::render(void)
     }
     case NOTIFY_INVALID_MOVE:
     {
-        // TODO: ADD META INFO ABOUT MOVE HERE
         //                "-=-=-=-=-=-=-=-="
         display.display1("Invalid Move");
-        display.display2("Change,Try Again");
+        display.display2(gameState.lastMoveRes);
         break;
     }
     case LEFT_GAME:
@@ -237,12 +240,25 @@ void ScreenManager::render(void)
         display.display2(buff);
         break;
     }
+#ifdef DEBUG_SHIP_POSITIONS
+    case SHIP_POSITION_DEBUG:
+    {
+        //               "-=-=-=-=-=-=-=-="
+        display.display1("Ship Pos Debug");
+        char buff[17];
+        snprintf(buff, sizeof(buff), "Coords: C%c, R%c",
+                 shipManager.col + '0',
+                 shipManager.row + '0');
+        display.display2(buff);
+        break;
+    }
+#endif
     }
 }
 
 void ScreenManager::rightPage(void)
 {
-    switch (gameState.state)
+    switch (gameState.getState())
     {
     case SETUP:
     {
@@ -265,7 +281,7 @@ void ScreenManager::rightPage(void)
         }
         default:
         {
-            printf("Right Page Ignored!\n");
+            ESP_LOGI(TAG, "Right Page Ignored!");
             break;
         }
         }
@@ -287,7 +303,7 @@ void ScreenManager::rightPage(void)
         }
         default:
         {
-            printf("Right Page Ignored!\n");
+            ESP_LOGI(TAG, "Right Page Ignored!");
             break;
         }
         }
@@ -299,7 +315,7 @@ void ScreenManager::rightPage(void)
         {
         default:
         {
-            printf("Right Page Ignored!\n");
+            ESP_LOGI(TAG, "Right Page Ignored!");
             break;
         }
         }
@@ -312,7 +328,7 @@ void ScreenManager::rightPage(void)
 
 void ScreenManager::leftPage(void)
 {
-    switch (gameState.state)
+    switch (gameState.getState())
     {
     case SETUP:
     {
@@ -335,7 +351,7 @@ void ScreenManager::leftPage(void)
         }
         default:
         {
-            printf("Left Page Ignored!\n");
+            ESP_LOGI(TAG, "Left Page Ignored!");
             break;
         }
         }
@@ -357,7 +373,7 @@ void ScreenManager::leftPage(void)
         }
         default:
         {
-            printf("Left Page Ignored!\n");
+            ESP_LOGI(TAG, "Left Page Ignored!");
             break;
         }
         }
@@ -369,7 +385,7 @@ void ScreenManager::leftPage(void)
         {
         default:
         {
-            printf("Left Page Ignored!\n");
+            ESP_LOGI(TAG, "Left Page Ignored!");
             break;
         }
         }
@@ -382,6 +398,7 @@ void ScreenManager::leftPage(void)
 
 void ScreenManager::rightArrow(void)
 {
+#ifndef DEBUG_SHIP_POSITIONS
     switch (this->state)
     {
     case ATTACK:
@@ -392,14 +409,19 @@ void ScreenManager::rightArrow(void)
     }
     default:
     {
-        printf("Ignoring Right Arrow\n");
+        ESP_LOGI(TAG, "Right Arrow Ignored");
         break;
     }
     }
+#else
+    shipManager.right();
+    this->render();
+#endif
 }
 
 void ScreenManager::leftArrow(void)
 {
+#ifndef DEBUG_SHIP_POSITIONS
     switch (this->state)
     {
     case ATTACK:
@@ -410,14 +432,19 @@ void ScreenManager::leftArrow(void)
     }
     default:
     {
-        printf("Ignoring Left Arrow\n");
+        ESP_LOGI(TAG, "Left Arrow Ignored");
         break;
     }
     }
+#else
+    shipManager.left();
+    this->render();
+#endif
 }
 
 void ScreenManager::upArrow(void)
 {
+#ifndef DEBUG_SHIP_POSITIONS
     switch (this->state)
     {
     case ATTACK:
@@ -434,7 +461,7 @@ void ScreenManager::upArrow(void)
         }
         else
         {
-            switch (gameState.state)
+            switch (gameState.getState())
             {
             case SETUP:
             {
@@ -450,7 +477,7 @@ void ScreenManager::upArrow(void)
             }
             default:
             {
-                printf("Error: Invalid state change from friends list");
+                ESP_LOGI(TAG, "Error: Invalid state change from friends list");
                 break;
             }
             }
@@ -464,14 +491,20 @@ void ScreenManager::upArrow(void)
     }
     default:
     {
-        printf("Up Arrow Ignored!\n");
+        ESP_LOGI(TAG, "Up Arrow Ignored!");
         break;
     }
     }
+
+#else
+    shipManager.up();
+    this->render();
+#endif
 }
 
 void ScreenManager::downArrow(void)
 {
+#ifndef DEBUG_SHIP_POSITIONS
     switch (this->state)
     {
     case ATTACK:
@@ -501,15 +534,20 @@ void ScreenManager::downArrow(void)
     }
     default:
     {
-        printf("Down Arrow Ignored!\n");
+        ESP_LOGI(TAG, "Down Arrow Ignored!");
         break;
     }
     }
+
+#else
+    shipManager.down();
+    this->render();
+#endif
 }
 
 void ScreenManager::enter(void)
 {
-    switch (gameState.state)
+    switch (gameState.getState())
     {
     case SETUP:
     {
@@ -540,7 +578,7 @@ void ScreenManager::enter(void)
         }
         default:
         {
-            printf("Enter Ignored!\n");
+            ESP_LOGI(TAG, "Enter Ignored!");
             break;
         }
         }
@@ -555,7 +593,7 @@ void ScreenManager::enter(void)
             if (shipManager.isReady())
             {
                 websocket.send(messenger.build_position_ships());
-                gameState.state = IN_PROGRESS;
+                gameState.setState(IN_PROGRESS);
             }
             else
             {
@@ -571,7 +609,7 @@ void ScreenManager::enter(void)
         }
         default:
         {
-            printf("Enter Ignored!\n");
+            ESP_LOGI(TAG, "Enter Ignored!");
             break;
         }
         }
@@ -588,7 +626,7 @@ void ScreenManager::enter(void)
         }
         default:
         {
-            printf("Enter Ignored!\n");
+            ESP_LOGI(TAG, "Enter Ignored!");
             break;
         }
         }
@@ -609,7 +647,7 @@ void ScreenManager::press(int num)
     }
     default:
     {
-        printf("Key %c Ignored!\n", num);
+        ESP_LOGI(TAG, "Key %c Ignored!", num);
         break;
     }
     }
@@ -617,7 +655,7 @@ void ScreenManager::press(int num)
 
 void ScreenManager::back(void)
 {
-    switch (gameState.state)
+    switch (gameState.getState())
     {
     case SETUP:
     {
@@ -630,7 +668,7 @@ void ScreenManager::back(void)
         }
         default:
         {
-            printf("back ignored!\n");
+            ESP_LOGI(TAG, "back ignored!");
             break;
         }
         }

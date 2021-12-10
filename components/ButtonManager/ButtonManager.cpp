@@ -22,9 +22,9 @@ static xQueueHandle gpio_evt_queue = NULL;
 
 static void handle_button_event(int row, int col)
 {
-    printf("row: %d, col: %d\n", row, col);
+    ESP_LOGI(TAG, "row: %d, col: %d", row, col);
     char letter = decode_letter[row * 4 + col];
-    printf("key: %c\n", letter);
+    ESP_LOGI(TAG, "key: %c", letter);
     switch (letter)
     {
     case '9':

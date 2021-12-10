@@ -23,6 +23,7 @@
 #include "FriendManager.h"
 #include "LEDManager.h"
 #include "MotorManager.h"
+#include "ShipManager.h"
 
 class Websocket
 {
@@ -34,6 +35,7 @@ public:
     void start(void);
     void stop(void);
     void send(char *msg);
+    void sendQuiet(char *msg);
     void handle(const char *msg, uint8_t len);
 };
 

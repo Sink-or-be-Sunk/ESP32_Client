@@ -1,30 +1,20 @@
 #pragma once
 
 #include <stdint.h>
-
-/**
- * Ship Position and Index in ShipManager Array
- */
-enum ship_position_t
-{
-    INVALID = -1,
-    PATROL = 0,
-    SUBMARINE = 1,
-    BATTLESHIP = 2,
-    CARRIER = 3,
-};
+#include "esp_log.h"
 
 class ShipPosition
 {
 private:
-    ship_position_t type = INVALID;
-
 public:
-    bool isReady = 0;
-    uint8_t front_r;
-    uint8_t front_c;
-    uint8_t back_r;
-    uint8_t back_c;
+    bool isReady;
+    int front_r;
+    int front_c;
+    int back_r;
+    int back_c;
 
-    void position(uint8_t r1, uint8_t c1, uint8_t r2, uint8_t c2);
+    void init();
+    bool remove(int row, int col);
+
+    void position(int r1, int c1, int r2, int c2);
 };

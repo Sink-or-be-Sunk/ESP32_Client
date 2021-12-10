@@ -7,21 +7,18 @@ static const char *TAG = "LED";
 #define RMT_TX_CHANNEL RMT_CHANNEL_0
 #define EXAMPLE_CHASE_SPEED_MS (10)
 
-#define NUMBER_OF_LEDS 128
+#define LED_REFRESH 1000
 
 led_strip_t *strip;
 
-// FIXME: REMOVE THE LED RAINBOW DEMO FROM FINAL PROJECT BUILD (see config.h #define LED_RAINBOW_DEMO)
-// TODO: OR MAYBE CHANGE THE RAINBOW INTO SOME WATER SPLASH FOR USE IN GAMEPLAY SOMETIME
-
+#ifdef LED_RAINBOW_DEMO
 /**
  * @brief Simple helper function, converting HSV color space to RGB color space
  *
  * Wiki: https://en.wikipedia.org/wiki/HSL_and_HSV
  *
  */
-static void
-led_strip_hsv2rgb(uint32_t h, uint32_t s, uint32_t v, uint32_t *r, uint32_t *g, uint32_t *b)
+static void led_strip_hsv2rgb(uint32_t h, uint32_t s, uint32_t v, uint32_t *r, uint32_t *g, uint32_t *b)
 {
     h %= 360; // h -> [0,360]
     uint32_t rgb_max = v * 2.55f;
@@ -67,9 +64,12 @@ led_strip_hsv2rgb(uint32_t h, uint32_t s, uint32_t v, uint32_t *r, uint32_t *g, 
         break;
     }
 }
+#endif
 
 static void led_task(void *arg)
 {
+#ifdef LED_RAINBOW_DEMO
+    ledManager.pause();
     uint32_t red = 0;
     uint32_t green = 0;
     uint32_t blue = 0;
@@ -91,6 +91,13 @@ static void led_task(void *arg)
             vTaskDelay(pdMS_TO_TICKS(EXAMPLE_CHASE_SPEED_MS));
         }
     }
+#else
+    for (;;)
+    {
+        ESP_ERROR_CHECK(strip->refresh(strip, 100));
+        vTaskDelay(pdMS_TO_TICKS(LED_REFRESH));
+    }
+#endif
 }
 
 void LEDManager::init(void)
@@ -118,7 +125,6 @@ void LEDManager::init(void)
 
     // start led task
     xTaskCreate(led_task, "led_task", 2048, NULL, 10, &this->handle);
-    vTaskSuspend(this->handle);
 
     ESP_LOGI(TAG, "Success");
 }
@@ -143,29 +149,34 @@ void LEDManager::update(const char *str)
     {
         switch (str[i])
         {
-        case 'E':
+        case led_position_t::EMPTY:
         {
-            ESP_ERROR_CHECK(strip->set_pixel(strip, i, 0, 0, 0));
+            ESP_ERROR_CHECK(strip->set_pixel(strip, i, 0, 0, 0x0f)); // TODO: DO WE WANT BLUE FOR EMPTY?
             break;
         }
-        case 'F':
+        case led_position_t::FULL:
         {
             ESP_ERROR_CHECK(strip->set_pixel(strip, i, 0, 0xff, 0));
             break;
         }
-        case 'H':
+        case led_position_t::HIT:
         {
             ESP_ERROR_CHECK(strip->set_pixel(strip, i, 0xff, 0, 0));
             break;
         }
-        case 'M':
+        case led_position_t::MISS:
         {
             ESP_ERROR_CHECK(strip->set_pixel(strip, i, 0xff, 0xff, 0xff));
             break;
         }
-        case 'S':
+        case led_position_t::SUNK:
         {
             ESP_ERROR_CHECK(strip->set_pixel(strip, i, 0xff, 0xa5, 0x00));
+            break;
+        }
+        case led_position_t::PENDING:
+        {
+            ESP_ERROR_CHECK(strip->set_pixel(strip, i, 0xff, 0x00, 0xff));
             break;
         }
         default:
