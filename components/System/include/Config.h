@@ -123,4 +123,4 @@
  * erased and internal state machine is reset after this
  * threshold is reached.
  */
-#define WIFI_NO_CONNECT_RETRY_CNT 24
+#define WIFI_NO_CONNECT_RETRY_CNT 12
