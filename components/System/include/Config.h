@@ -51,7 +51,7 @@
  * Pressing button 1 turns on the led light show
  * Pressing button 2 turns the lights off
  */
-// #define LED_RAINBOW_DEMO
+#define LED_RAINBOW_DEMO
 
 /**
  * Add Motor Rumble Demo to Project
