@@ -71,6 +71,7 @@ enum HEADERS
     // GAME_ALREADY_EXITS, //FIXME: REMOVE THIS FROM SERVER
     GAME_CREATED,
     GAME_STARTED,
+    GAME_OVER_SERVER, // FIXME: NEED TO ADD NAMESPACED SCOPES TO FIX NAMING COLLISION
     JOINED_GAME,
     MOVE_RESULT,
     INVALID_MOVE,
@@ -96,6 +97,7 @@ static void header_map_init()
     header_map["REGISTER SUCCESS"] = REGISTER_SUCCESS;
     header_map["GAME CREATED"] = GAME_CREATED;
     header_map["GAME STARTED"] = GAME_STARTED;
+    header_map["GAME OVER"] = GAME_OVER_SERVER;
     header_map["JOINED GAME"] = JOINED_GAME;
     header_map["MADE MOVE"] = MOVE_RESULT;
     header_map["INVALID MOVE"] = INVALID_MOVE;
@@ -361,20 +363,6 @@ void Websocket::handle(const char *msg, uint8_t len)
                 motorManager.rumble();
             }
 
-            // check if game is over
-            if (!strcmp(GAME_OVER_WINNER_TAG, meta->valuestring) || !strcmp(GAME_OVER_LOSER_TAG, meta->valuestring))
-            {
-                // gameState.reset();
-                // gameState.setState(SETUP);
-                // TODO: HAVE A MORE ELEGANT WAY TO RESET THE BOARD FOR A NEW GAME
-                screenManager.setState(GAME_OVER);
-                vTaskDelay(pdMS_TO_TICKS(10000));
-                screenManager.setState(REBOOT);
-                vTaskDelay(pdMS_TO_TICKS(2000));
-                esp_restart(); // reset board
-
-                break;
-            }
             screenManager.splash(MOVE_MADE);
         }
         else
@@ -384,6 +372,20 @@ void Websocket::handle(const char *msg, uint8_t len)
         }
 
         status = HEADERS::MOVE_RESULT;
+        break;
+    }
+    case GAME_OVER_SERVER:
+    {
+        // gameState.reset();
+        // gameState.setState(SETUP);
+        // TODO: HAVE A MORE ELEGANT WAY TO RESET THE BOARD FOR A NEW GAME
+        screenManager.setState(GAME_OVER);
+        vTaskDelay(pdMS_TO_TICKS(10000));
+        screenManager.setState(REBOOT);
+        vTaskDelay(pdMS_TO_TICKS(2000));
+        esp_restart(); // reset board
+
+        status = HEADERS::GAME_OVER_SERVER;
         break;
     }
     case INVALID_MOVE:
