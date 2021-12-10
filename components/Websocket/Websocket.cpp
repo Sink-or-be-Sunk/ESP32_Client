@@ -364,9 +364,15 @@ void Websocket::handle(const char *msg, uint8_t len)
             // check if game is over
             if (!strcmp(GAME_OVER_WINNER_TAG, meta->valuestring) || !strcmp(GAME_OVER_LOSER_TAG, meta->valuestring))
             {
-                gameState.reset();
-                gameState.setState(SETUP);
-                screenManager.splash(GAME_OVER, CREATE_GAME);
+                // gameState.reset();
+                // gameState.setState(SETUP);
+                // TODO: HAVE A MORE ELEGANT WAY TO RESET THE BOARD FOR A NEW GAME
+                screenManager.setState(GAME_OVER);
+                vTaskDelay(pdMS_TO_TICKS(10000));
+                screenManager.setState(REBOOT);
+                vTaskDelay(pdMS_TO_TICKS(2000));
+                esp_restart(); // reset board
+
                 break;
             }
             screenManager.splash(MOVE_MADE);
